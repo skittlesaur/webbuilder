@@ -1,6 +1,7 @@
-import { useMemo } from 'react'
+import { Fragment, useMemo } from 'react'
 import type { Position } from './position'
 import ElementPropertiesPosition from './position'
+import ElementPropertiesSize from './size'
 import { findElementByIdArr } from '@/lib/find-element-by-id'
 import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
@@ -17,16 +18,23 @@ const ElementProperties = () => {
   if (!activeElement) return null
 
   return (
-    <div>
+    <Fragment key={selectedElementId}>
       <ElementPropertiesPosition
         bottom={activeElement.style.bottom as string | undefined}
-        key={activeElement.id}
         left={activeElement.style.left as string | undefined}
         position={activeElement.style.position as Position | undefined}
         right={activeElement.style.right as string | undefined}
         top={activeElement.style.top as string | undefined}
       />
-    </div>
+      <ElementPropertiesSize
+        height={activeElement.style.height as string | undefined}
+        maxHeight={activeElement.style.maxHeight as string | undefined}
+        maxWidth={activeElement.style.maxWidth as string | undefined}
+        minHeight={activeElement.style.minHeight as string | undefined}
+        minWidth={activeElement.style.minWidth as string | undefined}
+        width={activeElement.style.width as string | undefined}
+      />
+    </Fragment>
   )
 }
 
