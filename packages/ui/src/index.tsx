@@ -1,5 +1,10 @@
 // styles
-import "./styles.css";
+import './styles.css'
 
 // components
-export * from "./card";
+export * from './avatar'
+export * from './dropdown-menu'
+export * from './shortcut'
+export * from './tooltip'
+export * from './select'
+export * from './input'

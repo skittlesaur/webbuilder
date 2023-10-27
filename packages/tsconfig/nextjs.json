@@ -13,7 +13,11 @@
     "module": "esnext",
     "resolveJsonModule": true,
     "strict": false,
-    "target": "es5"
+    "target": "es5",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["src", "next-env.d.ts"],
   "exclude": ["node_modules"]

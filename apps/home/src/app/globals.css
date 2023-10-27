@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.cursor-all-children * {
+  cursor: var(--cursor) !important;
+}
+
+.nestable {
+  position: relative;
+}
+
+.nestable .nestable-list {
+  margin: 0;
+  padding: 0 0 0 1rem;
+  list-style-type: none;
+}
+
+.nestable > .nestable-list {
+  padding: 0;
+}
+
+.nestable-item:first-child,
+.nestable-item-copy:first-child {
+  margin-top: 0;
+}
+
+.nestable-item--children-no-collapse .nestable-item-icon,
+.nestable-item-copy--children-no-collapse .nestable-item-icon {
+  cursor: inherit;
+}
+
+.nestable-item {
+  position: relative;
+}
+
+.nestable-item.is-dragging .nestable-list {
+  pointer-events: none;
+}
+
+.nestable-item-name {
+  padding: 0.1rem;
+}
