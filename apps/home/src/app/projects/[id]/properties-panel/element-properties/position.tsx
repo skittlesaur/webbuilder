@@ -25,14 +25,12 @@ type Unit = (typeof units)[number]
 
 interface InputWithUnitProps {
   initial: string
-  placeholder: string
   type: 'top' | 'left' | 'bottom' | 'right'
   showMeasure?: boolean
 }
 
 const InputWithUnit = ({
   initial,
-  placeholder,
   type,
   showMeasure = false,
 }: InputWithUnitProps) => {
@@ -153,17 +151,13 @@ const ElementPropertiesPosition = ({
         {['absolute', 'fixed'].includes(position) && (
           <div className="grid grid-cols-3 gap-1">
             <div className="col-span-3 flex items-center justify-center">
-              <InputWithUnit initial={top} placeholder="Top" type="top" />
+              <InputWithUnit initial={top} type="top" />
             </div>
-            <InputWithUnit initial={left} placeholder="Left" type="left" />
+            <InputWithUnit initial={left} type="left" />
             <div />
-            <InputWithUnit initial={right} placeholder="Right" type="right" />
+            <InputWithUnit initial={right} type="right" />
             <div className="col-span-3 flex items-center justify-center">
-              <InputWithUnit
-                initial={bottom}
-                placeholder="Bottom"
-                type="bottom"
-              />
+              <InputWithUnit initial={bottom} type="bottom" />
             </div>
           </div>
         )}
@@ -199,12 +193,7 @@ const ElementPropertiesPosition = ({
         {position === 'sticky' && (
           <div className="grid grid-cols-[0.5fr_1fr] items-center">
             <p className="text-gray-400">Top</p>
-            <InputWithUnit
-              showMeasure
-              initial={top}
-              placeholder="Top"
-              type="top"
-            />
+            <InputWithUnit showMeasure initial={top} type="top" />
           </div>
         )}
       </div>

@@ -1,6 +1,13 @@
 import { useInteractionsStore } from '@/stores/interactions-store'
 
-const ListItem = ({ item }) => {
+interface ListItemProps {
+  item: {
+    id: string
+    text: string
+  }
+}
+
+const ListItem = ({ item }: ListItemProps) => {
   const { setHoveredElementId, setSelectedElementId, selectedElementId } =
     useInteractionsStore()
 

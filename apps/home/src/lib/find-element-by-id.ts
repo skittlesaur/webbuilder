@@ -6,7 +6,7 @@ export const findElementById = (element: Element, idToFind: string): Element | n
   }
 
   for (const child of element.children) {
-    if (typeof child === "object" && child !== null) {
+    if (typeof child === "object") {
       const foundElement = findElementById(child, idToFind)
       if (foundElement) {
         return foundElement

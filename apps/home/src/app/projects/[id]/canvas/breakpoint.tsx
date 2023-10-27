@@ -25,8 +25,8 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
   }, [breakpoint.width])
 
   const hasRelativeParent = useMemo(() => {
-    if (!elements) return false
-    return elements.some((el) => el.style?.position === 'relative')
+    if (!elements.length) return false
+    return elements.some((el) => el.style.position === 'relative')
   }, [elements])
 
   return (

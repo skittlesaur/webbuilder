@@ -8,17 +8,17 @@ import ListItem from './item'
 import { useCanvasStore } from '@/stores/canvas-store'
 
 const LayersList = () => {
-  const { elements, setElements } = useCanvasStore()
+  const { elements } = useCanvasStore()
 
   const recursiveFormat = useCallback((element) => {
     if (typeof element === 'string') return null
 
     const children =
       element.children
-        ?.map((child) => recursiveFormat(child))
+        .map((child) => recursiveFormat(child))
         .filter((child) => child) || []
 
-    const someChildString = element.children?.find(
+    const someChildString = element.children.find(
       (child) => typeof child === 'string'
     )
 
@@ -44,10 +44,13 @@ const LayersList = () => {
     <div className="relative" id="layers-container">
       <Nestable
         items={formattedElements as Item[]}
-        renderItem={({ item }) => <ListItem item={item} />}
-        onChange={(newItems) => {
-          console.log(newItems)
-        }}
+        renderItem={({ item }) => <ListItem item={{
+          id: item.id,
+          text: item.text,
+        }} />}
+        // onChange={(newItems) => {
+        //
+        // }}
       />
       <HoverIndicator />
       <SelectionIndicator />

@@ -67,5 +67,8 @@ module.exports = {
     ],
     'import/no-cycle': 'off',
     '@typescript-eslint/no-unsafe-return': 'off',
+    '@typescript-eslint/no-redundant-type-constituents': 'off',
+    '@typescript-eslint/no-confusing-void-expression': 'off',
+    '@typescript-eslint/no-unnecessary-condition': 'off',
   },
 }

@@ -1,11 +1,11 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
+import { createId } from '@paralleldrive/cuid2'
 import type {
   DraggedElement,
   Element as ElementType
 } from '@/stores/canvas-store'
 import { useCanvasStore } from '@/stores/canvas-store'
-import { createId } from '@paralleldrive/cuid2'
 
 interface ElementProps {
   Icon: React.ReactNode
@@ -74,6 +74,7 @@ const Element = ({ Icon, title, element }: ElementProps) => {
         id: createId(),
         type: element as ElementType['type'],
         children: [],
+        style: {},
       }
 
       const { relativeId, relativePosition } = draggedElement || {}

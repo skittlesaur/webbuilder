@@ -89,16 +89,16 @@ const Element = ({ element }: { element: ElementType | string }) => {
       })}
       data-droppable="true"
       id={element.id}
+      style={element.style}
       onClick={(e) => {
         e.stopPropagation()
         setSelectedElementId(element.id)
       }}
-      style={element.style}
       >
       {draggedElement?.relativeId === element.id && (
-        <DraggableIndicator position={draggedElement?.relativePosition} />
+        <DraggableIndicator position={draggedElement.relativePosition} />
       )}
-      {element.children?.map((child) => (
+      {element.children.map((child) => (
         <Element
           element={child}
           key={typeof child === 'string' ? child : child.id}

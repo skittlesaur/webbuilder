@@ -10,7 +10,7 @@ const ElementProperties = () => {
   const { elements } = useCanvasStore()
 
   const activeElement = useMemo(() => {
-    if (!elements || !selectedElementId) return null
+    if (!selectedElementId) return null
     return findElementByIdArr(elements, selectedElementId)
   }, [elements, selectedElementId])
 
@@ -19,12 +19,12 @@ const ElementProperties = () => {
   return (
     <div>
       <ElementPropertiesPosition
-        bottom={activeElement.style?.bottom as string | undefined}
+        bottom={activeElement.style.bottom as string | undefined}
         key={activeElement.id}
-        left={activeElement.style?.left as string | undefined}
-        position={activeElement.style?.position as Position | undefined}
-        right={activeElement.style?.right as string | undefined}
-        top={activeElement.style?.top as string | undefined}
+        left={activeElement.style.left as string | undefined}
+        position={activeElement.style.position as Position | undefined}
+        right={activeElement.style.right as string | undefined}
+        top={activeElement.style.top as string | undefined}
       />
     </div>
   )

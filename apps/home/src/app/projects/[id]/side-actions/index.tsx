@@ -1,11 +1,11 @@
 'use client'
+
 import { PlusIcon, Component1Icon, LayersIcon } from '@radix-ui/react-icons'
 import UserProfile from './profile'
 import SideButton from './side-button'
 import PagesIcon from '@/icons/pages-outline.svg'
 import { PanelsEnum, usePanelsStore } from '@/stores/panels-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
-import {} from '@/stores/canvas-store'
 
 const ACTIONS = [
   {
