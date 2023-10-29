@@ -2,6 +2,7 @@ import { Fragment, useMemo } from 'react'
 import type { Position } from './position'
 import ElementPropertiesPosition from './position'
 import ElementPropertiesSize from './size'
+import ElementPropertiesFill from './fill'
 import { findElementByIdArr } from '@/lib/find-element-by-id'
 import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
@@ -33,6 +34,9 @@ const ElementProperties = () => {
         minHeight={activeElement.style.minHeight as string | undefined}
         minWidth={activeElement.style.minWidth as string | undefined}
         width={activeElement.style.width as string | undefined}
+      />
+      <ElementPropertiesFill
+        background={activeElement.style.background as string | undefined}
       />
     </Fragment>
   )
