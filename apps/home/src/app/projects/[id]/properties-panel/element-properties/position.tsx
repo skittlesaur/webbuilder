@@ -10,6 +10,7 @@ import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
 
 const positions = {
+  static: 'Static',
   absolute: 'Absolute',
   relative: 'Relative',
   sticky: 'Sticky',
@@ -19,7 +20,7 @@ const positions = {
 export type Position = keyof typeof positions
 
 const ElementPropertiesPosition = ({
-  position = 'relative',
+  position = 'static',
   top = '0px',
   left = '0px',
   bottom = '0px',
