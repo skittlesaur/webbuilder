@@ -18,7 +18,7 @@ const Canvas = () => {
       if (e.ctrlKey || e.metaKey) {
         e.preventDefault()
         const zoomChange: number = zoom + e.deltaY / 1000
-        const zoomVal = Math.min(Math.max(0.1, zoomChange), 5)
+        const zoomVal = Math.min(Math.max(0.1, zoomChange), 8)
         const fixedZoom = parseFloat(zoomVal.toFixed(3))
         setZoom(fixedZoom)
       } else {

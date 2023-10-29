@@ -26,7 +26,12 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
 
   const hasRelativeParent = useMemo(() => {
     if (!elements.length) return false
-    return elements.some((el) => el.style.position === 'relative' || el.style.position === 'sticky' || el.style.position === undefined)
+    return elements.some(
+      (el) =>
+        el.style.position === 'relative' ||
+        el.style.position === 'sticky' ||
+        el.style.position === undefined
+    )
   }, [elements])
 
   return (
@@ -43,8 +48,8 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
       <div
         className="bg-accent px-5 py-2 rounded flex items-center gap-4"
         style={{
-          fontSize: `${(5 - zoom) * 0.7}rem`,
-          lineHeight: `${(5 - zoom) * 0.7 + 0.5}rem`,
+          fontSize: `minmax(0.5rem, ${(5 - zoom) * 0.7}rem, 1.5rem))`,
+          lineHeight: `minmax(0.6rem, ${(5 - zoom) * 0.7 + 0.5}rem, 1.5rem))`,
         }}>
         <h1>{breakpointTitle}</h1>
         <p className="text-white/70">
