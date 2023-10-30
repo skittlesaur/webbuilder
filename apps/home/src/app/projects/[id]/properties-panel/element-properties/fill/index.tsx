@@ -4,6 +4,38 @@ import FillItem from './item'
 import { useInteractionsStore } from '@/stores/interactions-store'
 import { useCanvasStore } from '@/stores/canvas-store'
 
+export const DEFAULT_COLOR: Fill = {
+  type: 'color',
+  value: '#FFFFFF',
+  opacity: 100,
+}
+
+export const DEFAULT_GRADIENT: Fill = {
+  type: 'gradient',
+  value: [
+    {
+      color: '#FFFFFF',
+      position: 0,
+      opacity: 100,
+    },
+    {
+      color: '#000000',
+      position: 100,
+      opacity: 100,
+    },
+  ],
+  degree: 0,
+}
+
+export const gradientToBackground = (
+  gradient: GradientValue[],
+  degree: number
+) => {
+  return `linear-gradient(${degree}deg, ${gradient
+    .map((i) => `${i.color}${opacityToHex(i.opacity / 100)} ${i.position}%`)
+    .join(', ')})`
+}
+
 interface GradientValue {
   color: string
   position: number
@@ -19,7 +51,7 @@ export type Fill =
   | {
       type: 'gradient'
       value: GradientValue[]
-      opacity: number
+      degree: number
     }
 
 interface FillProps {
@@ -52,42 +84,56 @@ const ElementPropertiesFill = ({ background }: FillProps) => {
       ]
     }
 
-    return []
+    const isGradient = background?.startsWith('linear-gradient')
+
+    if (!isGradient) return []
+
+    // linear-gradient(0deg, rgba(255, 0, 0, 0.32) 9.84456%, rgb(166, 33, 33) 84.456%), linear-gradient(0deg, rgb(0, 0, 0) 0%, rgb(255, 255, 255) 67.3575%)
+    // split into array of gradients
+    const gradients = background.split('), linear-gradient(').map((i) => {
+      const isLast = i.endsWith(')')
+      let val = i
+      if (isLast) val = val.slice(0, -1)
+      val = val.replace('linear-gradient(', '')
+
+      const gradientDegree = val.replace(/(?<degree>.*)deg, (?<colors>.*)/, '$1')
+      const gradientColors = val.replace(/(?<degree>.*)deg, (?<colors>.*)/, '$2')
+      const gradientColorsArr = gradientColors.split(', ')
+
+      const colorsWithPositions = gradientColorsArr.map((color) => {
+        const colorValue = color.slice(0, 7)
+        const opacity = color.slice(7, 9)
+        const opacityPercentage = Math.round(
+          (parseInt(opacity, 16) / 255) * 100
+        )
+        const position = color.slice(10, 13)
+        return {
+          color: colorValue,
+          opacity: opacityPercentage,
+          position: parseInt(position),
+        }
+      })
+
+      return {
+        type: 'gradient',
+        value: colorsWithPositions,
+        degree: parseInt(gradientDegree),
+      }
+    })
+
+    return gradients as Fill[]
   })
   const [colorPicker, setColorPicker] = useState<number | null>(null)
 
   const onAddClick = () => {
     if (fills.length === 0) {
-      return setFills([
-        {
-          type: 'color',
-          value: '#FFFFFF',
-          opacity: 100,
-        },
-      ])
+      return setFills([DEFAULT_COLOR])
     }
 
     setFills((prev: Fill[]) => {
-      const newFill: Fill = {
-        type: 'gradient',
-        value: [
-          {
-            color: '#FFFFFF',
-            position: 0,
-            opacity: 100,
-          },
-          {
-            color: '#000000',
-            position: 100,
-            opacity: 100,
-          },
-        ],
-        opacity: 100,
-      }
-
       const prevWithoutColors = prev.filter((fill) => fill.type !== 'color')
 
-      return [...prevWithoutColors, newFill]
+      return [...prevWithoutColors, DEFAULT_GRADIENT]
     })
   }
 
@@ -119,7 +165,7 @@ const ElementPropertiesFill = ({ background }: FillProps) => {
           if (fill.type === 'color') {
             return `${fill.value}${opacityToHex(fill.opacity / 100)}`
           }
-          return fill.value
+          return gradientToBackground(fill.value, fill.degree)
         })
         .join(', ')
     )
