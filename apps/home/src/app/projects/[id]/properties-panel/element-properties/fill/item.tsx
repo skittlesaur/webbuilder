@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Input } from 'ui'
 import { ChromePicker } from 'react-color'
 import cn from 'classnames'
@@ -27,6 +27,29 @@ const ColorFill = ({
   const [color, setColor] = useState<string>(fill.value)
   const [opacity, setOpacity] = useState<number>(fill.opacity)
 
+  const handleColorBlur = () => {
+    const colorValue = color.startsWith('#')
+      ? color.substring(0, 7)
+      : `#${color.substring(0, 6)}`
+    const isValidColor = /^#(?<check>[0-9A-F]{3}){1,2}$/i.test(colorValue)
+
+    if (isValidColor) {
+      onConfirm({ ...fill, value: colorValue })
+    } else {
+      setColor(fill.value)
+    }
+  }
+
+  const handleOpacityBlur = () => {
+    onConfirm({ ...fill, opacity })
+  }
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      ;(e.target as HTMLInputElement).blur()
+    }
+  }
+
   return (
     <>
       <div className="relative flex items-center gap-2 justify-between">
@@ -43,56 +66,24 @@ const ColorFill = ({
             <Input
               className="uppercase !p-1 !text-xs !h-6 !w-24 !rounded-r-none"
               value={color}
-              onBlur={() => {
-                const colorValue = color.startsWith('#')
-                  ? color.substring(0, 7)
-                  : `#${color.substring(0, 6)}`
-
-                const isValidColor = /^#(?<check>[0-9A-F]{3}){1,2}$/i.test(
-                  colorValue
-                )
-
-                if (!isValidColor) return setColor(fill.value)
-
-                onConfirm({
-                  ...fill,
-                  value: colorValue,
-                })
-              }}
+              onBlur={handleColorBlur}
               onChange={(e) => {
                 setColor(e.target.value)
               }}
-              onKeyDown={(e) => {
-                const isEnter = e.key === 'Enter'
-                if (!isEnter) return
-
-                const target = e.target as HTMLInputElement
-                target.blur()
-              }}
+              onKeyDown={handleKeyPress}
             />
             <div className="relative -ml-px">
               <Input
                 className="!p-1 !text-xs !h-6 pr-2 !w-12 !rounded-l-none"
                 value={opacity}
-                onBlur={() => {
-                  onConfirm({
-                    ...fill,
-                    opacity,
-                  })
-                }}
+                onBlur={handleOpacityBlur}
                 onChange={(e) => {
                   const value = Number(e.target.value)
                   if (isNaN(value)) return
 
                   setOpacity(value)
                 }}
-                onKeyDown={(e) => {
-                  const isEnter = e.key === 'Enter'
-                  if (!isEnter) return
-
-                  const target = e.target as HTMLInputElement
-                  target.blur()
-                }}
+                onKeyDown={handleKeyPress}
               />
               <p className="select-none pointer-events-none absolute right-2 leading-[0] top-1/2 -translate-y-1/2 text-xs text-gray-400">
                 %
@@ -163,21 +154,19 @@ const GradientFill = ({
 
   const wrapperRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    if (dragging === null) return
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (dragging === null) return
 
-    const listener = (e: MouseEvent) => {
       const wrapper = wrapperRef.current
       if (!wrapper) return
 
       const wrapperRect = wrapper.getBoundingClientRect()
       const wrapperWidth = wrapperRect.width
-
       const left = wrapperRect.left
 
       const mouseX = e.clientX
       const mouseXRelative = mouseX - left
-
       const mouseXPercentage = (mouseXRelative / wrapperWidth) * 100
       const mouseXPercentageFixed = Math.min(Math.max(0, mouseXPercentage), 100)
 
@@ -188,9 +177,7 @@ const GradientFill = ({
         position: mouseXPercentageFixed,
       }
 
-      // sort fills by position
       const sortedFills = newFills.sort((a, b) => a.position - b.position)
-      // update dragging index
       const newDraggingIndex = sortedFills.findIndex(
         (item) => item.position === mouseXPercentageFixed
       )
@@ -201,16 +188,72 @@ const GradientFill = ({
         ...fill,
         value: sortedFills,
       })
-    }
+    },
+    [dragging, fill, onConfirm]
+  )
 
-    window.addEventListener('mousemove', listener)
+  useEffect(() => {
+    if (dragging === null) return
+    window.addEventListener('mousemove', handleMouseMove)
     window.addEventListener('mouseup', () => setDragging(null))
 
     return () => {
-      window.removeEventListener('mousemove', listener)
+      window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('mouseup', () => setDragging(null))
     }
-  }, [dragging, fill, onConfirm])
+  }, [dragging, handleMouseMove])
+
+  const handleWrapperClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const wrapper = wrapperRef.current
+    if (!wrapper) return
+
+    const target = e.target as HTMLDivElement
+
+    if (wrapper !== target) return
+
+    const wrapperRect = wrapper.getBoundingClientRect()
+    const wrapperWidth = wrapperRect.width
+    const left = wrapperRect.left
+    const mouseX = e.clientX
+    const mouseXRelative = mouseX - left
+    const mouseXPercentage = (mouseXRelative / wrapperWidth) * 100
+    const mouseXPercentageFixed = Math.min(Math.max(0, mouseXPercentage), 100)
+    const newColor = '#000000'
+
+    const newFills = [...fill.value]
+    newFills.push({
+      color: newColor,
+      opacity: 100,
+      position: mouseXPercentageFixed,
+    })
+
+    const sortedFills = newFills.sort((a, b) => a.position - b.position)
+    const itemIndex = sortedFills.findIndex(
+      (item) => item.position === mouseXPercentageFixed
+    )
+
+    setDragging(null)
+    setSelectedStep(itemIndex)
+    onConfirm({
+      ...fill,
+      value: sortedFills,
+    })
+  }
+
+  const handleStepClick = (index: number) => {
+    setDragging(index)
+    setSelectedStep(index)
+  }
+
+  const handleStepDelete = (index: number) => {
+    const newFills = [...fill.value]
+    newFills.splice(index, 1)
+
+    onConfirm({
+      ...fill,
+      value: newFills,
+    })
+  }
 
   return (
     <>
@@ -253,55 +296,7 @@ const GradientFill = ({
             ref={wrapperRef}
             role="button"
             tabIndex={-1}
-            onClick={(e) => {
-              const wrapper = wrapperRef.current
-              if (!wrapper) return
-
-              const target = e.target as HTMLDivElement
-
-              if (wrapper !== target) return
-
-              const wrapperRect = wrapper.getBoundingClientRect()
-              const wrapperWidth = wrapperRect.width
-              const left = wrapperRect.left
-
-              const mouseX = e.clientX
-              const mouseXRelative = mouseX - left
-
-              const mouseXPercentage = (mouseXRelative / wrapperWidth) * 100
-              const mouseXPercentageFixed = Math.min(
-                Math.max(0, mouseXPercentage),
-                100
-              )
-
-              // calculate the color of the new step based on the position of the click and previous colors
-              const newColor = '#000000'
-
-              const newFills = [...fill.value]
-
-              newFills.push({
-                color: newColor,
-                opacity: 100,
-                position: mouseXPercentageFixed,
-              })
-
-              // sort fills by position
-              const sortedFills = newFills.sort(
-                (a, b) => a.position - b.position
-              )
-
-              // update dragging index
-              const itemIndex = sortedFills.findIndex(
-                (item) => item.position === mouseXPercentageFixed
-              )
-
-              setDragging(null)
-              setSelectedStep(itemIndex)
-              onConfirm({
-                ...fill,
-                value: sortedFills,
-              })
-            }}
+            onClick={handleWrapperClick}
             onKeyDown={() => null}>
             {fill.value.map((step, index) => (
               <button
@@ -319,21 +314,11 @@ const GradientFill = ({
                 type="button"
                 onClick={() => setSelectedStep(index)}
                 onKeyDown={(e) => {
-                  const isDeleteKey = e.key === 'Delete'
-                  if (!isDeleteKey) return
-
-                  const newFills = [...fill.value]
-                  newFills.splice(index, 1)
-
-                  onConfirm({
-                    ...fill,
-                    value: newFills,
-                  })
+                  if (e.key === 'Delete') {
+                    handleStepDelete(index)
+                  }
                 }}
-                onMouseDown={() => {
-                  setDragging(index)
-                  setSelectedStep(index)
-                }}>
+                onMouseDown={() => handleStepClick(index)}>
                 <div
                   className="relative z-10 w-full h-full"
                   style={{
