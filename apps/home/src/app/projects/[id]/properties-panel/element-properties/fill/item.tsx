@@ -10,6 +10,7 @@ import {
   gradientToBackground,
 } from '.'
 import RemoveIcon from '@/icons/remove.svg'
+import { useInteractionsStore } from '@/stores/interactions-store'
 
 interface ItemProps {
   fill: Fill
@@ -149,7 +150,8 @@ const GradientFill = ({
   colorPickerClick,
   colorPickerOpen,
 }: ItemProps & { fill: { type: 'gradient' } }) => {
-  const [selectedStep, setSelectedStep] = useState<number>(0)
+  const { selectedGradientStep, setSelectedGradientStep } =
+    useInteractionsStore()
   const [dragging, setDragging] = useState<number | null>(null)
 
   const wrapperRef = useRef<HTMLDivElement>(null)
@@ -183,13 +185,13 @@ const GradientFill = ({
       )
 
       setDragging(newDraggingIndex)
-      setSelectedStep(newDraggingIndex)
+      setSelectedGradientStep(newDraggingIndex)
       onConfirm({
         ...fill,
         value: sortedFills,
       })
     },
-    [dragging, fill, onConfirm]
+    [dragging, fill, onConfirm, setSelectedGradientStep]
   )
 
   useEffect(() => {
@@ -233,7 +235,7 @@ const GradientFill = ({
     )
 
     setDragging(null)
-    setSelectedStep(itemIndex)
+    setSelectedGradientStep(itemIndex)
     onConfirm({
       ...fill,
       value: sortedFills,
@@ -242,7 +244,7 @@ const GradientFill = ({
 
   const handleStepClick = (index: number) => {
     setDragging(index)
-    setSelectedStep(index)
+    setSelectedGradientStep(index)
   }
 
   const handleStepDelete = (index: number) => {
@@ -303,8 +305,10 @@ const GradientFill = ({
                 className={cn(
                   'shadow-lg absolute top-0 w-6 h-6 border-2 -translate-x-1/2 before:content-[""] before:absolute before:z-[1] before:inset-0 before:bg-background after:content-[""] after:absolute after:z-[-2] after:w-2 after:h-2 after:top-full after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:rotate-45',
                   {
-                    'border-primary after:bg-primary': index === selectedStep,
-                    'border-white after:bg-white ': index !== selectedStep,
+                    'border-primary after:bg-primary':
+                      index === selectedGradientStep,
+                    'border-white after:bg-white ':
+                      index !== selectedGradientStep,
                   }
                 )}
                 key={index}
@@ -312,7 +316,7 @@ const GradientFill = ({
                   left: `${step.position}%`,
                 }}
                 type="button"
-                onClick={() => setSelectedStep(index)}
+                onClick={() => setSelectedGradientStep(index)}
                 onKeyDown={(e) => {
                   if (e.key === 'Delete') {
                     handleStepDelete(index)
@@ -337,16 +341,16 @@ const GradientFill = ({
             />
           </div>
           <ChromePicker
-            color={`${fill.value[selectedStep].color}${opacityToHex(
-              fill.value[selectedStep].opacity / 100
+            color={`${fill.value[selectedGradientStep].color}${opacityToHex(
+              fill.value[selectedGradientStep].opacity / 100
             )}`}
             onChange={(c: { hex: string; rgb: { a: number } }) => {
               const hex = c.hex
               const alpha = c.rgb.a * 100
 
               const newFills = [...fill.value]
-              newFills[selectedStep] = {
-                ...newFills[selectedStep],
+              newFills[selectedGradientStep] = {
+                ...newFills[selectedGradientStep],
                 color: hex,
                 opacity: alpha,
               }

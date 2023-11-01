@@ -6,6 +6,7 @@ import SideButton from './side-button'
 import PagesIcon from '@/icons/pages-outline.svg'
 import { PanelsEnum, usePanelsStore } from '@/stores/panels-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
+import { memo } from 'react'
 
 const ACTIONS = [
   {
@@ -70,4 +71,4 @@ const SideActions = () => {
   )
 }
 
-export default SideActions
+export default memo(SideActions, () => true)

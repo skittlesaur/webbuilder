@@ -3,6 +3,7 @@ import 'ui/styles.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import cn from 'classnames'
+import { Toaster } from 'sonner'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -23,6 +24,7 @@ const RootLayout = ({ children }: RootLayoutProps) => {
           inter.className,
           'bg-background text-text w-screen h-screen'
         )}>
+        <Toaster />
         {children}
       </body>
     </html>

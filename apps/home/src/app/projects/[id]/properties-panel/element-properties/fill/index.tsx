@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import AddFill from './add'
 import FillItem from './item'
 import { useInteractionsStore } from '@/stores/interactions-store'
 import { useCanvasStore } from '@/stores/canvas-store'
+import {} from 'sonner'
 
 export const DEFAULT_COLOR: Fill = {
   type: 'color',
@@ -64,7 +65,8 @@ export const opacityToHex = (opacity: number) => {
 }
 
 const ElementPropertiesFill = ({ background }: FillProps) => {
-  const { selectedElementId } = useInteractionsStore()
+  const { selectedElementId, gradientEditor, setGradientEditor } =
+    useInteractionsStore()
   const { updateElementAttribute } = useCanvasStore()
 
   const [fills, setFills] = useState<Fill[]>(() => {
@@ -96,8 +98,14 @@ const ElementPropertiesFill = ({ background }: FillProps) => {
       if (isLast) val = val.slice(0, -1)
       val = val.replace('linear-gradient(', '')
 
-      const gradientDegree = val.replace(/(?<degree>.*)deg, (?<colors>.*)/, '$1')
-      const gradientColors = val.replace(/(?<degree>.*)deg, (?<colors>.*)/, '$2')
+      const gradientDegree = val.replace(
+        /(?<degree>.*)deg, (?<colors>.*)/,
+        '$1'
+      )
+      const gradientColors = val.replace(
+        /(?<degree>.*)deg, (?<colors>.*)/,
+        '$2'
+      )
       const gradientColorsArr = gradientColors.split(', ')
 
       const colorsWithPositions = gradientColorsArr.map((color) => {
@@ -138,12 +146,23 @@ const ElementPropertiesFill = ({ background }: FillProps) => {
   }
 
   const onConfirm = (data: Fill, index: number) => {
-    setFills((prev: Fill[]) => {
-      const newFills = [...prev]
-      newFills[index] = data
-      return newFills
-    })
+    if (data.type === 'gradient') {
+      setGradientEditor(data)
+    } else {
+      setFills((prev: Fill[]) => {
+        const newFills = [...prev]
+        newFills[index] = data
+        return newFills
+      })
+    }
   }
+
+  useEffect(() => {
+    if (colorPicker === null) return setGradientEditor(null)
+
+    if (fills[colorPicker].type === 'gradient')
+      setGradientEditor(fills[colorPicker] as Fill & { type: 'gradient' })
+  }, [colorPicker, setGradientEditor])
 
   useEffect(() => {
     if (!selectedElementId) return
@@ -170,6 +189,24 @@ const ElementPropertiesFill = ({ background }: FillProps) => {
         .join(', ')
     )
   }, [fills, selectedElementId, updateElementAttribute])
+
+  useEffect(() => {
+    if (colorPicker === null || !gradientEditor) return
+    if (typeof fills[colorPicker].value === 'string') return
+
+    const { value } = gradientEditor
+
+    setFills((prev: Fill[]) => {
+      const newFills = [...prev]
+      newFills[colorPicker] = {
+        type: 'gradient',
+        value,
+        degree: gradientEditor.degree,
+      }
+
+      return newFills
+    })
+  }, [gradientEditor])
 
   return (
     <div className="p-4 border-b border-border flex flex-col gap-4">
@@ -204,4 +241,4 @@ const ElementPropertiesFill = ({ background }: FillProps) => {
   )
 }
 
-export default ElementPropertiesFill
+export default memo(ElementPropertiesFill, () => true)

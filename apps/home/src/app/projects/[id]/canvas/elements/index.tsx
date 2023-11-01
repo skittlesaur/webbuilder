@@ -4,6 +4,7 @@ import DraggableIndicator from '../draggable-indicator'
 import type { Element as ElementType } from '@/stores/canvas-store'
 import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
+import GradientEditor from './gradient-editor'
 
 const Element = ({ element }: { element: ElementType | string }) => {
   const { draggedElement } = useCanvasStore()
@@ -13,6 +14,7 @@ const Element = ({ element }: { element: ElementType | string }) => {
     hoveredElementId,
     setHoveredElementId,
     setSelectedElementId,
+    gradientEditor,
   } = useInteractionsStore()
 
   useEffect(() => {
@@ -93,10 +95,12 @@ const Element = ({ element }: { element: ElementType | string }) => {
       onClick={(e) => {
         e.stopPropagation()
         setSelectedElementId(element.id)
-      }}
-      >
+      }}>
       {draggedElement?.relativeId === element.id && (
         <DraggableIndicator position={draggedElement.relativePosition} />
+      )}
+      {gradientEditor !== null && selectedElementId === element.id && (
+        <GradientEditor />
       )}
       {element.children.map((child) => (
         <Element

@@ -1,5 +1,5 @@
 'use client'
-import { useCallback, useEffect, useRef } from 'react'
+import { memo, useCallback, useEffect, useRef } from 'react'
 import Breakpoint from './breakpoint'
 import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
@@ -75,4 +75,4 @@ const Canvas = () => {
   )
 }
 
-export default Canvas
+export default memo(Canvas, () => true)

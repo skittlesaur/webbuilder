@@ -22,6 +22,7 @@
     "react-dom": "^18.2.0",
     "react-nestable": "^2.0.0",
     "react-use-measure": "^2.1.1",
+    "sonner": "^1.1.0",
     "tailwindcss-animate": "^1.0.7",
     "ui": "*",
     "zustand": "^4.4.1"
