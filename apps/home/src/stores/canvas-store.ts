@@ -11,7 +11,7 @@ export interface Breakpoint {
   }
 }
 
-export type ElementType = 'section' | 'div' | 'p'
+export type ElementType = 'div' | 'section' | 'ul' | 'li'
 
 export interface Element {
   id: string
@@ -22,7 +22,7 @@ export interface Element {
 
 export interface DraggedElement {
   relativeId: string
-  relativePosition: 'before' | 'after'
+  relativePosition: 'before' | 'after' | 'child'
   type: ElementType
 }
 
@@ -43,47 +43,12 @@ interface CanvasStore {
   elements: Element[]
   setElements: (elements: Element[]) => void
   addElement: (element: Element, relativeId?: string, relativePosition?: 'before' | 'after' | 'child') => void
-  removeElement: (element: Element) => void
+  removeElement: (elementId: string) => void
   updateElement: (element: Element) => void
   updateElementAttribute: (elementId: string, target: string, attribute: string, value: unknown) => void
   draggedElement: DraggedElement | undefined
   setDraggedElement: (draggedElement: DraggedElement | undefined) => void
 }
-
-const TEST_ELEMENTS: Element[] = [
-  {
-    id: '1',
-    type: 'section',
-    style: {},
-    children: [
-      {
-        id: '11',
-        type: 'div',
-        style: {},
-        children: [
-          {
-            id: '111',
-            type: 'p',
-            children: ['Hello World'],
-            style: {},
-          },
-          {
-            id: '112',
-            type: 'p',
-            children: ['Second p'],
-            style: {},
-          },
-        ],
-      },
-      {
-        id: '12',
-        type: 'p',
-        children: ['p p'],
-        style: {},
-      },
-    ],
-  },
-]
 
 export const useCanvasStore = create<CanvasStore>()(
   persist(
@@ -127,12 +92,12 @@ export const useCanvasStore = create<CanvasStore>()(
       removeSelectedId: (id) => {
         set({ selectedIds: get().selectedIds.filter((selectedId) => selectedId !== id) })
       },
-      elements: TEST_ELEMENTS,
+      elements: [],
       setElements: (elements) => {
         set({ elements })
       },
       addElement: (element, relativeId, relativePosition) => {
-        if (!relativeId) {
+        if (!relativeId || relativeId === 'root') {
           set({ elements: [...get().elements, element] })
           return
         }
@@ -150,6 +115,12 @@ export const useCanvasStore = create<CanvasStore>()(
             if (relativePosition === 'after') {
               return [el, element]
             }
+            if (relativePosition === 'child') {
+              return {
+                ...el,
+                children: [...el.children, element]
+              }
+            }
           }
 
           const updatedChildren = el.children.map((child) => updateElement(child as Element))
@@ -160,12 +131,35 @@ export const useCanvasStore = create<CanvasStore>()(
           }
         }
 
-        const newElements = get().elements.map((el) => updateElement(el)) as Element[]
+        const newElements = get().elements.map((el) => updateElement(el)).flat() as Element[]
 
         set({ elements: newElements })
       },
-      removeElement: (element) => {
-        set({ elements: get().elements.filter((arrElement) => arrElement.id !== element.id) })
+      removeElement: (elementId) => {
+        const elements = get().elements
+
+        const deepRemoveElement = (el: Element): Element | string | null => {
+          if (typeof el === 'string') return el
+
+          if (el.id === elementId) {
+            return null
+          }
+
+          const updatedChildren = el.children.map((child) => deepRemoveElement(child as Element))
+
+          const filteredChildren = updatedChildren.filter((child) => child !== null)
+
+          return {
+            ...el,
+            children: filteredChildren.flat(),
+          } as Element
+        }
+
+        const newElements = elements
+        .map((el) => deepRemoveElement(el))
+        .filter((el) => el !== null) as Element[]
+
+        set({ elements: newElements })
       },
       updateElement: (element) => {
         set({

@@ -2,6 +2,8 @@ import { create } from 'zustand'
 import type { Fill } from '@/app/projects/[id]/properties-panel/element-properties/fill'
 
 interface InteractionsStore {
+  isDraggingElement: boolean
+  setIsDraggingElement: (isDragging: boolean) => void
   hoveredElementId: string | null
   setHoveredElementId: (id: string | null) => void
   selectedElementId: string | null
@@ -13,6 +15,8 @@ interface InteractionsStore {
 }
 
 export const useInteractionsStore = create<InteractionsStore>((set) => ({
+  isDraggingElement: false,
+  setIsDraggingElement: (isDragging) => { set({ isDraggingElement: isDragging }) },
   hoveredElementId: null,
   setHoveredElementId: (id) => { set({ hoveredElementId: id }) },
   selectedElementId: null,

@@ -28,6 +28,8 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
     if (!elements.length) return false
     return elements.some(
       (el) =>
+        el.style === undefined ||
+        el.style.position === 'static' ||
         el.style.position === 'relative' ||
         el.style.position === 'sticky' ||
         el.style.position === undefined
@@ -58,7 +60,7 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
       </div>
       <div
         className={cn(
-          'relative flex flex-col w-full bg-white text-black text-base',
+          'relative flex flex-col w-full bg-white text-black text-base min-h-[20rem]',
           {
             'h-[20rem]': !hasRelativeParent,
           }
@@ -68,6 +70,16 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
         {elements.map((element) => (
           <Element element={element} key={element.id} />
         ))}
+        {elements.length === 0 && (
+          <Element
+            element={{
+              id: 'root',
+              type: 'div',
+              style: { height: '20rem', width: '100%' },
+              children: [],
+            }}
+          />
+        )}
       </div>
     </div>
   )

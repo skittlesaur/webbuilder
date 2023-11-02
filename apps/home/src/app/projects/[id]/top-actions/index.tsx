@@ -1,4 +1,5 @@
 import BackButton from './back-button'
+import ExportButton from './export'
 
 const TopActions = () => {
   return (
@@ -8,11 +9,7 @@ const TopActions = () => {
         <h1 className="font-medium text-sm">Project name</h1>
       </div>
       <div className="flex items-center gap-2">
-        <button
-          className="px-2.5 py-1.5 text-medium !bg-primary text-text rounded text-xs hover:!bg-primary-800 transition-colors ease-in-out duration-150"
-          type="button">
-          Publish
-        </button>
+        <ExportButton />
       </div>
     </div>
   )

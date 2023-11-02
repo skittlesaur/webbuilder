@@ -6,6 +6,15 @@ import AddElementsPanelHeader from './header'
 import LayoutElements from './layout'
 import AddElementsPanelSearch from './search'
 import { PanelsEnum } from '@/stores/panels-store'
+import type { Element } from '@/stores/canvas-store'
+
+export interface PanelElement {
+  Icon: JSX.Element
+  title: string
+  element: Element['type']
+  style: Element['style']
+  children?: Element['children']
+}
 
 const AddElementsPanel = () => {
   return (

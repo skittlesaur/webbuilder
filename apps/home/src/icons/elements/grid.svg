@@ -1,0 +1,16 @@
+<svg viewBox="0 0 52 45" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0.390244" y="-0.390244" width="21.8537" height="19.9024" rx="2.73171"
+    transform="matrix(1 0 0 -1 0.243805 20.1463)" fill="#121825" />
+  <rect x="0.390244" y="-0.390244" width="21.8537" height="19.9024" rx="2.73171"
+    transform="matrix(1 0 0 -1 0.243805 20.1463)" stroke="#F9FAFB" stroke-width="0.780488"
+    stroke-dasharray="1.56 1.56" />
+  <rect width="22.6341" height="20.6829" rx="3.12195" transform="matrix(1 0 0 -1 0.243805 44.7317)"
+    fill="#121825" />
+  <rect width="22.6341" height="20.6829" rx="3.12195" transform="matrix(1 0 0 -1 27.5608 20.9268)"
+    fill="#121825" />
+  <rect x="0.390244" y="-0.390244" width="21.8537" height="19.9024" rx="2.73171"
+    transform="matrix(1 0 0 -1 27.5608 43.9512)" fill="#121825" />
+  <rect x="0.390244" y="-0.390244" width="21.8537" height="19.9024" rx="2.73171"
+    transform="matrix(1 0 0 -1 27.5608 43.9512)" stroke="#F9FAFB" stroke-width="0.780488"
+    stroke-dasharray="1.56 1.56" />
+</svg>

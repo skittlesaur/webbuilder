@@ -24,7 +24,7 @@ const RootLayout = ({ children }: RootLayoutProps) => {
           inter.className,
           'bg-background text-text w-screen h-screen'
         )}>
-        <Toaster />
+        <Toaster position="bottom-center" theme="light" />
         {children}
       </body>
     </html>

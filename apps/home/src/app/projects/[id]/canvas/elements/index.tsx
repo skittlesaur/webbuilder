@@ -5,16 +5,21 @@ import type { Element as ElementType } from '@/stores/canvas-store'
 import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
 import GradientEditor from './gradient-editor'
+import UnstyledDisplay from './unstyled-display'
+import {} from 'sonner'
 
 const Element = ({ element }: { element: ElementType | string }) => {
   const { draggedElement } = useCanvasStore()
   const [isHovering, setIsHovering] = useState(false)
+  const [isUnstyled, setIsUnstyled] = useState(false)
+
   const {
     selectedElementId,
     hoveredElementId,
     setHoveredElementId,
     setSelectedElementId,
     gradientEditor,
+    isDraggingElement,
   } = useInteractionsStore()
 
   useEffect(() => {
@@ -78,6 +83,33 @@ const Element = ({ element }: { element: ElementType | string }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- no need to update when other props change since it will cause unexpected behavior
   }, [isHovering])
 
+  useEffect(() => {
+    if (typeof element === 'string') {
+      setIsUnstyled(false)
+      return
+    }
+
+    const hasHeight =
+      (element.style?.height &&
+        !['auto', 'unset'].includes(element.style?.height as string)) ||
+      (element.style?.minHeight &&
+        ['auto', 'unset'].includes(element.style?.minHeight as string))
+
+    const hasWidth =
+      (element.style?.width &&
+        !['auto', 'unset'].includes(element.style?.width as string)) ||
+      (element.style?.minWidth &&
+        ['auto', 'unset'].includes(element.style?.minWidth as string))
+
+    const hasChildren = element.children.length > 0
+
+    if (!hasHeight && !hasWidth && !hasChildren) {
+      setIsUnstyled(true)
+    } else {
+      setIsUnstyled(false)
+    }
+  }, [element])
+
   if (typeof element === 'string') return element
 
   const Type = element.type
@@ -87,21 +119,25 @@ const Element = ({ element }: { element: ElementType | string }) => {
       className={cn({
         'ring-2 !ring-primary': selectedElementId === element.id,
         'ring-2 ring-primary/70': isHovering || hoveredElementId === element.id,
-        relative: draggedElement?.relativeId === element.id,
       })}
       data-droppable="true"
       id={element.id}
-      style={element.style}
+      style={{
+        ...element.style,
+        padding: isDraggingElement ? `1rem` : element.style?.padding,
+      }}
       onClick={(e) => {
+        if (element.id === 'root') return
         e.stopPropagation()
         setSelectedElementId(element.id)
       }}>
-      {draggedElement?.relativeId === element.id && (
+      {draggedElement && draggedElement?.relativeId === element.id ? (
         <DraggableIndicator position={draggedElement.relativePosition} />
-      )}
+      ) : null}
       {gradientEditor !== null && selectedElementId === element.id && (
         <GradientEditor />
       )}
+      {isUnstyled ? <UnstyledDisplay /> : null}
       {element.children.map((child) => (
         <Element
           element={child}

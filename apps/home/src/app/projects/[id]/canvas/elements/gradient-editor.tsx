@@ -103,6 +103,7 @@ const GradientEditor = () => {
     if (!line) return
 
     toast('@todo: Add new point')
+    e.preventDefault()
   }, [])
 
   useEffect(() => {

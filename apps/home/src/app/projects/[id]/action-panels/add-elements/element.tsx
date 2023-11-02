@@ -1,22 +1,20 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { createId } from '@paralleldrive/cuid2'
+import type { PanelElement } from '.'
 import type {
   DraggedElement,
-  Element as ElementType
+  Element as ElementType,
 } from '@/stores/canvas-store'
 import { useCanvasStore } from '@/stores/canvas-store'
+import { useInteractionsStore } from '@/stores/interactions-store'
 
-interface ElementProps {
-  Icon: React.ReactNode
-  title: string
-  element: string
-}
-
-const Element = ({ Icon, title, element }: ElementProps) => {
+const Element = ({ Icon, title, element, style, children }: PanelElement) => {
   const [isDragging, setIsDragging] = useState(false)
   const [dragPosition, setDragPosition] = useState({ x: 0, y: 0, snap: false })
-  const { zoom, draggedElement, setDraggedElement, addElement } = useCanvasStore()
+  const { zoom, draggedElement, setDraggedElement, addElement } =
+    useCanvasStore()
+  const { setIsDraggingElement } = useInteractionsStore()
 
   useEffect(() => {
     if (!isDragging) return
@@ -54,13 +52,18 @@ const Element = ({ Icon, title, element }: ElementProps) => {
         }
       })
 
-      const offset = 0.4
+      const offset = 0.2
       const elementRect = closestElementToCursor.getBoundingClientRect()
 
-      const relativePosition: DraggedElement['relativePosition'] =
-        clientY < elementRect.top + elementRect.height * offset
-          ? 'before'
-          : 'after'
+      let relativePosition: DraggedElement['relativePosition']
+
+      if (clientY < elementRect.y + elementRect.height * offset) {
+        relativePosition = 'before'
+      } else if (clientY > elementRect.y + elementRect.height * (1 - offset)) {
+        relativePosition = 'after'
+      } else {
+        relativePosition = 'child'
+      }
 
       setDraggedElement({
         relativeId: closestElementToCursor.id,
@@ -73,8 +76,8 @@ const Element = ({ Icon, title, element }: ElementProps) => {
       const newElement: ElementType = {
         id: createId(),
         type: element as ElementType['type'],
-        children: [],
-        style: {},
+        children: children ?? [],
+        style: style ?? {},
       }
 
       const { relativeId, relativePosition } = draggedElement || {}
@@ -84,6 +87,7 @@ const Element = ({ Icon, title, element }: ElementProps) => {
       }
 
       setIsDragging(false)
+      setIsDraggingElement(false)
       setDraggedElement(undefined)
     }
 
@@ -94,7 +98,15 @@ const Element = ({ Icon, title, element }: ElementProps) => {
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [addElement, draggedElement, element, isDragging, setDraggedElement])
+  }, [
+    addElement,
+    children,
+    draggedElement,
+    element,
+    isDragging,
+    setDraggedElement,
+    style,
+  ])
 
   return (
     <>
@@ -103,13 +115,14 @@ const Element = ({ Icon, title, element }: ElementProps) => {
         type="button"
         onMouseDown={(e) => {
           setIsDragging(true)
+          setIsDraggingElement(true)
           setDragPosition({
             x: e.clientX - 70,
             y: e.clientY - 90,
             snap: false,
           })
         }}>
-        <div className="w-full aspect-square bg-secondary rounded flex items-center justify-center">
+        <div className="w-full aspect-square bg-secondary rounded flex items-center justify-center p-1.5">
           {Icon}
         </div>
         <p className="text-xs">{title}</p>

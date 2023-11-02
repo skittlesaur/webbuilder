@@ -3,11 +3,14 @@ import { memo, useCallback, useEffect, useRef } from 'react'
 import Breakpoint from './breakpoint'
 import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
+import { toast } from 'sonner'
 
 const Canvas = () => {
-  const { breakpoints, pan, setPan, zoom, setZoom } = useCanvasStore()
+  const { breakpoints, pan, setPan, zoom, setZoom, removeElement } =
+    useCanvasStore()
   const ref = useRef<HTMLDivElement>(null)
-  const { setSelectedElementId } = useInteractionsStore()
+  const { setSelectedElementId, selectedElementId, setHoveredElementId } =
+    useInteractionsStore()
 
   // handle scroll on canvas to pan
   const handleWheel = useCallback(
@@ -53,6 +56,36 @@ const Canvas = () => {
       setSelectedElementId(null)
     }
   }
+
+  const handleElementDelete = useCallback(
+    (e: KeyboardEvent) => {
+      const isDelete = e.key === 'Delete' || e.key === 'Backspace'
+      if (!isDelete) return
+
+      if (!selectedElementId || selectedElementId === 'root') return
+
+      setSelectedElementId(null)
+      setHoveredElementId(null)
+      removeElement(selectedElementId)
+      toast.success('Element deleted')
+    },
+    [
+      removeElement,
+      selectedElementId,
+      setHoveredElementId,
+      setSelectedElementId,
+    ]
+  )
+
+  useEffect(() => {
+    if (!selectedElementId) return
+
+    window.addEventListener('keydown', handleElementDelete)
+
+    return () => {
+      window.removeEventListener('keydown', handleElementDelete)
+    }
+  }, [handleElementDelete, selectedElementId])
 
   return (
     <div
