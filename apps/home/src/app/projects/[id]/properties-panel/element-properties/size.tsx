@@ -52,7 +52,7 @@ const properties = [
 ]
 
 const ElementPropertiesSize = (props: ElementPropertiesSizeProps) => {
-  const { selectedElementId } = useInteractionsStore()
+  const { selectedElementId, selectedMediaQuery } = useInteractionsStore()
   const { updateElementAttribute } = useCanvasStore()
 
   const [visibleProperties, setVisibleProperties] = useState(() => {
@@ -124,7 +124,8 @@ const ElementPropertiesSize = (props: ElementPropertiesSizeProps) => {
                       selectedElementId,
                       'style',
                       property.key,
-                      undefined
+                      undefined,
+                      selectedMediaQuery
                     )
                 }}>
                 <div className="bg-background rounded-md border border-border hover:bg-accent">

@@ -8,6 +8,8 @@ interface InteractionsStore {
   setHoveredElementId: (id: string | null) => void
   selectedElementId: string | null
   setSelectedElementId: (id: string | null) => void
+  selectedMediaQuery: number | null
+  setSelectedMediaQuery: (index: number | null) => void
   gradientEditor: Fill & { type: 'gradient' } | null
   setGradientEditor: (fill: Fill & { type: 'gradient' } | null) => void
   selectedGradientStep: number
@@ -20,7 +22,12 @@ export const useInteractionsStore = create<InteractionsStore>((set) => ({
   hoveredElementId: null,
   setHoveredElementId: (id) => { set({ hoveredElementId: id }) },
   selectedElementId: null,
-  setSelectedElementId: (id) => { set({ selectedElementId: id }) },
+  setSelectedElementId: (id) => {
+    set({ selectedElementId: id })
+    if (id === null) set({ selectedMediaQuery: null })
+  },
+  selectedMediaQuery: null,
+  setSelectedMediaQuery: (index) => { set({ selectedMediaQuery: index }) },
   gradientEditor: null,
   setGradientEditor: (fill) => { set({ gradientEditor: fill }) },
   selectedGradientStep: 0,

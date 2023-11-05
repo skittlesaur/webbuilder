@@ -15,7 +15,6 @@ const TYPOGRAPHY_ELEMENTS: PanelElement[] = [
       fontWeight: 'bold',
       lineHeight: '1.25',
       letterSpacing: '-0.025em',
-      width: 'fit-content',
     },
     children: ['Heading'],
   },
@@ -26,7 +25,6 @@ const TYPOGRAPHY_ELEMENTS: PanelElement[] = [
     style: {
       fontSize: '1rem',
       lineHeight: '1.5',
-      width: 'fit-content',
     },
     children: ['Paragraph'],
   },
@@ -39,7 +37,6 @@ const TYPOGRAPHY_ELEMENTS: PanelElement[] = [
       lineHeight: '1.5',
       color: '#0070f3',
       textDecoration: 'underline',
-      width: 'fit-content',
     },
     children: [
       {

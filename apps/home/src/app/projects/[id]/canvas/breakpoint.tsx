@@ -2,16 +2,10 @@ import { useMemo, useRef } from 'react'
 import cn from 'classnames'
 import Element from './elements'
 import { useCanvasStore } from '@/stores/canvas-store'
+import type { Breakpoint as BreakpointType } from '@/stores/canvas-store'
 
 interface BreakpointProps {
-  breakpoint: {
-    id: string
-    width: number
-    position: {
-      x: number
-      y: number
-    }
-  }
+  breakpoint: BreakpointType
 }
 
 const Breakpoint = ({ breakpoint }: BreakpointProps) => {
@@ -68,7 +62,11 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
         data-breakpoint="true"
         ref={ref}>
         {elements.map((element) => (
-          <Element element={element} key={element.id} />
+          <Element
+            element={element}
+            key={element.id}
+            mediaQuery={breakpoint.isDefault ? null : breakpoint.width}
+          />
         ))}
         {elements.length === 0 && (
           <Element
@@ -78,6 +76,7 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
               style: { height: '20rem', width: '100%' },
               children: [],
             }}
+            mediaQuery={breakpoint.isDefault ? null : breakpoint.width}
           />
         )}
       </div>

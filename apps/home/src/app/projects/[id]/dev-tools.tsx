@@ -5,7 +5,7 @@ import { useInteractionsStore } from '@/stores/interactions-store'
 
 const DevTools = () => {
   const { pan, zoom, draggedElement } = useCanvasStore()
-  const { selectedElementId } = useInteractionsStore()
+  const { selectedElementId, selectedMediaQuery } = useInteractionsStore()
 
   const DATA = [
     {
@@ -21,9 +21,15 @@ const DevTools = () => {
       value: selectedElementId || 'None',
     },
     {
+      title: 'Selected Media Query',
+      value: selectedMediaQuery || 'None',
+    },
+    {
       title: 'Dragged Element',
-      value: draggedElement ? `${draggedElement?.relativeId} - ${draggedElement?.relativePosition}` : 'None',
-    }
+      value: draggedElement
+        ? `${draggedElement?.relativeId} - ${draggedElement?.relativePosition}`
+        : 'None',
+    },
   ]
 
   return (

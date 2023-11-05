@@ -3,13 +3,13 @@ import type { Position } from './position'
 import ElementPropertiesPosition from './position'
 import ElementPropertiesSize from './size'
 import ElementPropertiesFill from './fill'
+import ElementPropertiesTypography from './typography'
 import { findElementByIdArr } from '@/lib/find-element-by-id'
 import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
-import ElementPropertiesTypography from './typography'
 
 const ElementProperties = () => {
-  const { selectedElementId } = useInteractionsStore()
+  const { selectedElementId, selectedMediaQuery } = useInteractionsStore()
   const { elements } = useCanvasStore()
 
   const activeElement = useMemo(() => {
@@ -19,33 +19,52 @@ const ElementProperties = () => {
 
   if (!activeElement) return null
 
+  const getAttribute = (attribute: string) => {
+    if (selectedMediaQuery !== null) {
+      const queries = Object.keys(activeElement.mediaQueries || {})
+        .filter((mq) => Number(mq) <= (selectedMediaQuery || 0))
+        .sort((a, b) => Number(a) - Number(b))
+
+      const queryStyles = queries.reduce((acc, mq) => {
+        return {
+          ...acc,
+          ...activeElement.mediaQueries?.[mq],
+        }
+      }, {})
+
+      return queryStyles[attribute]
+    }
+
+    return activeElement.style[attribute]
+  }
+
   return (
-    <Fragment key={selectedElementId}>
+    <Fragment key={`${selectedElementId}-${selectedMediaQuery}`}>
       <ElementPropertiesPosition
-        bottom={activeElement.style.bottom as string | undefined}
-        left={activeElement.style.left as string | undefined}
-        position={activeElement.style.position as Position | undefined}
-        right={activeElement.style.right as string | undefined}
-        top={activeElement.style.top as string | undefined}
+        bottom={getAttribute('bottom')}
+        left={getAttribute('left')}
+        position={getAttribute('position') as Position}
+        right={getAttribute('right')}
+        top={getAttribute('top')}
       />
       <ElementPropertiesSize
-        height={activeElement.style.height as string | undefined}
-        maxHeight={activeElement.style.maxHeight as string | undefined}
-        maxWidth={activeElement.style.maxWidth as string | undefined}
-        minHeight={activeElement.style.minHeight as string | undefined}
-        minWidth={activeElement.style.minWidth as string | undefined}
-        width={activeElement.style.width as string | undefined}
+        height={getAttribute('height')}
+        maxHeight={getAttribute('maxHeight')}
+        maxWidth={getAttribute('maxWidth')}
+        minHeight={getAttribute('minHeight')}
+        minWidth={getAttribute('minWidth')}
+        width={getAttribute('width')}
       />
       <ElementPropertiesFill
-        background={activeElement.style.background as string | undefined}
+        background={getAttribute('background')}
       />
       <ElementPropertiesTypography
-        fontFamily={activeElement.style.fontFamily as string | undefined}
-        fontSize={activeElement.style.fontSize as string | undefined}
-        fontWeight={activeElement.style.fontWeight as string | undefined}
-        letterSpacing={activeElement.style.letterSpacing as string | undefined}
-        lineHeight={activeElement.style.lineHeight as string | undefined}
-        textAlign={activeElement.style.textAlign as string | undefined}
+        fontFamily={getAttribute('fontFamily')}
+        fontSize={getAttribute('fontSize')}
+        fontWeight={getAttribute('fontWeight')}
+        letterSpacing={getAttribute('letterSpacing')}
+        lineHeight={getAttribute('lineHeight')}
+        textAlign={getAttribute('textAlign')}
       />
     </Fragment>
   )

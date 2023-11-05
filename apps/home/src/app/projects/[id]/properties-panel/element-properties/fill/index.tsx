@@ -65,8 +65,12 @@ export const opacityToHex = (opacity: number) => {
 }
 
 const ElementPropertiesFill = ({ background }: FillProps) => {
-  const { selectedElementId, gradientEditor, setGradientEditor } =
-    useInteractionsStore()
+  const {
+    selectedElementId,
+    gradientEditor,
+    setGradientEditor,
+    selectedMediaQuery,
+  } = useInteractionsStore()
   const { updateElementAttribute } = useCanvasStore()
 
   const [fills, setFills] = useState<Fill[]>(() => {
@@ -186,7 +190,8 @@ const ElementPropertiesFill = ({ background }: FillProps) => {
           }
           return gradientToBackground(fill.value, fill.degree)
         })
-        .join(', ')
+        .join(', '),
+      selectedMediaQuery
     )
   }, [fills, selectedElementId, updateElementAttribute])
 

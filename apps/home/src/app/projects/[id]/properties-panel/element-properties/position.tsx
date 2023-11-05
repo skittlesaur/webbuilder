@@ -33,7 +33,7 @@ const ElementPropertiesPosition = ({
   right?: string
 }) => {
   const { updateElementAttribute } = useCanvasStore()
-  const { selectedElementId } = useInteractionsStore()
+  const { selectedElementId, selectedMediaQuery } = useInteractionsStore()
 
   if (!selectedElementId) return null
 
@@ -63,13 +63,14 @@ const ElementPropertiesPosition = ({
                 selectedElementId,
                 'style',
                 'position',
-                value
+                value,
+                selectedMediaQuery
               )
 
               // Reset position values
-              ;['top', 'left', 'bottom', 'right'].forEach((type) => {
-                updateElementAttribute(selectedElementId, 'style', type, 'auto')
-              })
+              // ['top', 'left', 'bottom', 'right'].forEach((type) => {
+              //   updateElementAttribute(selectedElementId, 'style', type, 'auto', selectedMediaQuery)
+              // })
             }}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Position" />

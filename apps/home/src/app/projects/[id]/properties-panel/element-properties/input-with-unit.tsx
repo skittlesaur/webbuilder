@@ -27,7 +27,7 @@ const InputWithUnit = ({
   showMeasure = false,
   autoValue = 'auto',
 }: InputWithUnitProps) => {
-  const { selectedElementId } = useInteractionsStore()
+  const { selectedElementId, selectedMediaQuery } = useInteractionsStore()
   const { updateElementAttribute } = useCanvasStore()
 
   const [unit, setUnit] = useState<Unit>(() => {
@@ -48,15 +48,22 @@ const InputWithUnit = ({
   useEffect(() => {
     if (!selectedElementId) return
     if (unit === 'auto')
-      return updateElementAttribute(selectedElementId, 'style', type, autoValue)
+      return updateElementAttribute(
+        selectedElementId,
+        'style',
+        type,
+        autoValue,
+        selectedMediaQuery
+      )
 
     updateElementAttribute(
       selectedElementId,
       'style',
       type,
-      `${value ?? ''}${unit}`
+      `${value ?? ''}${unit}`,
+      selectedMediaQuery
     )
-  }, [autoValue, selectedElementId, type, unit, updateElementAttribute, value])
+  }, [unit, value, selectedElementId, updateElementAttribute, type, autoValue, selectedMediaQuery])
 
   if (!selectedElementId) return null
 
@@ -112,7 +119,8 @@ const InputWithUnit = ({
           className={cn({
             'absolute right-2 !border-none focus:!ring-0 !w-auto !p-0 !rounded-l-none !text-xs !-ml-px':
               !showMeasure,
-            '!rounded-l-none -ml-px !w-[4.5rem] !min-w-[4.5rem] !max-w-[4.5rem]': showMeasure,
+            '!rounded-l-none -ml-px !w-[4.5rem] !min-w-[4.5rem] !max-w-[4.5rem]':
+              showMeasure,
           })}>
           {showMeasure ? <SelectValue placeholder={unit} /> : null}
         </SelectTrigger>

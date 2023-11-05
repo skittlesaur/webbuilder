@@ -28,7 +28,7 @@ const FontWeight = ({
   fontFamily?: string
   fontWeight?: string
 }) => {
-  const { selectedElementId } = useInteractionsStore()
+  const { selectedElementId, selectedMediaQuery } = useInteractionsStore()
   const { updateElementAttribute } = useCanvasStore()
 
   const weights = FontsData.find((font) => font.family === fontFamily)?.variants
@@ -54,7 +54,13 @@ const FontWeight = ({
         defaultValue={String(getSelectedWeight())}
         onValueChange={(val) => {
           if (selectedElementId === null) return
-          updateElementAttribute(selectedElementId, 'style', 'fontWeight', val)
+          updateElementAttribute(
+            selectedElementId,
+            'style',
+            'fontWeight',
+            val,
+            selectedMediaQuery
+          )
         }}>
         <SelectTrigger className="truncate">
           <SelectValue asChild placeholder="Select a weight">

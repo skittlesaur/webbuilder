@@ -78,6 +78,9 @@ const ExportButton = () => {
     let css = defaultCss
     const fontFamilies = new Set<string>()
 
+    // viewport -> {className: CSSProperties}
+    const mediaQueries = {}
+
     const deepGenerateElement = (element: Element | string) => {
       if (typeof element === 'string') {
         return document.createTextNode(element)
@@ -88,7 +91,21 @@ const ExportButton = () => {
       const el = document.createElement(element.type)
 
       const elementClassName = `baraa-${id}`
-      const elementCss = getElementCss(style)
+
+      Object.keys(
+        (element.mediaQueries || {}) as Record<string, CSSProperties>
+      ).forEach((mediaQuery) => {
+        if (!mediaQueries[mediaQuery]) {
+          mediaQueries[mediaQuery] = {}
+        }
+
+        mediaQueries[mediaQuery] = {
+          ...mediaQueries[mediaQuery],
+          [elementClassName]: element.mediaQueries?.[mediaQuery],
+        }
+      })
+
+      const elementCss = getElementCss(style as CSSProperties)
 
       if (elementCss) {
         css += `.${elementClassName} { \n${elementCss}; \n}\n\n`
@@ -117,6 +134,18 @@ const ExportButton = () => {
 
     elements.forEach((element) => {
       body.appendChild(deepGenerateElement(element))
+    })
+
+    Object.entries(mediaQueries).forEach(([mediaQuery, styles]) => {
+      const styleString = Object.entries(styles as Record<string, CSSProperties>)
+        .map(([className, style]) => {
+          return `.${className} { \n${getElementCss(
+            style as CSSProperties
+          )}; \n}`
+        })
+        .join('\n\n')
+
+      css += `@media (min-width: ${mediaQuery}px) { \n${styleString} \n}\n\n`
     })
 
     const fileName = `baraa-${createId()}`

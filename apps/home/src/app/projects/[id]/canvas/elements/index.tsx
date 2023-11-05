@@ -9,7 +9,13 @@ import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
 import isTypographyElement from '@/lib/is-typography-element'
 
-const Element = ({ element }: { element: ElementType | string }) => {
+const Element = ({
+  element,
+  mediaQuery,
+}: {
+  element: ElementType | string
+  mediaQuery: number | null
+}) => {
   const { draggedElement } = useCanvasStore()
   const [isHovering, setIsHovering] = useState(false)
   const [isUnstyled, setIsUnstyled] = useState(false)
@@ -21,6 +27,7 @@ const Element = ({ element }: { element: ElementType | string }) => {
     setSelectedElementId,
     gradientEditor,
     isDraggingElement,
+    setSelectedMediaQuery,
   } = useInteractionsStore()
 
   useEffect(() => {
@@ -115,6 +122,17 @@ const Element = ({ element }: { element: ElementType | string }) => {
 
   const Type = element.type
 
+  const queries = Object.keys(element.mediaQueries || {})
+    .filter((mq) => Number(mq) <= (mediaQuery || 0))
+    .sort((a, b) => Number(a) - Number(b))
+
+  const queryStyles = queries.reduce((acc, mq) => {
+    return {
+      ...acc,
+      ...element.mediaQueries?.[mq],
+    }
+  }, {})
+
   return (
     <Type
       {...element.attributes}
@@ -126,6 +144,7 @@ const Element = ({ element }: { element: ElementType | string }) => {
       id={element.id}
       style={{
         ...element.style,
+        ...queryStyles,
         padding: isDraggingElement ? `1rem 0` : element.style?.padding,
         outline: isDraggingElement
           ? '2px solid #923FDE'
@@ -137,6 +156,7 @@ const Element = ({ element }: { element: ElementType | string }) => {
         e.stopPropagation()
         e.preventDefault()
         setSelectedElementId(element.id)
+        setSelectedMediaQuery(mediaQuery)
       }}>
       {draggedElement && draggedElement?.relativeId === element.id ? (
         <DraggableIndicator position={draggedElement.relativePosition} />
@@ -152,6 +172,7 @@ const Element = ({ element }: { element: ElementType | string }) => {
           <Element
             element={child}
             key={typeof child === 'string' ? child : child.id}
+            mediaQuery={mediaQuery}
           />
         ))
       )}

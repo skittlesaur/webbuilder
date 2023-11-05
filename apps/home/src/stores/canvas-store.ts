@@ -9,6 +9,7 @@ export interface Breakpoint {
     x: number
     y: number
   }
+  isDefault?: boolean
 }
 
 export type ElementType = 'div' | 'section' | 'ul' | 'li' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'p' | 'span' | 'sup' | 'sub' | 'a'
@@ -18,6 +19,7 @@ export interface Element {
   type: ElementType
   children: (Element | string)[]
   style: CSSProperties
+  mediaQueries?: Record<string, CSSProperties>
   attributes?: Record<string, unknown>
 }
 
@@ -46,7 +48,7 @@ interface CanvasStore {
   addElement: (element: Element, relativeId?: string, relativePosition?: 'before' | 'after' | 'child') => void
   removeElement: (elementId: string) => void
   updateElement: (element: Element) => void
-  updateElementAttribute: (elementId: string, target: string, attribute: string, value: unknown) => void
+  updateElementAttribute: (elementId: string, target: string, attribute: string, value: unknown, mediaQuery: number | null) => void
   draggedElement: DraggedElement | undefined
   setDraggedElement: (draggedElement: DraggedElement | undefined) => void
 }
@@ -65,17 +67,17 @@ export const useCanvasStore = create<CanvasStore>()(
       breakpoints: [
         {
           id: 'desktop',
-          width: 1920,
+          width: 1440,
           position: {
-            x: 5,
+            x: 0,
             y: 0
-          }
+          },
         },
         {
           id: 'tablet',
           width: 768,
           position: {
-            x: 1400,
+            x: 1150,
             y: 0
           }
         },
@@ -83,9 +85,10 @@ export const useCanvasStore = create<CanvasStore>()(
           id: 'mobile',
           width: 375,
           position: {
-            x: 2025,
+            x: 1770,
             y: 0
-          }
+          },
+          isDefault: true
         }
       ],
       updateBreakpoint: (id, breakpoint) => {
@@ -201,13 +204,40 @@ export const useCanvasStore = create<CanvasStore>()(
         const newElements = elements.map((el) => updateElement(el)) as Element[]
         set({ elements: newElements })
       },
-      updateElementAttribute: (elementId, target, attribute, value) => {
+      updateElementAttribute: (elementId, target, attribute, value, mediaQuery) => {
         const elements = get().elements
 
         const updateElement = (el: Element): Element | Element[] | string => {
           if (typeof el === 'string') return el
 
           if (el.id === elementId) {
+            if (target === 'style' && mediaQuery) {
+              const mq = el.mediaQueries ? el.mediaQueries[mediaQuery] : undefined
+
+              if (mq && el[target][attribute] === value) {
+                const update = {
+                  ...el,
+                }
+                delete update.mediaQueries?.[mediaQuery][attribute]
+                if (Object.keys(update.mediaQueries?.[mediaQuery] || {}).length === 0) {
+                  delete update.mediaQueries?.[mediaQuery]
+                }
+
+                return update
+              }
+
+              return {
+                ...el,
+                mediaQueries: {
+                  ...el.mediaQueries,
+                  [mediaQuery]: {
+                    ...mq,
+                    [attribute]: value,
+                  }
+                }
+              }
+            }
+
             const data = el[target]
             return {
               ...el,

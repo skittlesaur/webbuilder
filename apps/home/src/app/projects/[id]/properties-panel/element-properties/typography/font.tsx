@@ -10,7 +10,7 @@ import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
 
 const TypographyFont = ({ fontFamily }: { fontFamily?: string }) => {
-  const { selectedElementId } = useInteractionsStore()
+  const { selectedElementId, selectedMediaQuery } = useInteractionsStore()
   const { updateElementAttribute } = useCanvasStore()
 
   return (
@@ -28,7 +28,8 @@ const TypographyFont = ({ fontFamily }: { fontFamily?: string }) => {
             selectedElementId,
             'style',
             'fontFamily',
-            `${font.family}, Inter, sans-serif`
+            `${font.family}, Inter, sans-serif`,
+            selectedMediaQuery
           )
         }}>
         <SelectTrigger className="truncate">
