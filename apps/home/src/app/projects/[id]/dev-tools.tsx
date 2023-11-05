@@ -27,7 +27,7 @@ const DevTools = () => {
   ]
 
   return (
-    <div className="z-[100] fixed bottom-4 right-4 bg-white text-black min-w-[7rem] px-2 py-1 rounded flex flex-col gap-1">
+    <div className="z-[100] fixed bottom-4 right-1/2 translate-x-1/2 bg-white text-black min-w-[7rem] px-2 py-1 rounded flex flex-col gap-1">
       {DATA.map((item) => (
         <div className="flex flex-col" key={item.title}>
           <p className="text-xs font-medium">{item.title}</p>

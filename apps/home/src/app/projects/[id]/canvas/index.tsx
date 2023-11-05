@@ -62,7 +62,28 @@ const Canvas = () => {
       const isDelete = e.key === 'Delete' || e.key === 'Backspace'
       if (!isDelete) return
 
+      const target = e.target as HTMLElement | null
+
+      if (['input', 'textarea'].includes(target?.tagName.toLowerCase() ?? ''))
+        return
       if (!selectedElementId || selectedElementId === 'root') return
+
+      const element = document.getElementById(selectedElementId as string)
+      if (!element) return
+
+      // check if the element is an input that is focused
+      const isInputFocused = element.querySelector('input:focus')
+      if (isInputFocused) return
+
+      // check if the element is a textarea that is focused
+      const isTextareaFocused = element.querySelector('textarea:focus')
+      if (isTextareaFocused) return
+
+      // check if the element is a contenteditable that is focused
+      const isContentEditableFocused = element.querySelector(
+        '[contenteditable]:focus'
+      )
+      if (isContentEditableFocused) return
 
       setSelectedElementId(null)
       setHoveredElementId(null)

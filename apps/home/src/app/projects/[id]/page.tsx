@@ -1,8 +1,10 @@
+'use client'
 import dynamic from 'next/dynamic'
 import AddElementsPanel from './action-panels/add-elements'
 import SideActions from './side-actions'
 import TopActions from './top-actions'
 import LayersPanel from './action-panels/layers'
+import './fonts.css'
 
 const DevTools = dynamic(() => import('./dev-tools'), { ssr: false })
 const Canvas = dynamic(() => import('./canvas'), { ssr: false })

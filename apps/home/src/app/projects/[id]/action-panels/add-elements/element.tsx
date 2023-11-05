@@ -8,8 +8,16 @@ import type {
 } from '@/stores/canvas-store'
 import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
+import isTypographyElement from '@/lib/is-typography-element'
 
-const Element = ({ Icon, title, element, style, children }: PanelElement) => {
+const Element = ({
+  Icon,
+  title,
+  element,
+  style,
+  children,
+  attributes,
+}: PanelElement) => {
   const [isDragging, setIsDragging] = useState(false)
   const [dragPosition, setDragPosition] = useState({ x: 0, y: 0, snap: false })
   const { zoom, draggedElement, setDraggedElement, addElement } =
@@ -37,7 +45,7 @@ const Element = ({ Icon, title, element, style, children }: PanelElement) => {
         return
       }
 
-      let closestElementToCursor = intersectingElements[0]
+      let closestElementToCursor = intersectingElements[0] as HTMLElement
       let closestDistance = Infinity
 
       intersectingElements.forEach((el) => {
@@ -48,11 +56,19 @@ const Element = ({ Icon, title, element, style, children }: PanelElement) => {
 
         if (distance < closestDistance) {
           closestDistance = distance
-          closestElementToCursor = el
+          closestElementToCursor = el as HTMLElement
         }
       })
 
-      const offset = 0.2
+      // if the closest element is a typography element, we want to
+      // snap to the typography element's parent instead (no child)
+      // so an offset of 0.5 is used while the default is 0.2
+      const offset =
+        isTypographyElement({
+          type: closestElementToCursor.tagName.toLowerCase() as ElementType['type'],
+        }) && element !== 'a'
+          ? 0.5
+          : 0.2
       const elementRect = closestElementToCursor.getBoundingClientRect()
 
       let relativePosition: DraggedElement['relativePosition']
@@ -78,6 +94,7 @@ const Element = ({ Icon, title, element, style, children }: PanelElement) => {
         type: element as ElementType['type'],
         children: children ?? [],
         style: style ?? {},
+        attributes: attributes ?? {},
       }
 
       const { relativeId, relativePosition } = draggedElement || {}
@@ -100,11 +117,13 @@ const Element = ({ Icon, title, element, style, children }: PanelElement) => {
     }
   }, [
     addElement,
+    attributes,
     children,
     draggedElement,
     element,
     isDragging,
     setDraggedElement,
+    setIsDraggingElement,
     style,
   ])
 

@@ -107,7 +107,8 @@ const ElementPropertiesSize = (props: ElementPropertiesSizeProps) => {
           <div
             className="relative grid grid-cols-[0.5fr_1fr] gap-2 items-center group"
             key={property.key}>
-            {property.hiddenByDefault ? <button
+            {property.hiddenByDefault ? (
+              <button
                 className="z-10 opacity-0 group-hover:opacity-100 focus:opacity-100 absolute top-1/2 -translate-y-1/2 translate-x-[calc(-50%-1rem)] w-8 flex items-center justify-center transition-all duration-150 ease-in-out"
                 type="button"
                 onClick={() => {
@@ -129,7 +130,8 @@ const ElementPropertiesSize = (props: ElementPropertiesSizeProps) => {
                 <div className="bg-background rounded-md border border-border hover:bg-accent">
                   <RemoveIcon className="w-5 h-5" />
                 </div>
-              </button> : null}
+              </button>
+            ) : null}
             <p className="text-gray-400">{property.title}</p>
             <InputWithUnit
               showMeasure

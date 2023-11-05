@@ -6,6 +6,7 @@ import ElementPropertiesFill from './fill'
 import { findElementByIdArr } from '@/lib/find-element-by-id'
 import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
+import ElementPropertiesTypography from './typography'
 
 const ElementProperties = () => {
   const { selectedElementId } = useInteractionsStore()
@@ -37,6 +38,14 @@ const ElementProperties = () => {
       />
       <ElementPropertiesFill
         background={activeElement.style.background as string | undefined}
+      />
+      <ElementPropertiesTypography
+        fontFamily={activeElement.style.fontFamily as string | undefined}
+        fontSize={activeElement.style.fontSize as string | undefined}
+        fontWeight={activeElement.style.fontWeight as string | undefined}
+        letterSpacing={activeElement.style.letterSpacing as string | undefined}
+        lineHeight={activeElement.style.lineHeight as string | undefined}
+        textAlign={activeElement.style.textAlign as string | undefined}
       />
     </Fragment>
   )

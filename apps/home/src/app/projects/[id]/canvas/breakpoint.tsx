@@ -38,14 +38,14 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
 
   return (
     <div
-      className="absolute flex flex-col gap-5"
+      className="absolute flex flex-col gap-5 origin-top"
       data-breakpoint={breakpoint.id}
       style={{
         width: breakpoint.width,
-        scale: zoom * 0.2,
-        transform: `translate(${pan.x}px, ${pan.y}px)`,
-        left: breakpoint.position.x,
-        top: breakpoint.position.y,
+        transform: `scale(${zoom * 0.2}) translate(${pan.x}px, ${pan.y}px)`,
+        left:
+          breakpoint.position.x * zoom * 0.2 - breakpoint.width / 2 + pan.x / 2,
+        top: breakpoint.position.y * zoom * 0.2 + pan.y / 2,
       }}>
       <div
         className="bg-accent px-5 py-2 rounded flex items-center gap-4"
@@ -60,7 +60,7 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
       </div>
       <div
         className={cn(
-          'relative flex flex-col w-full bg-white text-black text-base min-h-[20rem]',
+          'relative flex flex-col w-full bg-white text-black text-base overflow-x-hidden',
           {
             'h-[20rem]': !hasRelativeParent,
           }

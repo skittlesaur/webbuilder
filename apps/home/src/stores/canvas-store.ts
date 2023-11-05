@@ -11,13 +11,14 @@ export interface Breakpoint {
   }
 }
 
-export type ElementType = 'div' | 'section' | 'ul' | 'li'
+export type ElementType = 'div' | 'section' | 'ul' | 'li' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'p' | 'span' | 'sup' | 'sub' | 'a'
 
 export interface Element {
   id: string
   type: ElementType
   children: (Element | string)[]
   style: CSSProperties
+  attributes?: Record<string, unknown>
 }
 
 export interface DraggedElement {
@@ -61,14 +62,32 @@ export const useCanvasStore = create<CanvasStore>()(
       setPan: ({ x, y }) => {
         set({ pan: { x, y } })
       },
-      breakpoints: [{
-        id: 'desktop',
-        width: 1920,
-        position: {
-          x: 0,
-          y: 0
+      breakpoints: [
+        {
+          id: 'desktop',
+          width: 1920,
+          position: {
+            x: 5,
+            y: 0
+          }
+        },
+        {
+          id: 'tablet',
+          width: 768,
+          position: {
+            x: 1400,
+            y: 0
+          }
+        },
+        {
+          id: 'mobile',
+          width: 375,
+          position: {
+            x: 2025,
+            y: 0
+          }
         }
-      }],
+      ],
       updateBreakpoint: (id, breakpoint) => {
         set({
           breakpoints: get().breakpoints.map((bp) => {
@@ -156,21 +175,31 @@ export const useCanvasStore = create<CanvasStore>()(
         }
 
         const newElements = elements
-        .map((el) => deepRemoveElement(el))
-        .filter((el) => el !== null) as Element[]
+          .map((el) => deepRemoveElement(el))
+          .filter((el) => el !== null) as Element[]
 
         set({ elements: newElements })
       },
       updateElement: (element) => {
-        set({
-          elements: get().elements.map((arrElement) => {
-            if (arrElement.id === element.id) {
-              return element
-            }
-            return arrElement
+        const elements = get().elements
+
+        const updateElement = (el: Element): Element | Element[] | string => {
+          if (typeof el === 'string') return el
+
+          if (el.id === element.id) {
+            return element
           }
-          )
-        })
+
+          const updatedChildren = el.children.map((child) => updateElement(child as Element))
+
+          return {
+            ...el,
+            children: updatedChildren.flat(),
+          }
+        }
+
+        const newElements = elements.map((el) => updateElement(el)) as Element[]
+        set({ elements: newElements })
       },
       updateElementAttribute: (elementId, target, attribute, value) => {
         const elements = get().elements

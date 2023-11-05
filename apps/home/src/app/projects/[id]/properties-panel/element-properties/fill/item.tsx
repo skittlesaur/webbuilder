@@ -62,6 +62,9 @@ const ColorFill = ({
             }}
             type="button"
             onClick={colorPickerClick}
+            onPointerDown={(e) => {
+              e.preventDefault()
+            }}
           />
           <div className="flex">
             <Input
@@ -124,7 +127,10 @@ const ColorFill = ({
           </div>
           <ChromePicker
             color={`${fill.value}${opacityToHex(fill.opacity / 100)}`}
-            onChange={(c: { hex: string; rgb: { a: number } }) => {
+            onChange={(c: { hex: string; rgb: { a: number } }, e) => {
+              e.stopPropagation()
+              e.preventDefault()
+
               const hex = c.hex
               const alpha = c.rgb.a * 100
 

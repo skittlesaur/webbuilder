@@ -1,12 +1,13 @@
 import cn from 'classnames'
 import { useEffect, useState } from 'react'
 import DraggableIndicator from '../draggable-indicator'
+import GradientEditor from './gradient-editor'
+import TypographyElement from './typography-element'
+import UnstyledDisplay from './unstyled-display'
 import type { Element as ElementType } from '@/stores/canvas-store'
 import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
-import GradientEditor from './gradient-editor'
-import UnstyledDisplay from './unstyled-display'
-import {} from 'sonner'
+import isTypographyElement from '@/lib/is-typography-element'
 
 const Element = ({ element }: { element: ElementType | string }) => {
   const { draggedElement } = useCanvasStore()
@@ -116,6 +117,7 @@ const Element = ({ element }: { element: ElementType | string }) => {
 
   return (
     <Type
+      {...element.attributes}
       className={cn({
         'ring-2 !ring-primary': selectedElementId === element.id,
         'ring-2 ring-primary/70': isHovering || hoveredElementId === element.id,
@@ -124,11 +126,16 @@ const Element = ({ element }: { element: ElementType | string }) => {
       id={element.id}
       style={{
         ...element.style,
-        padding: isDraggingElement ? `1rem` : element.style?.padding,
+        padding: isDraggingElement ? `1rem 0` : element.style?.padding,
+        outline: isDraggingElement
+          ? '2px solid #923FDE'
+          : element.style?.outline,
+        position: isDraggingElement ? 'relative' : element.style?.position,
       }}
       onClick={(e) => {
         if (element.id === 'root') return
         e.stopPropagation()
+        e.preventDefault()
         setSelectedElementId(element.id)
       }}>
       {draggedElement && draggedElement?.relativeId === element.id ? (
@@ -138,12 +145,16 @@ const Element = ({ element }: { element: ElementType | string }) => {
         <GradientEditor />
       )}
       {isUnstyled ? <UnstyledDisplay /> : null}
-      {element.children.map((child) => (
-        <Element
-          element={child}
-          key={typeof child === 'string' ? child : child.id}
-        />
-      ))}
+      {isTypographyElement(element) ? (
+        <TypographyElement element={element} />
+      ) : (
+        element.children.map((child) => (
+          <Element
+            element={child}
+            key={typeof child === 'string' ? child : child.id}
+          />
+        ))
+      )}
     </Type>
   )
 }

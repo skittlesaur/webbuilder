@@ -70,5 +70,7 @@ module.exports = {
     '@typescript-eslint/no-redundant-type-constituents': 'off',
     '@typescript-eslint/no-confusing-void-expression': 'off',
     '@typescript-eslint/no-unnecessary-condition': 'off',
+    '@typescript-eslint/no-unnecessary-type-assertion': 'off',
+    '@typescript-eslint/non-nullable-type-assertion-style': 'off',
   },
 }

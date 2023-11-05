@@ -1,26 +1,14 @@
 'use client'
 
 import type { CSSProperties } from 'react'
-import type { Element } from '@/stores/canvas-store'
-import { useCanvasStore } from '@/stores/canvas-store'
 import { toast } from 'sonner'
+import { createId } from '@paralleldrive/cuid2'
+import FontsData from '../fonts-data.json'
+import { useCanvasStore } from '@/stores/canvas-store'
+import type { Element } from '@/stores/canvas-store'
 
-const ExportButton = () => {
-  const { elements } = useCanvasStore()
-
-  const getElementCss = (style: CSSProperties) => {
-    return Object.entries(style)
-      .filter(([, value]) => value)
-      .map(([property, value]) => `\t${property}: ${value}`)
-      .join('; \n')
-  }
-
-  const handleExport = () => {
-    const html = document.createElement('html')
-    const head = document.createElement('head')
-    const body = document.createElement('body')
-
-    let css = `@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+const defaultCss = `
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
     
 * {
   margin: 0;
@@ -29,7 +17,66 @@ const ExportButton = () => {
   font-family: sans-serif;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+ol,
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+img,
+svg,
+video,
+canvas,
+audio,
+iframe,
+embed,
+object {
+  display: block;
+  vertical-align: middle;
+}
+
+*,
+::before,
+::after {
+  border-width: 0;
+  border-style: solid;
+  border-color: transparent;
+}
+
 `
+
+const ExportButton = () => {
+  const { elements } = useCanvasStore()
+
+  const formatProperty = (property: string) => {
+    return property.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`)
+  }
+
+  const getElementCss = (style: CSSProperties) => {
+    return Object.entries(style)
+      .filter(([, value]) => value)
+      .map(([property, value]) => `\t${formatProperty(property)}: ${value}`)
+      .join('; \n')
+  }
+
+  const handleExport = () => {
+    const html = document.createElement('html')
+    const head = document.createElement('head')
+    const body = document.createElement('body')
+
+    let css = defaultCss
+    const fontFamilies = new Set<string>()
 
     const deepGenerateElement = (element: Element | string) => {
       if (typeof element === 'string') {
@@ -41,16 +88,26 @@ const ExportButton = () => {
       const el = document.createElement(element.type)
 
       const elementClassName = `baraa-${id}`
-      const elementCss = getElementCss(style as CSSProperties)
+      const elementCss = getElementCss(style)
 
       if (elementCss) {
         css += `.${elementClassName} { \n${elementCss}; \n}\n\n`
       }
 
+      if (style.fontFamily) {
+        fontFamilies.add(String(style.fontFamily).split(',')[0])
+      }
+
       el.className = elementClassName
 
+      Object.entries(
+        (element.attributes as Record<string, unknown>) || {}
+      ).forEach(([key, value]: [string, unknown]) => {
+        el.setAttribute(key, String(value))
+      })
+
       if (children.length) {
-        children.forEach((child) => {
+        children.forEach((child: Element | string) => {
           el.appendChild(deepGenerateElement(child))
         })
       }
@@ -62,25 +119,36 @@ const ExportButton = () => {
       body.appendChild(deepGenerateElement(element))
     })
 
-    head.innerHTML = `<link rel="stylesheet" href="./styles.css" />`
+    const fileName = `baraa-${createId()}`
+
+    head.innerHTML = `<link rel="stylesheet" href="./${fileName}.css" />`
     html.appendChild(head)
 
     html.appendChild(body)
 
     const htmlFile = new Blob([html.outerHTML], { type: 'text/html' })
-    const cssFile = new Blob([css], { type: 'text/css' })
+
+    const fontImports = FontsData.filter((font) =>
+      Array.from(fontFamilies).includes(font.family as string)
+    )
+      .map((font) => `@import url('${font.url}');`)
+      .join('\n')
+
+    const cssWithImports = `${fontImports}${css}`
+
+    const cssFile = new Blob([cssWithImports], { type: 'text/css' })
 
     const htmlFileUrl = URL.createObjectURL(htmlFile)
     const cssFileUrl = URL.createObjectURL(cssFile)
 
     const link = document.createElement('a')
     link.href = htmlFileUrl
-    link.download = 'index.html'
+    link.download = `${fileName}.html`
     link.click()
 
     const cssLink = document.createElement('a')
     cssLink.href = cssFileUrl
-    cssLink.download = 'styles.css'
+    cssLink.download = `${fileName}.css`
     cssLink.click()
 
     URL.revokeObjectURL(htmlFileUrl)
