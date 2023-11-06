@@ -72,6 +72,7 @@ export const useCanvasStore = create<CanvasStore>()(
             x: 0,
             y: 0
           },
+          isDefault: true
         },
         {
           id: 'tablet',
@@ -88,7 +89,6 @@ export const useCanvasStore = create<CanvasStore>()(
             x: 1770,
             y: 0
           },
-          isDefault: true
         }
       ],
       updateBreakpoint: (id, breakpoint) => {

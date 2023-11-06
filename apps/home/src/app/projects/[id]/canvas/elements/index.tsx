@@ -122,7 +122,9 @@ const Element = ({
 
   const Type = element.type
 
-  const queries = Object.keys(element.mediaQueries || {})
+  const queries = Object.keys(
+    (element.mediaQueries || {}) as Record<string, unknown>
+  )
     .filter((mq) => Number(mq) <= (mediaQuery || 0))
     .sort((a, b) => Number(a) - Number(b))
 

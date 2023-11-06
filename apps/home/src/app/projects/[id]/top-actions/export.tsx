@@ -5,7 +5,7 @@ import { toast } from 'sonner'
 import { createId } from '@paralleldrive/cuid2'
 import FontsData from '../fonts-data.json'
 import { useCanvasStore } from '@/stores/canvas-store'
-import type { Element } from '@/stores/canvas-store'
+import type { Breakpoint, Element } from '@/stores/canvas-store'
 
 const defaultCss = `
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
@@ -57,7 +57,7 @@ object {
 `
 
 const ExportButton = () => {
-  const { elements } = useCanvasStore()
+  const { elements, breakpoints } = useCanvasStore()
 
   const formatProperty = (property: string) => {
     return property.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`)
@@ -81,6 +81,15 @@ const ExportButton = () => {
     // viewport -> {className: CSSProperties}
     const mediaQueries = {}
 
+    const defaultMediaQuery = breakpoints.find(
+      (bp) => bp.isDefault
+    ) as Breakpoint
+    const smallestMediaQuery = breakpoints.reduce((acc, bp) => {
+      if (bp.width < acc.width) return bp
+      return acc
+    })
+    const isDefaultSmallest = smallestMediaQuery.id === defaultMediaQuery.id
+
     const deepGenerateElement = (element: Element | string) => {
       if (typeof element === 'string') {
         return document.createTextNode(element)
@@ -92,6 +101,8 @@ const ExportButton = () => {
 
       const elementClassName = `baraa-${id}`
 
+      const propertiesInBreakpoints: string[] = []
+
       Object.keys(
         (element.mediaQueries || {}) as Record<string, CSSProperties>
       ).forEach((mediaQuery) => {
@@ -99,11 +110,47 @@ const ExportButton = () => {
           mediaQueries[mediaQuery] = {}
         }
 
+        propertiesInBreakpoints.push(
+          ...Object.keys(
+            (element.mediaQueries?.[mediaQuery] || {}) as Record<
+              string,
+              unknown
+            >
+          )
+        )
+
         mediaQueries[mediaQuery] = {
           ...mediaQueries[mediaQuery],
           [elementClassName]: element.mediaQueries?.[mediaQuery],
         }
       })
+
+      if (!isDefaultSmallest) {
+        mediaQueries[defaultMediaQuery.width] = {
+          ...mediaQueries[defaultMediaQuery.width],
+          [elementClassName]: propertiesInBreakpoints.reduce(
+            (acc, property) => {
+              if (element.mediaQueries?.[defaultMediaQuery.width]?.[property]) {
+                return {
+                  ...acc,
+                  [property]:
+                    element.mediaQueries?.[defaultMediaQuery.width]?.[property],
+                }
+              }
+
+              if (element.style?.[property]) {
+                return {
+                  ...acc,
+                  [property]: element.style?.[property],
+                }
+              }
+
+              return acc
+            },
+            {}
+          ),
+        }
+      }
 
       const elementCss = getElementCss(style as CSSProperties)
 
@@ -136,9 +183,16 @@ const ExportButton = () => {
       body.appendChild(deepGenerateElement(element))
     })
 
+    const propertiesInBreakpoints: string[] = []
+
     Object.entries(mediaQueries).forEach(([mediaQuery, styles]) => {
-      const styleString = Object.entries(styles as Record<string, CSSProperties>)
+      const styleString = Object.entries(
+        styles as Record<string, CSSProperties>
+      )
         .map(([className, style]) => {
+          const properties = Object.keys(style as CSSProperties)
+          propertiesInBreakpoints.push(...properties)
+
           return `.${className} { \n${getElementCss(
             style as CSSProperties
           )}; \n}`

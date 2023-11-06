@@ -54,7 +54,7 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
       </div>
       <div
         className={cn(
-          'relative flex flex-col w-full bg-white text-black text-base overflow-x-hidden',
+          'relative flex flex-col w-full bg-white text-black text-base',
           {
             'h-[20rem]': !hasRelativeParent,
           }

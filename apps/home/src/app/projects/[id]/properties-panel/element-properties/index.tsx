@@ -21,7 +21,9 @@ const ElementProperties = () => {
 
   const getAttribute = (attribute: string) => {
     if (selectedMediaQuery !== null) {
-      const queries = Object.keys(activeElement.mediaQueries || {})
+      const queries = Object.keys(
+        (activeElement.mediaQueries || {}) as Record<string, unknown>
+      )
         .filter((mq) => Number(mq) <= (selectedMediaQuery || 0))
         .sort((a, b) => Number(a) - Number(b))
 
@@ -32,7 +34,7 @@ const ElementProperties = () => {
         }
       }, {})
 
-      return queryStyles[attribute]
+      return queryStyles[attribute] || activeElement.style[attribute]
     }
 
     return activeElement.style[attribute]
@@ -55,9 +57,7 @@ const ElementProperties = () => {
         minWidth={getAttribute('minWidth')}
         width={getAttribute('width')}
       />
-      <ElementPropertiesFill
-        background={getAttribute('background')}
-      />
+      <ElementPropertiesFill background={getAttribute('background')} />
       <ElementPropertiesTypography
         fontFamily={getAttribute('fontFamily')}
         fontSize={getAttribute('fontSize')}
