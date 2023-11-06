@@ -150,6 +150,8 @@ const ExportButton = () => {
 
     const fileName = `baraa-${createId()}`
 
+    head.innerHTML = `<meta charset="UTF-8" />`
+    head.innerHTML = `<meta name="viewport" content="width=device-width, initial-scale=1.0" />`
     head.innerHTML = `<link rel="stylesheet" href="./${fileName}.css" />`
     html.appendChild(head)
 

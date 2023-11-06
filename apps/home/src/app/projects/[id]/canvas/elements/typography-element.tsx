@@ -248,6 +248,7 @@ const TypographyElement = ({ element }: { element: Element }) => {
       ) : null}
       <EditorContent
         editor={editor}
+        className="w-full h-full [&_*]:w-full [&_*]:h-full"
         onBlur={() => {
           // clear selection
           window.getSelection()?.removeAllRanges()
