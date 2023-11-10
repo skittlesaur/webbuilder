@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useInteractionsStore } from '@/stores/interactions-store'
 
 const HoverIndicator = () => {
-  const { hoveredElementId } = useInteractionsStore()
+  const hoveredElementId = useInteractionsStore((s) => s.hoveredElementId)
   const [yOffset, setYOffset] = useState(0)
 
   useEffect(() => {

@@ -9,8 +9,9 @@ import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
 
 const ElementProperties = () => {
-  const { selectedElementId, selectedMediaQuery } = useInteractionsStore()
-  const { elements } = useCanvasStore()
+  const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
+  const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
+  const elements = useCanvasStore((s) => s.elements)
 
   const activeElement = useMemo(() => {
     if (!selectedElementId) return null

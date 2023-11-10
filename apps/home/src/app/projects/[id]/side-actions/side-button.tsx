@@ -10,7 +10,8 @@ interface SideButtonProps {
 }
 
 const SideButton = ({ Icon, title, value }: SideButtonProps) => {
-  const { activePanel, setActivePanel } = usePanelsStore()
+  const activePanel = usePanelsStore((s) => s.activePanel)
+  const setActivePanel = usePanelsStore((s) => s.setActivePanel)
 
   return (
     <TooltipProvider disableHoverableContent delayDuration={300}>

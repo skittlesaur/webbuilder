@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react'
 import { useInteractionsStore } from '@/stores/interactions-store'
 
 const SelectionIndicator = () => {
-  const { selectedElementId, setSelectedElementId } = useInteractionsStore()
+  const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
+  const setSelectedElementId = useInteractionsStore(
+    (s) => s.setSelectedElementId
+  )
+
   const [yOffset, setYOffset] = useState(0)
   const [height, setHeight] = useState(0)
 

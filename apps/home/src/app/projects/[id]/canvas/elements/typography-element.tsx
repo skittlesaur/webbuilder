@@ -51,7 +51,9 @@ const bubbleMenuButtons: BubbleMenuButton[] = [
 ]
 
 const TypographyElement = ({ element }: { element: Element }) => {
-  const { updateElement, draggedElement, elements } = useCanvasStore()
+  const updateElement = useCanvasStore((s) => s.updateElement)
+  const draggedElement = useCanvasStore((s) => s.draggedElement)
+  const elements = useCanvasStore((s) => s.elements)
 
   const generateContent = (el: Element) => {
     return el.children.map((child) => {

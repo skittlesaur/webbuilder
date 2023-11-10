@@ -32,8 +32,9 @@ const ElementPropertiesPosition = ({
   bottom?: string
   right?: string
 }) => {
-  const { updateElementAttribute } = useCanvasStore()
-  const { selectedElementId, selectedMediaQuery } = useInteractionsStore()
+  const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
+  const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
+  const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
 
   if (!selectedElementId) return null
 

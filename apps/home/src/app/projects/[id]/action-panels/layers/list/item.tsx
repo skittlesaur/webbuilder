@@ -8,8 +8,11 @@ interface ListItemProps {
 }
 
 const ListItem = ({ item }: ListItemProps) => {
-  const { setHoveredElementId, setSelectedElementId, selectedElementId } =
-    useInteractionsStore()
+  const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
+  const setHoveredElementId = useInteractionsStore((s) => s.setHoveredElementId)
+  const setSelectedElementId = useInteractionsStore(
+    (s) => s.setSelectedElementId
+  )
 
   return (
     <button
@@ -31,9 +34,9 @@ const ListItem = ({ item }: ListItemProps) => {
         e.stopPropagation()
         setHoveredElementId(null)
       }}>
-      <div className="w-3.5 h-3.5 rounded bg-primary/50" />
+      <div className="min-w-[0.875rem] max-w-[0.875rem] min-h-[0.875rem] max-h-[0.875rem] rounded bg-primary/50" />
       <div className="absolute left-[calc(0.4375rem+3px)] top-8 bottom-2 bg-accent z-[-2] w-px" />
-      <p>{item.text}</p>
+      <p className="truncate">{item.text}</p>
     </button>
   )
 }

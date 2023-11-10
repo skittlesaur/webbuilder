@@ -4,8 +4,11 @@ import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
 
 const DevTools = () => {
-  const { pan, zoom, draggedElement } = useCanvasStore()
-  const { selectedElementId, selectedMediaQuery } = useInteractionsStore()
+  const pan = useCanvasStore((s) => s.pan)
+  const zoom = useCanvasStore((s) => s.zoom)
+  const draggedElement = useCanvasStore((s) => s.draggedElement)
+  const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
+  const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
 
   const DATA = [
     {

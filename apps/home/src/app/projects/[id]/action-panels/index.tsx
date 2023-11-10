@@ -10,8 +10,10 @@ const ActionPanelWrapper = ({
   children: React.ReactNode
   self: PanelsEnum
 }) => {
-  const { activePanel, previousPanel, panelWidth, setPanelWidth } =
-    usePanelsStore()
+  const activePanel = usePanelsStore((s) => s.activePanel)
+  const previousPanel = usePanelsStore((s) => s.previousPanel)
+  const panelWidth = usePanelsStore((s) => s.panelWidth)
+  const setPanelWidth = usePanelsStore((s) => s.setPanelWidth)
   const [isResizing, setIsResizing] = useState(false)
   const [ref, bounds] = useMeasure()
 

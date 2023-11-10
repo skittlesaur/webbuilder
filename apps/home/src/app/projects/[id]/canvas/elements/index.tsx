@@ -1,13 +1,14 @@
 import cn from 'classnames'
-import { useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import DraggableIndicator from '../draggable-indicator'
 import GradientEditor from './gradient-editor'
 import TypographyElement from './typography-element'
-import UnstyledDisplay from './unstyled-display'
 import type { Element as ElementType } from '@/stores/canvas-store'
 import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
 import isTypographyElement from '@/lib/is-typography-element'
+
+const VOID_ELEMENTS = ['img', 'input']
 
 const Element = ({
   element,
@@ -16,19 +17,21 @@ const Element = ({
   element: ElementType | string
   mediaQuery: number | null
 }) => {
-  const { draggedElement } = useCanvasStore()
+  const draggedElement = useCanvasStore((s) => s.draggedElement)
   const [isHovering, setIsHovering] = useState(false)
   const [isUnstyled, setIsUnstyled] = useState(false)
 
-  const {
-    selectedElementId,
-    hoveredElementId,
-    setHoveredElementId,
-    setSelectedElementId,
-    gradientEditor,
-    isDraggingElement,
-    setSelectedMediaQuery,
-  } = useInteractionsStore()
+  const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
+  const hoveredElementId = useInteractionsStore((s) => s.hoveredElementId)
+  const setHoveredElementId = useInteractionsStore((s) => s.setHoveredElementId)
+  const setSelectedElementId = useInteractionsStore(
+    (s) => s.setSelectedElementId
+  )
+  const gradientEditor = useInteractionsStore((s) => s.gradientEditor)
+  const isDraggingElement = useInteractionsStore((s) => s.isDraggingElement)
+  const setSelectedMediaQuery = useInteractionsStore(
+    (s) => s.setSelectedMediaQuery
+  )
 
   useEffect(() => {
     if (typeof element === 'string') return
@@ -135,6 +138,36 @@ const Element = ({
     }
   }, {})
 
+  if (VOID_ELEMENTS.includes(element.type as string))
+    return (
+      <Type
+        {...element.attributes}
+        className={cn({
+          'ring-2 !ring-primary': selectedElementId === element.id,
+          'ring-2 ring-primary/70':
+            isHovering || hoveredElementId === element.id,
+        })}
+        data-droppable="true"
+        id={element.id}
+        style={{
+          ...element.style,
+          ...queryStyles,
+          padding: isDraggingElement ? `1rem 0` : element.style?.padding,
+          outline: isDraggingElement
+            ? '2px solid #923FDE'
+            : element.style?.outline,
+          position: isDraggingElement ? 'relative' : element.style?.position,
+        }}
+        onClick={(e) => {
+          if (element.id === 'root') return
+          e.stopPropagation()
+          e.preventDefault()
+          setSelectedElementId(element.id)
+          setSelectedMediaQuery(mediaQuery)
+        }}
+      />
+    )
+
   return (
     <Type
       {...element.attributes}
@@ -166,7 +199,7 @@ const Element = ({
       {gradientEditor !== null && selectedElementId === element.id && (
         <GradientEditor />
       )}
-      {isUnstyled ? <UnstyledDisplay /> : null}
+      {/* {isUnstyled ? <UnstyledDisplay /> : null} */}
       {isTypographyElement(element) ? (
         <TypographyElement element={element} />
       ) : (
@@ -182,4 +215,14 @@ const Element = ({
   )
 }
 
-export default Element
+export default memo(Element, (prev, next) => {
+  if (typeof prev.element === 'string' || typeof next.element === 'string')
+    return prev.element === next.element
+
+  if (prev.mediaQuery !== next.mediaQuery) return false
+
+  if (JSON.stringify(prev.element) !== JSON.stringify(next.element))
+    return false
+
+  return true
+})

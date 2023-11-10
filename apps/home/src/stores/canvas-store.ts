@@ -19,14 +19,23 @@ export interface Element {
   type: ElementType
   children: (Element | string)[]
   style: CSSProperties
-  mediaQueries?: Record<string, CSSProperties>
-  attributes?: Record<string, unknown>
+  mediaQueries?: Record<string, CSSProperties> // key is the breakpoint width
+  attributes?: Record<string, unknown> // special attributes like href, src, alt, etc.
 }
 
 export interface DraggedElement {
   relativeId: string
   relativePosition: 'before' | 'after' | 'child'
   type: ElementType
+}
+
+export interface CustomFont { 
+  fontFamily: string
+  fontWeights: number[]
+  fontStyles: string[]
+  fontDisplay?: string
+  src: string
+  unicodeRange?: string
 }
 
 interface CanvasStore {
@@ -51,6 +60,12 @@ interface CanvasStore {
   updateElementAttribute: (elementId: string, target: string, attribute: string, value: unknown, mediaQuery: number | null) => void
   draggedElement: DraggedElement | undefined
   setDraggedElement: (draggedElement: DraggedElement | undefined) => void
+  bodyStyles: CSSProperties
+  setBodyStyles: (variables: CSSProperties) => void
+  customFonts: CustomFont[]
+  setCustomFonts: (fonts: CustomFont[]) => void
+  addCustomFont: (font: CustomFont) => void
+  removeCustomFont: (fontFamily: string) => void
 }
 
 export const useCanvasStore = create<CanvasStore>()(
@@ -263,6 +278,20 @@ export const useCanvasStore = create<CanvasStore>()(
       draggedElement: undefined,
       setDraggedElement: (draggedElement) => {
         set({ draggedElement })
+      },
+      bodyStyles: {},
+      setBodyStyles: (variables) => {
+        set({ bodyStyles: variables })
+      },
+      customFonts: [],
+      setCustomFonts: (fonts) => {
+        set({ customFonts: fonts })
+      },
+      addCustomFont: (font) => {
+        set({ customFonts: [...get().customFonts, font] })
+      },
+      removeCustomFont: (fontFamily) => {
+        set({ customFonts: get().customFonts.filter((font) => font.fontFamily !== fontFamily) })
       },
     }),
     {

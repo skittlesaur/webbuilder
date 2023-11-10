@@ -20,9 +20,14 @@ const Element = ({
 }: PanelElement) => {
   const [isDragging, setIsDragging] = useState(false)
   const [dragPosition, setDragPosition] = useState({ x: 0, y: 0, snap: false })
-  const { zoom, draggedElement, setDraggedElement, addElement } =
-    useCanvasStore()
-  const { setIsDraggingElement } = useInteractionsStore()
+
+  const zoom = useCanvasStore((s) => s.zoom)
+  const draggedElement = useCanvasStore((s) => s.draggedElement)
+  const setDraggedElement = useCanvasStore((s) => s.setDraggedElement)
+  const addElement = useCanvasStore((s) => s.addElement)
+  const setIsDraggingElement = useInteractionsStore(
+    (s) => s.setIsDraggingElement
+  )
 
   useEffect(() => {
     if (!isDragging) return

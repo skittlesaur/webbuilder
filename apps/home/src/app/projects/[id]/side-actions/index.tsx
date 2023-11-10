@@ -32,8 +32,8 @@ const ACTIONS = [
 ]
 
 const SideActions = () => {
-  const { setSelectedElementId } = useInteractionsStore()
-  const { setActivePanel } = usePanelsStore()
+  const setSelectedElementId = useInteractionsStore((s) => s.setSelectedElementId)
+  const setActivePanel = usePanelsStore((s) => s.setActivePanel)
 
   const handleClick = (e: React.MouseEvent | React.KeyboardEvent) => {
     const target = e.target as HTMLElement | null

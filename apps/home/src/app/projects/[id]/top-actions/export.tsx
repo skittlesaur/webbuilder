@@ -57,7 +57,8 @@ object {
 `
 
 const ExportButton = () => {
-  const { elements, breakpoints } = useCanvasStore()
+  const elements = useCanvasStore((s) => s.elements)
+  const breakpoints = useCanvasStore((s) => s.breakpoints)
 
   const formatProperty = (property: string) => {
     return property.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`)
@@ -248,7 +249,7 @@ const ExportButton = () => {
 
   return (
     <button
-      className="px-2.5 py-1.5 text-medium !bg-primary text-text rounded text-xs hover:!bg-primary-800 transition-colors ease-in-out duration-150"
+      className="px-2.5 py-1.5 h-7 text-medium !bg-primary text-text rounded text-xs hover:!bg-primary-800 transition-colors ease-in-out duration-150"
       type="button"
       onClick={handleExport}>
       Export

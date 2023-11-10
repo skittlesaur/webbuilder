@@ -27,8 +27,9 @@ const InputWithUnit = ({
   showMeasure = false,
   autoValue = 'auto',
 }: InputWithUnitProps) => {
-  const { selectedElementId, selectedMediaQuery } = useInteractionsStore()
-  const { updateElementAttribute } = useCanvasStore()
+  const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
+  const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
+  const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
 
   const [unit, setUnit] = useState<Unit>(() => {
     if (!selectedElementId) return 'px'

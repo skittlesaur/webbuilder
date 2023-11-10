@@ -52,8 +52,9 @@ const properties = [
 ]
 
 const ElementPropertiesSize = (props: ElementPropertiesSizeProps) => {
-  const { selectedElementId, selectedMediaQuery } = useInteractionsStore()
-  const { updateElementAttribute } = useCanvasStore()
+  const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
+  const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
+  const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
 
   const [visibleProperties, setVisibleProperties] = useState(() => {
     const visible = properties.filter((property) => {

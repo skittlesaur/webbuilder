@@ -2,7 +2,7 @@ import CloseIcon from '@/icons/close-outline.svg'
 import { usePanelsStore } from '@/stores/panels-store'
 
 const LayersPanelHeader = () => {
-  const { setActivePanel } = usePanelsStore()
+  const setActivePanel = usePanelsStore((s) => s.setActivePanel)
 
   return (
     <div className="flex items-center justify-between gap-2">

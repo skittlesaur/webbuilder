@@ -1,5 +1,4 @@
 import { useMemo, useRef } from 'react'
-import cn from 'classnames'
 import Element from './elements'
 import { useCanvasStore } from '@/stores/canvas-store'
 import type { Breakpoint as BreakpointType } from '@/stores/canvas-store'
@@ -9,7 +8,11 @@ interface BreakpointProps {
 }
 
 const Breakpoint = ({ breakpoint }: BreakpointProps) => {
-  const { pan, zoom, elements } = useCanvasStore()
+  const pan = useCanvasStore((s) => s.pan)
+  const zoom = useCanvasStore((s) => s.zoom)
+  const elements = useCanvasStore((s) => s.elements)
+  const bodyStyles = useCanvasStore((s) => s.bodyStyles)
+
   const ref = useRef<HTMLDivElement>(null)
 
   const breakpointTitle = useMemo(() => {
@@ -53,14 +56,22 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
         </p>
       </div>
       <div
-        className={cn(
-          'relative flex flex-col w-full bg-white text-black text-base',
-          {
-            'h-[20rem]': !hasRelativeParent,
-          }
-        )}
         data-breakpoint="true"
-        ref={ref}>
+        ref={ref}
+        style={{
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          width: '100%',
+          height: hasRelativeParent ? undefined : '20rem',
+          backgroundColor: 'white',
+          color: 'black',
+          fontSize: '1rem',
+          ...bodyStyles,
+          maxWidth: '100%',
+          minWidth: '100%',
+          overflowX: 'hidden',
+        }}>
         {elements.map((element) => (
           <Element
             element={element}

@@ -1,16 +1,25 @@
 'use client'
-import { memo, useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import Breakpoint from './breakpoint'
 import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
 import { toast } from 'sonner'
 
 const Canvas = () => {
-  const { breakpoints, pan, setPan, zoom, setZoom, removeElement } =
-    useCanvasStore()
+  const breakpoints = useCanvasStore((s) => s.breakpoints)
+  const pan = useCanvasStore((s) => s.pan)
+  const setPan = useCanvasStore((s) => s.setPan)
+  const zoom = useCanvasStore((s) => s.zoom)
+  const setZoom = useCanvasStore((s) => s.setZoom)
+  const removeElement = useCanvasStore((s) => s.removeElement)
+
+  const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
+  const setSelectedElementId = useInteractionsStore(
+    (s) => s.setSelectedElementId
+  )
+  const setHoveredElementId = useInteractionsStore((s) => s.setHoveredElementId)
+
   const ref = useRef<HTMLDivElement>(null)
-  const { setSelectedElementId, selectedElementId, setHoveredElementId } =
-    useInteractionsStore()
 
   // handle scroll on canvas to pan
   const handleWheel = useCallback(
@@ -129,4 +138,4 @@ const Canvas = () => {
   )
 }
 
-export default memo(Canvas, () => true)
+export default Canvas

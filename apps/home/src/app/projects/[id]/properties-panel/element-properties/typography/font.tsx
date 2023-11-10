@@ -10,8 +10,9 @@ import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
 
 const TypographyFont = ({ fontFamily }: { fontFamily?: string }) => {
-  const { selectedElementId, selectedMediaQuery } = useInteractionsStore()
-  const { updateElementAttribute } = useCanvasStore()
+  const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
+  const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
+  const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
 
   return (
     <div className="relative grid grid-cols-[0.5fr_1fr] gap-2 items-center group">

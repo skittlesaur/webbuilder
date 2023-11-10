@@ -8,7 +8,7 @@ import ListItem from './item'
 import { useCanvasStore } from '@/stores/canvas-store'
 
 const LayersList = () => {
-  const { elements } = useCanvasStore()
+  const elements = useCanvasStore((s) => s.elements)
 
   const recursiveFormat = useCallback((element) => {
     if (typeof element === 'string') return null

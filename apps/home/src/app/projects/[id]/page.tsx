@@ -14,7 +14,7 @@ const PropertiesPanel = dynamic(() => import('./properties-panel'), {
 
 const ProjectsPage = () => {
   return (
-    <div className="h-screen w-screen flex overflow-hidden">
+    <div className="h-screen w-screen flex overflow-hidden relative">
       <DevTools />
       <SideActions />
       <div className="flex flex-col flex-1">

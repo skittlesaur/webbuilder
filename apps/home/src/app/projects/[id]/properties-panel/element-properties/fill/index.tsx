@@ -65,13 +65,11 @@ export const opacityToHex = (opacity: number) => {
 }
 
 const ElementPropertiesFill = ({ background }: FillProps) => {
-  const {
-    selectedElementId,
-    gradientEditor,
-    setGradientEditor,
-    selectedMediaQuery,
-  } = useInteractionsStore()
-  const { updateElementAttribute } = useCanvasStore()
+  const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
+  const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
+  const gradientEditor = useInteractionsStore((s) => s.gradientEditor)
+  const setGradientEditor = useInteractionsStore((s) => s.setGradientEditor)
+  const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
 
   const [fills, setFills] = useState<Fill[]>(() => {
     if (!background) return []

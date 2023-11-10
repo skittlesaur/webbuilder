@@ -25,8 +25,9 @@ const buttons = [
 ]
 
 const AlignText = ({ textAlign }: { textAlign?: string }) => {
-  const { selectedElementId, selectedMediaQuery } = useInteractionsStore()
-  const { updateElementAttribute } = useCanvasStore()
+  const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
+  const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
+  const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
 
   const handleAlign = (value: string) => {
     if (!selectedElementId) return

@@ -156,8 +156,13 @@ const GradientFill = ({
   colorPickerClick,
   colorPickerOpen,
 }: ItemProps & { fill: { type: 'gradient' } }) => {
-  const { selectedGradientStep, setSelectedGradientStep } =
-    useInteractionsStore()
+  const selectedGradientStep = useInteractionsStore(
+    (s) => s.selectedGradientStep
+  )
+  const setSelectedGradientStep = useInteractionsStore(
+    (s) => s.setSelectedGradientStep
+  )
+
   const [dragging, setDragging] = useState<number | null>(null)
 
   const wrapperRef = useRef<HTMLDivElement>(null)
