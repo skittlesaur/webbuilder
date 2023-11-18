@@ -45,6 +45,12 @@ export interface Asset {
   url: string
 }
 
+export interface DefinedComponent {
+  id: string
+  name: string
+  element: Omit<Element, 'id'>
+}
+
 interface CanvasStore {
   zoom: number
   setZoom: (zoom: number) => void
@@ -77,6 +83,10 @@ interface CanvasStore {
   setAssets: (assets: Asset[]) => void
   addAsset: (asset: Asset | Asset[]) => void
   deleteAsset: (assetId: string) => void
+  components: DefinedComponent[]
+  setComponents: (components: DefinedComponent[]) => void
+  addComponent: (component: DefinedComponent) => void
+  removeComponent: (componentId: string) => void
 }
 
 export const useCanvasStore = create<CanvasStore>()(
@@ -346,6 +356,16 @@ export const useCanvasStore = create<CanvasStore>()(
         })
 
         set({ elements: newElements as Element[] })
+      },
+      components: [],
+      setComponents: (components) => {
+        set({ components })
+      },
+      addComponent: (component) => {
+        set({ components: [component, ...get().components] })
+      },
+      removeComponent: (componentId) => {
+        set({ components: get().components.filter((component) => component.id !== componentId) })
       },
     }),
     {

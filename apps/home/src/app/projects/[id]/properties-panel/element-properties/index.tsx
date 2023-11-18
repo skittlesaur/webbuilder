@@ -13,6 +13,7 @@ import LinkAttributes from './link'
 import ElementPropertiesParent from './parent'
 import ImageAttributes from './image'
 import AccessibilityAttributes from './accessibility'
+import MakeComponentButton from './make-component'
 
 enum PropertyPanel {
   STYLE,
@@ -66,19 +67,22 @@ const ElementProperties = () => {
 
   return (
     <Fragment key={`${selectedElementId}-${selectedMediaQuery}`}>
-      <div className="flex items-center px-2 border-b border-border">
-        {panels.map((p) => (
-          <button
-            className={cn('text-xs px-2 py-2', {
-              'text-white': activePanel === p.panel,
-              'text-white/70': activePanel !== p.panel,
-            })}
-            key={p.panel}
-            type="button"
-            onClick={() => setActivePanel(p.panel)}>
-            {p.title}
-          </button>
-        ))}
+      <div className="flex items-center justify-between border-b border-border px-2 w-full">
+        <div className="flex items-center">
+          {panels.map((p) => (
+            <button
+              className={cn('text-xs px-2 py-2', {
+                'text-white': activePanel === p.panel,
+                'text-white/70': activePanel !== p.panel,
+              })}
+              key={p.panel}
+              type="button"
+              onClick={() => setActivePanel(p.panel)}>
+              {p.title}
+            </button>
+          ))}
+        </div>
+        <MakeComponentButton />
       </div>
       <ElementPropertiesParent />
       {activePanel === PropertyPanel.STYLE && (

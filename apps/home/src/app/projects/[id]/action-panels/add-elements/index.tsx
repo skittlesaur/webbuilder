@@ -16,6 +16,7 @@ export interface PanelElement {
   style: Element['style']
   children?: Element['children']
   attributes?: Element['attributes']
+  mediaQueries?: Element['mediaQueries']
 }
 
 const DividerElement = () => {

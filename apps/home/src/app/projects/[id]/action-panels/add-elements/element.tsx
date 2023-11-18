@@ -17,6 +17,7 @@ const Element = ({
   style,
   children,
   attributes,
+  mediaQueries,
 }: PanelElement) => {
   const [isDragging, setIsDragging] = useState(false)
   const [dragPosition, setDragPosition] = useState({ x: 0, y: 0, snap: false })
@@ -100,6 +101,7 @@ const Element = ({
         children: children ?? [],
         style: style ?? {},
         attributes: attributes ?? {},
+        mediaQueries,
       }
 
       const { relativeId, relativePosition } = draggedElement || {}
@@ -127,6 +129,7 @@ const Element = ({
     draggedElement,
     element,
     isDragging,
+    mediaQueries,
     setDraggedElement,
     setIsDraggingElement,
     style,
@@ -136,6 +139,7 @@ const Element = ({
     <>
       <button
         className="w-full h-full flex flex-col items-center gap-1.5 hover:brightness-110"
+        draggable={false}
         type="button"
         onMouseDown={(e) => {
           const isLeftClick = e.button === 0
@@ -147,8 +151,7 @@ const Element = ({
             y: e.clientY - 90,
             snap: false,
           })
-        }}
-        draggable={false}>
+        }}>
         <div className="w-full aspect-square bg-secondary rounded flex items-center justify-center p-1.5 icon-wrapper">
           {Icon}
         </div>

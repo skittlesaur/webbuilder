@@ -39,7 +39,7 @@ const AssetsImages = () => {
                     <ContextMenuTrigger>
                       <Element
                         Icon={
-                          <div className="relative overflow-hidden w-full h-full rounded-md bg-white ">
+                          <div className="relative overflow-hidden w-full h-full rounded-md bg-white">
                             <Image
                               fill
                               alt={asset.name}

@@ -1,7 +1,8 @@
 import ActionPanelWrapper from '..'
 import ActionPanelSeparator from '../separator'
-import AssetsDisplay from './assets'
+import ComponentsDisplay from './components'
 import AssetsAndComponentsPanelHeader from './header'
+import AssetsImages from './images'
 import { PanelsEnum } from '@/stores/panels-store'
 
 const AssetsAndComponentsPanel = () => {
@@ -11,7 +12,9 @@ const AssetsAndComponentsPanel = () => {
         <AssetsAndComponentsPanelHeader />
       </div>
       <ActionPanelSeparator />
-      <AssetsDisplay />
+      <ComponentsDisplay />
+      <ActionPanelSeparator />
+      <AssetsImages />
     </ActionPanelWrapper>
   )
 }
