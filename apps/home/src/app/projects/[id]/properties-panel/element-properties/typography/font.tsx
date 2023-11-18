@@ -13,6 +13,10 @@ const TypographyFont = ({ fontFamily }: { fontFamily?: string }) => {
   const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
   const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
   const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
+  const customFonts = useCanvasStore((s) => s.customFonts)?.map((f) => ({
+    family: f.fontFamily,
+    variants: f.fontWeights,
+  }))
 
   return (
     <div className="relative grid grid-cols-[0.5fr_1fr] gap-2 items-center group">
@@ -41,7 +45,7 @@ const TypographyFont = ({ fontFamily }: { fontFamily?: string }) => {
           </SelectValue>
         </SelectTrigger>
         <SelectContent className="h-[20rem] w-[14.5rem] overflow-y-auto">
-          {FontsData.map((font) => (
+          {[...customFonts, ...FontsData].map((font) => (
             <SelectItem key={font.family} value={font.family}>
               <p
                 className="truncate w-full"

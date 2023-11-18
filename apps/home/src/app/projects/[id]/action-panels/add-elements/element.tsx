@@ -135,9 +135,11 @@ const Element = ({
   return (
     <>
       <button
-        className="flex flex-col items-center gap-1.5 hover:brightness-110"
+        className="w-full h-full flex flex-col items-center gap-1.5 hover:brightness-110"
         type="button"
         onMouseDown={(e) => {
+          const isLeftClick = e.button === 0
+          if (!isLeftClick) return
           setIsDragging(true)
           setIsDraggingElement(true)
           setDragPosition({
@@ -145,8 +147,9 @@ const Element = ({
             y: e.clientY - 90,
             snap: false,
           })
-        }}>
-        <div className="w-full aspect-square bg-secondary rounded flex items-center justify-center p-1.5">
+        }}
+        draggable={false}>
+        <div className="w-full aspect-square bg-secondary rounded flex items-center justify-center p-1.5 icon-wrapper">
           {Icon}
         </div>
         <p className="text-xs">{title}</p>

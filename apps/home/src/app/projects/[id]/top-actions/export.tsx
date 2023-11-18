@@ -96,13 +96,19 @@ const ExportButton = () => {
         return document.createTextNode(element)
       }
 
-      const { children, style, id } = element
+      const { children, style, id, attributes } = element
 
       const el = document.createElement(element.type)
 
       const elementClassName = `baraa-${id}`
 
       const propertiesInBreakpoints: string[] = []
+
+      Object.keys((attributes || {}) as Record<string, unknown>).forEach(
+        (attribute) => {
+          el.setAttribute(attribute, String(attributes?.[attribute]))
+        }
+      )
 
       Object.keys(
         (element.mediaQueries || {}) as Record<string, CSSProperties>

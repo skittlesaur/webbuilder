@@ -6,4 +6,24 @@ module.exports = {
     })
     return config
   },
+
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'app.baraa',
+        port: '3000',
+      },
+    ],
+  },
+
+  async rewrites() {
+    return [
+      {
+        source: '/users/assets/:version/:fileName',
+        destination:
+          'https://res.cloudinary.com/dy9mp2tho/image/upload/:version/baraa-webbuilder/:fileName',
+      },
+    ]
+  },
 }

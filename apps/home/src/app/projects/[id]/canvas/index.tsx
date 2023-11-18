@@ -1,9 +1,9 @@
 'use client'
 import { useCallback, useEffect, useRef } from 'react'
+import { toast } from 'sonner'
 import Breakpoint from './breakpoint'
 import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
-import { toast } from 'sonner'
 
 const Canvas = () => {
   const breakpoints = useCanvasStore((s) => s.breakpoints)

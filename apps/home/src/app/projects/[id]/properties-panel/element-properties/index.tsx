@@ -1,17 +1,39 @@
-import { Fragment, useMemo } from 'react'
+import { Fragment, useMemo, useState } from 'react'
+import cn from 'classnames'
 import type { Position } from './position'
 import ElementPropertiesPosition from './position'
 import ElementPropertiesSize from './size'
 import ElementPropertiesFill from './fill'
 import ElementPropertiesTypography from './typography'
+import ElementPropertiesPaddingAndMargin from './padding-and-margin'
 import { findElementByIdArr } from '@/lib/find-element-by-id'
 import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
+import LinkAttributes from './link'
+import ElementPropertiesParent from './parent'
+import ImageAttributes from './image'
+
+enum PropertyPanel {
+  STYLE,
+  ATTRIBUTES,
+}
+
+const panels = [
+  {
+    title: 'Style',
+    panel: PropertyPanel.STYLE,
+  },
+  {
+    title: 'Attributes',
+    panel: PropertyPanel.ATTRIBUTES,
+  },
+]
 
 const ElementProperties = () => {
   const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
   const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
   const elements = useCanvasStore((s) => s.elements)
+  const [activePanel, setActivePanel] = useState(PropertyPanel.STYLE)
 
   const activeElement = useMemo(() => {
     if (!selectedElementId) return null
@@ -20,7 +42,7 @@ const ElementProperties = () => {
 
   if (!activeElement) return null
 
-  const getAttribute = (attribute: string) => {
+  const getStyleAttribute = (attribute: string) => {
     if (selectedMediaQuery !== null) {
       const queries = Object.keys(
         (activeElement.mediaQueries || {}) as Record<string, unknown>
@@ -43,30 +65,73 @@ const ElementProperties = () => {
 
   return (
     <Fragment key={`${selectedElementId}-${selectedMediaQuery}`}>
-      <ElementPropertiesPosition
-        bottom={getAttribute('bottom')}
-        left={getAttribute('left')}
-        position={getAttribute('position') as Position}
-        right={getAttribute('right')}
-        top={getAttribute('top')}
-      />
-      <ElementPropertiesSize
-        height={getAttribute('height')}
-        maxHeight={getAttribute('maxHeight')}
-        maxWidth={getAttribute('maxWidth')}
-        minHeight={getAttribute('minHeight')}
-        minWidth={getAttribute('minWidth')}
-        width={getAttribute('width')}
-      />
-      <ElementPropertiesFill background={getAttribute('background')} />
-      <ElementPropertiesTypography
-        fontFamily={getAttribute('fontFamily')}
-        fontSize={getAttribute('fontSize')}
-        fontWeight={getAttribute('fontWeight')}
-        letterSpacing={getAttribute('letterSpacing')}
-        lineHeight={getAttribute('lineHeight')}
-        textAlign={getAttribute('textAlign')}
-      />
+      <div className="flex items-center px-2 border-b border-border">
+        {panels.map((p) => (
+          <button
+            className={cn('text-xs px-2 py-2', {
+              'text-white': activePanel === p.panel,
+              'text-white/70': activePanel !== p.panel,
+            })}
+            key={p.panel}
+            type="button"
+            onClick={() => setActivePanel(p.panel)}>
+            {p.title}
+          </button>
+        ))}
+      </div>
+      <ElementPropertiesParent />
+      {activePanel === PropertyPanel.STYLE && (
+        <>
+          <ElementPropertiesPosition
+            bottom={getStyleAttribute('bottom')}
+            left={getStyleAttribute('left')}
+            position={getStyleAttribute('position') as Position}
+            right={getStyleAttribute('right')}
+            top={getStyleAttribute('top')}
+          />
+          <ElementPropertiesSize
+            height={getStyleAttribute('height')}
+            maxHeight={getStyleAttribute('maxHeight')}
+            maxWidth={getStyleAttribute('maxWidth')}
+            minHeight={getStyleAttribute('minHeight')}
+            minWidth={getStyleAttribute('minWidth')}
+            width={getStyleAttribute('width')}
+          />
+          <ElementPropertiesPaddingAndMargin
+            marginBottom={getStyleAttribute('marginBottom')}
+            marginLeft={getStyleAttribute('marginLeft')}
+            marginRight={getStyleAttribute('marginRight')}
+            marginTop={getStyleAttribute('marginTop')}
+            paddingBottom={getStyleAttribute('paddingBottom')}
+            paddingLeft={getStyleAttribute('paddingLeft')}
+            paddingRight={getStyleAttribute('paddingRight')}
+            paddingTop={getStyleAttribute('paddingTop')}
+          />
+          <ElementPropertiesFill background={getStyleAttribute('background')} />
+          <ElementPropertiesTypography
+            fontFamily={getStyleAttribute('fontFamily')}
+            fontSize={getStyleAttribute('fontSize')}
+            fontWeight={getStyleAttribute('fontWeight')}
+            letterSpacing={getStyleAttribute('letterSpacing')}
+            lineHeight={getStyleAttribute('lineHeight')}
+            textAlign={getStyleAttribute('textAlign')}
+          />
+        </>
+      )}
+      {activePanel === PropertyPanel.ATTRIBUTES && (
+        <>
+          <LinkAttributes
+            isAnchor={activeElement.type === 'a'}
+            href={activeElement.attributes?.href as string | undefined}
+            target={activeElement.attributes?.target as string | undefined}
+          />
+          <ImageAttributes
+            isImage={activeElement.type === 'img'}
+            src={activeElement.attributes?.src as string | undefined}
+            alt={activeElement.attributes?.alt as string | undefined}
+          />
+        </>
+      )}
     </Fragment>
   )
 }

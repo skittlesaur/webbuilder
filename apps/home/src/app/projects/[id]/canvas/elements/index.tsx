@@ -8,7 +8,7 @@ import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
 import isTypographyElement from '@/lib/is-typography-element'
 
-const VOID_ELEMENTS = ['img', 'input']
+const VOID_ELEMENTS = ['img', 'input', 'br', 'hr', 'link', 'meta']
 
 const Element = ({
   element,
@@ -19,7 +19,7 @@ const Element = ({
 }) => {
   const draggedElement = useCanvasStore((s) => s.draggedElement)
   const [isHovering, setIsHovering] = useState(false)
-  const [isUnstyled, setIsUnstyled] = useState(false)
+  // const [isUnstyled, setIsUnstyled] = useState(false)
 
   const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
   const hoveredElementId = useInteractionsStore((s) => s.hoveredElementId)
@@ -96,7 +96,7 @@ const Element = ({
 
   useEffect(() => {
     if (typeof element === 'string') {
-      setIsUnstyled(false)
+      // setIsUnstyled(false)
       return
     }
 
@@ -115,9 +115,9 @@ const Element = ({
     const hasChildren = element.children.length > 0
 
     if (!hasHeight && !hasWidth && !hasChildren) {
-      setIsUnstyled(true)
+      // setIsUnstyled(true)
     } else {
-      setIsUnstyled(false)
+      // setIsUnstyled(false)
     }
   }, [element])
 
@@ -159,10 +159,9 @@ const Element = ({
           position: isDraggingElement ? 'relative' : element.style?.position,
         }}
         onClick={(e) => {
-          if (element.id === 'root') return
           e.stopPropagation()
           e.preventDefault()
-          setSelectedElementId(element.id)
+          setSelectedElementId(element.id === 'root' ? null : element.id)
           setSelectedMediaQuery(mediaQuery)
         }}
       />
@@ -187,10 +186,9 @@ const Element = ({
         position: isDraggingElement ? 'relative' : element.style?.position,
       }}
       onClick={(e) => {
-        if (element.id === 'root') return
         e.stopPropagation()
         e.preventDefault()
-        setSelectedElementId(element.id)
+        setSelectedElementId(element.id === 'root' ? null : element.id)
         setSelectedMediaQuery(mediaQuery)
       }}>
       {draggedElement && draggedElement?.relativeId === element.id ? (

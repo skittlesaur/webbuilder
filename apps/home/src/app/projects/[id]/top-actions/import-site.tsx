@@ -1,6 +1,7 @@
 'use client'
 import { createId } from '@paralleldrive/cuid2'
-import { CSSProperties, useRef, useState } from 'react'
+import type { CSSProperties } from 'react'
+import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 import {
   AlertDialog,
@@ -18,8 +19,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from 'ui'
-import { CustomFont, Element, useCanvasStore } from '@/stores/canvas-store'
+import type { Asset, CustomFont, Element } from '@/stores/canvas-store'
+import { useCanvasStore } from '@/stores/canvas-store'
 import ImportIcon from '@/icons/cloud-upload-outline.svg'
+import uploadImage from '@/lib/upload-image'
 
 const isValidUrl = (url: string) => {
   try {
@@ -37,12 +40,16 @@ const ImportSite = () => {
   const setElements = useCanvasStore((s) => s.setElements)
   const setBodyStyles = useCanvasStore((s) => s.setBodyStyles)
   const setCustomFonts = useCanvasStore((s) => s.setCustomFonts)
+  const setAssets = useCanvasStore((s) => s.setAssets)
 
   const importData = async (url: string) => {
+    const siteBaseUrl = `https://${url.replace('https://', '').split('/')[0]}`
+
     const res = await fetch(url)
     const html = await res.text()
 
     const elements: Element[] = []
+    const assets: Asset[] = []
     const parser = new DOMParser()
     const doc = parser.parseFromString(html, 'text/html')
     const head = doc.head
@@ -50,10 +57,7 @@ const ImportSite = () => {
       head.querySelectorAll('link[rel=stylesheet]')
     ).map((el: HTMLLinkElement) =>
       // replace is to the root url of the site
-      el.href.replace(
-        process.env.NEXT_PUBLIC_SITE_URL || '',
-        `https://${url.replace('https://', '').split('/')[0]}`
-      )
+      el.href.replace(process.env.NEXT_PUBLIC_SITE_URL || '', siteBaseUrl)
     )
 
     const stylesheets = await Promise.all(
@@ -76,8 +80,9 @@ const ImportSite = () => {
     // class -> css properties
     const cssProperties: Record<string, CSSProperties> = {}
     const fontFamilies = new Set<CustomFont>()
+    const rules = Array.from(styleSheet?.cssRules || [])
 
-    for (const rule of styleSheet.cssRules) {
+    for (const rule of rules) {
       if (rule.type === CSSRule.FONT_FACE_RULE) {
         const fontFaceRule = rule as CSSFontFaceRule
         const fontFamily = fontFaceRule.style.getPropertyValue('font-family')
@@ -97,16 +102,14 @@ const ImportSite = () => {
           .getPropertyValue('src')
           .split(',')
           .map((s) => {
-            const fontUrl = s.match(/url\((?<temp1>.*?)\)/)?.[1]
-            const format = s
-              .match(/format\((?<temp1>.*?)\)/)?.[1]
+            const fontUrl = /url\((?<temp1>.*?)\)/.exec(s)?.[1]
+            const format = /format\((?<temp1>.*?)\)/
+              .exec(s)?.[1]
               .replace(/"|'/g, '')
 
             if (!fontUrl) return null
 
-            const formattedUrl = `https://${
-              url.replace('https://', '').split('/')[0]
-            }${fontUrl
+            const formattedUrl = `${siteBaseUrl}${fontUrl
               ?.replace(process.env.NEXT_PUBLIC_SITE_URL || '', '')
               .replace(/"|'/g, '')}`
 
@@ -164,7 +167,7 @@ const ImportSite = () => {
     const body = doc.body
     const children = Array.from(body.children)
 
-    const traverse = (el: HTMLElement) => {
+    const traverse = async (el: HTMLElement) => {
       const type = el.tagName.toLowerCase()
       if (['script', 'style'].includes(type)) return
 
@@ -172,41 +175,96 @@ const ImportSite = () => {
         .map((className) => cssProperties[className])
         .reduce((acc, curr) => ({ ...acc, ...curr }), {})
 
+      const attributesArray = Array.from(el.attributes)
+      const attributes = {}
+
+      for (const attr of attributesArray) {
+        if (attr.name === 'class') continue
+        if (attr.name === 'style') continue
+
+        if (attr.name === 'href') {
+          const href = attr.value
+          const isAbsolute = href.startsWith('http')
+          if (isAbsolute) continue
+
+          const isRelative = href.startsWith('/')
+          if (isRelative) {
+            attributes[attr.name] = `${siteBaseUrl}${href}`
+            continue
+          }
+        }
+
+        if (attr.name === 'src') {
+          const src = attr.value
+          const imageName =
+            el.getAttribute('alt') || el.getAttribute('title') || src
+          const isAbsolute = src.startsWith('http')
+          if (isAbsolute) {
+            // eslint-disable-next-line no-await-in-loop -- we need to wait for each image to upload
+            const imageUrl = await uploadImage(src)
+
+            assets.push({
+              id: createId(),
+              name: imageName,
+              type: 'image',
+              url: imageUrl,
+            })
+
+            attributes[attr.name] = imageUrl
+            continue
+          }
+
+          const isRelative = attr.value.startsWith('/')
+          if (isRelative) {
+            // eslint-disable-next-line no-await-in-loop -- we need to wait for each image to upload
+            const imageUrl = await uploadImage(`${siteBaseUrl}${attr.value}`)
+
+            assets.push({
+              id: createId(),
+              name: imageName,
+              type: 'image',
+              url: imageUrl,
+            })
+
+            attributes[attr.name] = imageUrl
+            continue
+          }
+        }
+
+        attributes[attr.name] = attr.value
+      }
+
       const element: Element = {
         id: createId(),
         type: el.tagName.toLowerCase() as Element['type'],
         children: [],
         style,
+        attributes,
       }
 
-      el.childNodes.forEach((child) => {
+      const childNodes = Array.from(el.childNodes)
+
+      for (const child of childNodes) {
         if (child instanceof Text) {
           if (child.textContent) element.children.push(child.textContent)
         } else {
           const isComment = child instanceof Comment
-          if (isComment) return
+          if (isComment) continue
 
-          const childElement = traverse(child as HTMLElement)
+          // eslint-disable-next-line no-await-in-loop -- we need to wait for each image to upload
+          const childElement = await traverse(child as HTMLElement)
           if (childElement) element.children.push(childElement)
         }
-      })
-
-      // console.log(el.childNodes)
-
-      // if (el.children.length) {
-      //   Array.from(el.children).forEach((child) => {
-      //     const childElement = traverse(child as HTMLElement)
-      //     if (childElement) element.children.push(childElement)
-      //   })
-      // }
+      }
 
       return element
     }
 
-    children.forEach((child) => {
-      const element = traverse(child as HTMLElement)
+    for (const child of children) {
+      // eslint-disable-next-line no-await-in-loop -- we need to wait for each image to upload
+      const element = await traverse(child as HTMLElement)
       if (element) elements.push(element)
-    })
+    }
 
     const bodyStyles = Array.from(body.classList)
       .map((className) => cssProperties[className])
@@ -231,7 +289,7 @@ const ImportSite = () => {
     // load the fonts
     const fonts = Array.from(fontFamilies).map((font) => {
       const fontFace = new FontFace(
-        font.fontFamily,
+        font.fontFamily as string,
         `url(${font.src.split(/,| /g)[0].replace(/"|'/g, '')})`
       )
       return fontFace
@@ -244,11 +302,16 @@ const ImportSite = () => {
         })
     })
 
+    setAssets(assets)
     await Promise.all(fonts)
   }
 
   const handleSiteImportClick = () => {
-    const url = inputRef.current?.value
+    const input = inputRef.current?.value?.trim() || ''
+    if (input.startsWith('http://'))
+      return toast.error('Only HTTPS sites are supported')
+
+    const url = input.startsWith('https') ? input : `https://${input}`
     if (!url) return toast.error('Please enter a URL')
 
     const isValid = isValidUrl(url)
@@ -302,7 +365,6 @@ const ImportSite = () => {
             <Input
               disabled={isImporting}
               placeholder="https://example.com"
-              value="https://baraa.app"
               ref={inputRef}
             />
           </div>

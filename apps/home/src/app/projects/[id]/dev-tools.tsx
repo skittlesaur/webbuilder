@@ -1,9 +1,11 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
 
 const DevTools = () => {
+  const [isOpen, setIsOpen] = useState(false)
   const pan = useCanvasStore((s) => s.pan)
   const zoom = useCanvasStore((s) => s.zoom)
   const draggedElement = useCanvasStore((s) => s.draggedElement)
@@ -35,8 +37,25 @@ const DevTools = () => {
     },
   ]
 
+  useEffect(() => {
+    // open dev tools when cmd + shift + d is pressed
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'd' && e.shiftKey && e.metaKey) {
+        e.preventDefault()
+        e.stopPropagation()
+        setIsOpen((prev) => !prev)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
+  if (!isOpen) return null
+
   return (
-    <div className="z-[100] fixed bottom-4 right-1/2 translate-x-1/2 bg-white text-black min-w-[7rem] px-2 py-1 rounded grid grid-cols-3 gap-2 hover:opacity-50 transition-opacity duration-200 select-none">
+    <div className="z-[100] fixed bottom-4 left-1/2 -translate-x-1/2 bg-white text-black border border-border/10 shadow-lg min-w-[7rem] px-2 py-1 rounded grid grid-cols-3 gap-2 select-none">
       {DATA.map((item) => (
         <div className="flex flex-col" key={item.title}>
           <p className="text-xs font-medium">{item.title}</p>

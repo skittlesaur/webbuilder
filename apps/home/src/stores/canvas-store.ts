@@ -12,7 +12,7 @@ export interface Breakpoint {
   isDefault?: boolean
 }
 
-export type ElementType = 'div' | 'section' | 'ul' | 'li' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'p' | 'span' | 'sup' | 'sub' | 'a'
+export type ElementType = 'div' | 'section' | 'ul' | 'li' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'p' | 'span' | 'sup' | 'sub' | 'a' | 'img'
 
 export interface Element {
   id: string
@@ -29,13 +29,20 @@ export interface DraggedElement {
   type: ElementType
 }
 
-export interface CustomFont { 
+export interface CustomFont {
   fontFamily: string
   fontWeights: number[]
   fontStyles: string[]
   fontDisplay?: string
   src: string
   unicodeRange?: string
+}
+
+export interface Asset {
+  id: string
+  name: string
+  type: 'image' | 'video'
+  url: string
 }
 
 interface CanvasStore {
@@ -66,6 +73,10 @@ interface CanvasStore {
   setCustomFonts: (fonts: CustomFont[]) => void
   addCustomFont: (font: CustomFont) => void
   removeCustomFont: (fontFamily: string) => void
+  assets: Asset[]
+  setAssets: (assets: Asset[]) => void
+  addAsset: (asset: Asset | Asset[]) => void
+  deleteAsset: (assetId: string) => void
 }
 
 export const useCanvasStore = create<CanvasStore>()(
@@ -292,6 +303,49 @@ export const useCanvasStore = create<CanvasStore>()(
       },
       removeCustomFont: (fontFamily) => {
         set({ customFonts: get().customFonts.filter((font) => font.fontFamily !== fontFamily) })
+      },
+      assets: [],
+      setAssets: (assets) => {
+        set({ assets })
+      },
+      addAsset: (asset) => {
+        set({ assets: [asset, ...get().assets].flat() })
+      },
+      deleteAsset: (assetId) => {
+        const asset = get().assets.find((a) => a.id === assetId)
+
+        set({ assets: get().assets.filter((a) => a.id !== assetId) })
+
+        // delete elements that use this asset
+        const elements = get().elements
+        const newElements = elements.map((el) => {
+          const updateElement = (e: Element): Element | Element[] | string => {
+            if (typeof e === 'string') return e
+
+            if (e.attributes?.src === asset?.url) {
+              return {
+                ...e,
+                attributes: {
+                  ...e.attributes,
+                  src: '',
+                }
+              }
+            }
+
+            const updatedChildren = e.children.map((child) => updateElement(child as Element))
+
+            const filteredChildren = updatedChildren.filter((child) => child !== null)
+
+            return {
+              ...e,
+              children: filteredChildren.flat(),
+            } as Element
+          }
+
+          return updateElement(el)
+        })
+
+        set({ elements: newElements as Element[] })
       },
     }),
     {

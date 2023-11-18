@@ -34,7 +34,9 @@ const InputWithUnit = ({
   const [unit, setUnit] = useState<Unit>(() => {
     if (!selectedElementId) return 'px'
     const u = initial?.replace(/[^a-z%]/g, '')
-    if (!u || u === autoValue) return 'auto'
+    if (!u || u === autoValue) {
+      return 'auto'
+    }
     return u as Unit
   })
 
@@ -64,7 +66,15 @@ const InputWithUnit = ({
       `${value ?? ''}${unit}`,
       selectedMediaQuery
     )
-  }, [unit, value, selectedElementId, updateElementAttribute, type, autoValue, selectedMediaQuery])
+  }, [
+    unit,
+    value,
+    selectedElementId,
+    updateElementAttribute,
+    type,
+    autoValue,
+    selectedMediaQuery,
+  ])
 
   if (!selectedElementId) return null
 
@@ -81,6 +91,12 @@ const InputWithUnit = ({
           const inputValue = e.target.value
 
           const valFormatted = inputValue.replace(/^0+/, '')
+
+          if (inputValue === '0') {
+            setValue(0)
+            setUnit('px')
+            return
+          }
 
           if (!inputValue || !valFormatted) {
             setValue(null)
