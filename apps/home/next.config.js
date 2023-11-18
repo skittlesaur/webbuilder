@@ -14,6 +14,10 @@ module.exports = {
         hostname: 'app.baraa',
         port: '3000',
       },
+      {
+        protocol: 'https',
+        hostname: 'webbuilder.baraa.app',
+      },
     ],
   },
 
