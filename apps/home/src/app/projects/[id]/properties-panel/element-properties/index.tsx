@@ -12,6 +12,7 @@ import { useInteractionsStore } from '@/stores/interactions-store'
 import LinkAttributes from './link'
 import ElementPropertiesParent from './parent'
 import ImageAttributes from './image'
+import AccessibilityAttributes from './accessibility'
 
 enum PropertyPanel {
   STYLE,
@@ -129,6 +130,14 @@ const ElementProperties = () => {
             isImage={activeElement.type === 'img'}
             src={activeElement.attributes?.src as string | undefined}
             alt={activeElement.attributes?.alt as string | undefined}
+          />
+          <AccessibilityAttributes
+            ariaLabel={
+              activeElement.attributes?.['aria-label'] as string | undefined
+            }
+            ariaRole={
+              activeElement.attributes?.['aria-role'] as string | undefined
+            }
           />
         </>
       )}
