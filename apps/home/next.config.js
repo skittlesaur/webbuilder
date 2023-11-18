@@ -16,7 +16,7 @@ module.exports = {
       },
       {
         protocol: 'https',
-        hostname: 'webbuilder.baraa.app',
+        hostname: 'builder.baraa.app',
       },
     ],
   },
