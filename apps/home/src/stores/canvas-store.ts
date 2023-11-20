@@ -51,7 +51,21 @@ export interface DefinedComponent {
   element: Omit<Element, 'id'>
 }
 
+export interface Project {
+  name: string
+  url: string
+  pages: {
+    id: string
+    name: string
+    url: string
+  }[]
+}
+
 interface CanvasStore {
+  project: Project | null
+  setProject: (project: Project) => void
+  pageId: string | null
+  setPageId: (id: string) => void
   zoom: number
   setZoom: (zoom: number) => void
   pan: {
@@ -60,6 +74,7 @@ interface CanvasStore {
   },
   setPan: ({ x, y }: { x: number, y: number }) => void
   breakpoints: Breakpoint[]
+  setBreakpoints: (breakpoints: Breakpoint[]) => void
   updateBreakpoint: (id: string, breakpoint: Partial<Breakpoint>) => void
   selectedIds: string[]
   setSelectedIds: (ids: string[]) => void
@@ -127,6 +142,9 @@ export const useCanvasStore = create<CanvasStore>()(
           },
         }
       ],
+      setBreakpoints: (breakpoints) => {
+        set({ breakpoints })
+      },
       updateBreakpoint: (id, breakpoint) => {
         set({
           breakpoints: get().breakpoints.map((bp) => {
@@ -366,6 +384,14 @@ export const useCanvasStore = create<CanvasStore>()(
       },
       removeComponent: (componentId) => {
         set({ components: get().components.filter((component) => component.id !== componentId) })
+      },
+      project: null,
+      setProject: (project) => {
+        set({ project })
+      },
+      pageId: null,
+      setPageId: (id) => {
+        set({ pageId: id })
       },
     }),
     {

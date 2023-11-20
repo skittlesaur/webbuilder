@@ -79,5 +79,6 @@ module.exports = {
         checksVoidReturn: false,
       },
     ],
+    '@typescript-eslint/no-unsafe-argument': 'off',
   },
 }

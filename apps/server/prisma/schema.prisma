@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String             @id @default(cuid()) @map("_id")
+  email              String             @unique
+  password           String
+  username           String             @unique
+  name               String?
+  avatar             String?
+  isVerified         Boolean            @default(false)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  teamMember         TeamMember[]
+  userVerification   UserVerification[]
+  createdProjects    Project[]          @relation("createdBy")
+  lastEditedProjects Project[]          @relation("lastEditedBy")
+  UserPageSettings   UserPageSettings[]
+}
+
+model UserVerification {
+  id        String   @id @default(cuid()) @map("_id")
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  token     String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
+
+model Team {
+  id          String       @id @default(cuid()) @map("_id")
+  name        String
+  url         String       @unique
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  teamMembers TeamMember[]
+  projects    Project[]
+}
+
+model TeamMember {
+  id        String   @id @default(cuid()) @map("_id")
+  team      Team     @relation(fields: [teamId], references: [id])
+  teamId    String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  role      TeamRole
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum TeamRole {
+  OWNER
+  EDITOR
+  MEMBER
+}
+
+model Project {
+  id             String   @id @default(cuid()) @map("_id")
+  name           String
+  url            String   @unique
+  team           Team     @relation(fields: [teamId], references: [id])
+  teamId         String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  createdBy      User     @relation("createdBy", fields: [createdById], references: [id])
+  createdById    String
+  lastEditedBy   User?    @relation("lastEditedBy", fields: [lastEditedById], references: [id])
+  lastEditedById String?
+  pages          Page[]
+}
+
+model Page {
+  id               String             @id @default(cuid()) @map("_id")
+  path             String
+  elements         Json[]
+  customFonts      Json[]
+  components       Json[]
+  breakpoints      Json[]
+  bodyStyles       Json[]
+  assets           Json[]
+  projectId        String
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  Project          Project            @relation(fields: [projectId], references: [id])
+  userPageSettings UserPageSettings[]
+}
+
+model UserPageSettings {
+  id        String   @id @default(cuid()) @map("_id")
+  page      Page     @relation(fields: [pageId], references: [id])
+  pageId    String
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+  panX      Float    @default(0)
+  panY      Float    @default(0)
+  zoom      Float    @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
