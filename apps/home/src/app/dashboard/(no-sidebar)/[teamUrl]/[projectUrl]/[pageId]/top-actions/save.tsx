@@ -2,7 +2,7 @@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'ui'
 import { useParams } from 'next/navigation'
 import { toast } from 'sonner'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import ImportIcon from '@/icons/cloud-upload-outline.svg'
 import { useCanvasStore } from '@/stores/canvas-store'
 import api from '@/lib/api'
@@ -51,20 +51,39 @@ const SaveButton = () => {
   }, [isSaving, teamUrlString, projectUrlString, pageIdString, setIsSaving])
 
   // auto save changes every 5 minutes
-  // useEffect(() => {
-  //   const interval = setInterval(
-  //     () => {
-  //       toast.promise(saveChanges(), {
-  //         loading: 'Auto saving changes...',
-  //         success: 'Changes saved successfully',
-  //         error: 'Failed to save changes, please try again later',
-  //       })
-  //     },
-  //     1000 * 60 * 5
-  //   )
+  useEffect(() => {
+    const interval = setInterval(
+      () => {
+        toast.promise(saveChanges(), {
+          loading: 'Auto saving changes...',
+          success: 'Changes saved successfully',
+          error: 'Failed to save changes, please try again later',
+        })
+      },
+      1000 * 60 * 5
+    )
 
-  //   return () => clearInterval(interval)
-  // }, [saveChanges])
+    return () => clearInterval(interval)
+  }, [saveChanges])
+
+  // ctrl/cmd + s to save changes
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 's' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault()
+
+        toast.promise(saveChanges(), {
+          loading: 'Saving changes...',
+          success: 'Changes saved successfully',
+          error: 'Failed to save changes, please try again later',
+        })
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [saveChanges])
 
   return (
     <TooltipProvider disableHoverableContent delayDuration={300}>
