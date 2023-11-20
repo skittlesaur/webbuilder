@@ -8,7 +8,6 @@ import OnboardingHeader from '../header'
 import useUser from '@/resolvers/use-user'
 import api from '@/lib/api'
 import getErrorMessage from '@/lib/get-error-message'
-import EnsureLoggedIn from '@/components/ensure-logged-in'
 
 const resendTimeouts = {
   0: 30,
