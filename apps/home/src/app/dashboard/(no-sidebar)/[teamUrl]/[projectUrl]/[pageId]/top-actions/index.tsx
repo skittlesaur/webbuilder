@@ -1,14 +1,16 @@
+import { useCanvasStore } from '@/stores/canvas-store'
 import BackButton from './back-button'
 import ExportButton from './export'
 import ImportSite from './import-site'
 import SaveButton from './save'
 
 const TopActions = () => {
+  const project = useCanvasStore((state) => state.project)
   return (
-    <div className="select-none bg-background relative z-50 w-full h-12 border-b border-border flex items-center justify-between px-5">
+    <div className="relative z-50 flex items-center justify-between w-full h-12 px-5 border-b select-none bg-background border-border">
       <div className="flex items-center gap-2">
         <BackButton />
-        <h1 className="font-medium text-sm">Project name</h1>
+        <h1 className="text-sm font-medium">{project?.name}</h1>
       </div>
       <div className="flex flex-row-reverse items-center gap-4">
         <ExportButton />

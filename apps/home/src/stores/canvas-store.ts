@@ -56,8 +56,7 @@ export interface Project {
   url: string
   pages: {
     id: string
-    name: string
-    url: string
+    path: string
   }[]
 }
 

@@ -59,8 +59,7 @@ const ProjectsPage = () => {
         url: project.url,
         pages: project.pages.map((page) => ({
           id: page.id,
-          name: page.name,
-          url: page.url,
+          path: page.path,
         })),
       })
       setProjectLoaded(true)

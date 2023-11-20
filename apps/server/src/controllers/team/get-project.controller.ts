@@ -47,7 +47,15 @@ const getTeamProjectController = async (req: Request, res: Response) => {
             avatar: true,
           }
         },
-        pages: true,
+        pages: {
+          select: {
+            id: true,
+            path: true,
+          },
+          orderBy: {
+            createdAt: 'desc'
+          }
+        },
       }
     })
 

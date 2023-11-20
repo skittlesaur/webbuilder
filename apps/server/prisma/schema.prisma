@@ -82,7 +82,7 @@ model Page {
   customFonts      Json[]
   components       Json[]
   breakpoints      Json[]
-  bodyStyles       Json[]
+  bodyStyles       Json
   assets           Json[]
   projectId        String
   createdAt        DateTime           @default(now())

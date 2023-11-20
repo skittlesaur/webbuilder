@@ -46,6 +46,8 @@ const SaveButton = () => {
         zoom,
       }
     )
+
+    setIsSaving(false)
   }, [isSaving, teamUrlString, projectUrlString, pageIdString, setIsSaving])
 
   // auto save changes every 5 minutes
@@ -68,7 +70,7 @@ const SaveButton = () => {
     <TooltipProvider disableHoverableContent delayDuration={300}>
       <Tooltip>
         <TooltipTrigger
-          className="w-7 h-7 flex items-center justify-center rounded hover:bg-secondary disabled:opacity-50 transition-colors ease-in-out duration-150"
+          className="flex items-center justify-center transition-colors duration-150 ease-in-out rounded w-7 h-7 hover:bg-secondary disabled:opacity-50"
           disabled={isSaving}
           onClick={() => {
             toast.promise(saveChanges(), {

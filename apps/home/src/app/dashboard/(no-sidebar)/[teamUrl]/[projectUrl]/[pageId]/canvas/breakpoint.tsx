@@ -45,7 +45,7 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
         top: breakpoint.position.y * zoom * 0.2 + pan.y / 2,
       }}>
       <div
-        className="bg-accent px-5 py-2 rounded flex items-center gap-4"
+        className="flex items-center gap-4 px-5 py-2 rounded bg-accent"
         style={{
           fontSize: `minmax(0.5rem, ${(5 - zoom) * 0.7}rem, 1.5rem))`,
           lineHeight: `minmax(0.6rem, ${(5 - zoom) * 0.7 + 0.5}rem, 1.5rem))`,

@@ -1,19 +1,18 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
+import Link from 'next/link'
 import BackChevronIcon from '@/icons/chevron-back-outline.svg'
 
 const BackButton = () => {
-  const router = useRouter()
+  const { teamUrl, projectUrl } = useParams()
+
   return (
-    <button
-      className="w-6 h-6 rounded-sm hover:bg-secondary flex items-center justify-center transition-colors ease-in-out duration-150"
-      type="button"
-      onClick={() => {
-        router.push('/projects')
-      }}>
+    <Link
+      className="flex items-center justify-center w-6 h-6 transition-colors duration-150 ease-in-out rounded-sm hover:bg-secondary"
+      href={`/dashboard/${teamUrl as string}/${projectUrl as string}`}>
       <BackChevronIcon className="w-4 h-4" />
-    </button>
+    </Link>
   )
 }
 
