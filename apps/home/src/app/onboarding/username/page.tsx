@@ -1,11 +1,11 @@
 'use client'
-import useUser from '@/resolvers/use-user'
-import OnboardingHeader from '../header'
 import { useEffect, useRef, useState } from 'react'
 import { Input } from 'ui'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { motion } from 'framer-motion'
+import OnboardingHeader from '../header'
+import useUser from '@/resolvers/use-user'
 import api from '@/lib/api'
 import getErrorMessage from '@/lib/get-error-message'
 
@@ -63,7 +63,7 @@ const OnboardingUsernamePage = () => {
   return (
     <>
       <OnboardingHeader title="Choose a username" />
-      <div className="flex flex-col items-center max-w-md mx-auto w-full flex-1 gap-2">
+      <div className="flex flex-col items-center flex-1 w-full max-w-md gap-2 mx-auto">
         {userLoading ? (
           <div className="w-full h-14 bg-accent animate-pulse rounded-xl" />
         ) : (
@@ -122,7 +122,7 @@ const OnboardingUsernamePage = () => {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={handleSubmit}>
-        {isLoading ? 'Verifying Your Account' : 'Verify'}
+        {isLoading ? 'Completing Signup...' : 'Complete'}
       </motion.button>
     </>
   )

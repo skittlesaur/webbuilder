@@ -20,17 +20,17 @@ const UserProfile = () => {
     avatar: 'https://baraa.app/profile.jpeg',
   }
 
-  const name = user.name || user.username
-  const twoCharsName = name.slice(0, 2).toUpperCase()
+  const name = user?.name || user?.username
+  const twoCharsName = name?.slice(0, 2).toUpperCase() || 'BU'
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="select-none rounded-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+          className="rounded-full select-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
           type="button">
           <Avatar>
-            <AvatarImage alt={`${name}'s avatar`} src={user.avatar} />
+            <AvatarImage alt={`${name}'s avatar`} src={user?.avatar} />
             <AvatarFallback>{twoCharsName}</AvatarFallback>
           </Avatar>
         </button>

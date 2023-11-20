@@ -79,6 +79,7 @@ const authSignupController = async (req: Request, res: Response) => {
       select: {
         id: true,
         email: true,
+        username: true,
         avatar: true,
         createdAt: true,
       }

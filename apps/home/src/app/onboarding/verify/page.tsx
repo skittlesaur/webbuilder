@@ -8,6 +8,7 @@ import OnboardingHeader from '../header'
 import useUser from '@/resolvers/use-user'
 import api from '@/lib/api'
 import getErrorMessage from '@/lib/get-error-message'
+import EnsureLoggedIn from '@/components/ensure-logged-in'
 
 const resendTimeouts = {
   0: 30,
@@ -189,7 +190,7 @@ const OnboardingVerifyPage = () => {
   return (
     <>
       <OnboardingHeader title="Enter the code we just sent you" />
-      <div className="flex flex-col items-center max-w-md mx-auto w-full flex-1 gap-6">
+      <div className="flex flex-col items-center flex-1 w-full max-w-md gap-6 mx-auto">
         <div className="flex items-center gap-3">
           {values.map((value, index) => (
             <Input
