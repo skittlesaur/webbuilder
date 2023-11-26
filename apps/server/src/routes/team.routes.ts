@@ -9,6 +9,8 @@ import getTeamProjectController from '../controllers/team/get-project.controller
 import updateTeamProjectPageController from '../controllers/team/update-project-page.controller'
 import authMiddleware from '../middlewares/auth.middleware'
 import authorizeTeamRole from '../middlewares/team-role.middleware'
+import getProjectPagesController from '../controllers/team/get-project-pages.controller'
+import createProjectPageController from '../controllers/team/create-project-page.controller'
 
 const teamRoutes = Router()
 teamRoutes.use(authMiddleware)
@@ -30,9 +32,19 @@ teamRoutes.get('/:teamUrl/project/:projectUrl',
   getTeamProjectController
 )
 
+teamRoutes.get('/:teamUrl/project/:projectUrl/pages',
+  authorizeTeamRole([TeamRole.OWNER, TeamRole.EDITOR, TeamRole.MEMBER]),
+  getProjectPagesController
+)
+
 teamRoutes.get('/:teamUrl/project/:projectUrl/page/:pageId',
   authorizeTeamRole([TeamRole.OWNER, TeamRole.EDITOR, TeamRole.MEMBER]),
   getTeamProjectPageController
+)
+
+teamRoutes.post('/:teamUrl/project/:projectUrl/page',
+  authorizeTeamRole([TeamRole.OWNER, TeamRole.EDITOR]),
+  createProjectPageController
 )
 
 teamRoutes.put('/:teamUrl/project/:projectUrl/page/:pageId',

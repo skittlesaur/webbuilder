@@ -1,11 +1,12 @@
-import { useCanvasStore } from '@/stores/canvas-store'
 import BackButton from './back-button'
 import ExportButton from './export'
 import ImportSite from './import-site'
 import SaveButton from './save'
+import useProject from '@/resolvers/use-project'
 
 const TopActions = () => {
-  const project = useCanvasStore((state) => state.project)
+  const { project } = useProject()
+
   return (
     <div className="relative z-50 flex items-center justify-between w-full h-12 px-5 border-b select-none bg-background border-border">
       <div className="flex items-center gap-2">

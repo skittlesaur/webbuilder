@@ -5,7 +5,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from 'ui'
-import FontsData from '../../../fonts-data.json'
+import FontsData from '@/lib/fonts-data.json'
 import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
 
@@ -48,7 +48,7 @@ const TypographyFont = ({ fontFamily }: { fontFamily?: string }) => {
           {[...customFonts, ...FontsData].map((font) => (
             <SelectItem key={font.family} value={font.family}>
               <p
-                className="truncate w-full"
+                className="w-full truncate"
                 style={{
                   fontFamily: `${font.family}, Inter, sans-serif`,
                 }}>

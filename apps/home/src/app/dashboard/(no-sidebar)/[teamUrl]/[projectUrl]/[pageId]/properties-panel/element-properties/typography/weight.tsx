@@ -5,7 +5,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from 'ui'
-import FontsData from '../../../fonts-data.json'
+import FontsData from '@/lib/fonts-data.json'
 import { useInteractionsStore } from '@/stores/interactions-store'
 import { useCanvasStore } from '@/stores/canvas-store'
 
@@ -74,7 +74,7 @@ const FontWeight = ({
           {weights.map((weight) => (
             <SelectItem key={weight} value={String(weight)}>
               <p
-                className="truncate w-full"
+                className="w-full truncate"
                 style={{
                   fontFamily,
                   fontWeight: weight,

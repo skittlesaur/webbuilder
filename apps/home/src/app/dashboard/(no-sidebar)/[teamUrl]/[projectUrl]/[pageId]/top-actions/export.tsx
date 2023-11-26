@@ -1,265 +1,167 @@
 'use client'
-
-import type { CSSProperties } from 'react'
+import {
+  Dialog,
+  DialogCancel,
+  DialogConfirm,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from 'ui'
+import { useState } from 'react'
+import cn from 'classnames'
 import { toast } from 'sonner'
-import { createId } from '@paralleldrive/cuid2'
-import FontsData from '../fonts-data.json'
-import { useCanvasStore } from '@/stores/canvas-store'
-import type { Breakpoint, Element } from '@/stores/canvas-store'
+import HtmlIcon from '@/icons/html.svg'
+import CssIcon from '@/icons/css.svg'
+import BootstrapIcon from '@/icons/bootstrap.svg'
+import exportHtmlCss from '@/lib/export/html-css'
 
-const defaultCss = `
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
-    
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: sans-serif;
+interface ExportEntry {
+  name: string
+  value: string
+  icon: React.ReactNode
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-size: inherit;
-  font-weight: inherit;
-}
+const HTML_EXPORTS = [
+  {
+    name: 'HTML5',
+    value: 'html',
+    icon: <HtmlIcon />,
+  },
+]
 
-ol,
-ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
+const CSS_EXPORTS = [
+  {
+    name: 'Vanilla CSS',
+    value: 'css',
+    icon: <CssIcon />,
+  },
+  {
+    name: 'Bootstrap',
+    value: 'bootstrap',
+    icon: <BootstrapIcon />,
+  },
+]
 
-img,
-svg,
-video,
-canvas,
-audio,
-iframe,
-embed,
-object {
-  display: block;
-  vertical-align: middle;
+const exportFunctions = {
+  'html-css': exportHtmlCss,
 }
-
-*,
-::before,
-::after {
-  border-width: 0;
-  border-style: solid;
-  border-color: transparent;
-}
-
-`
 
 const ExportButton = () => {
-  const elements = useCanvasStore((s) => s.elements)
-  const breakpoints = useCanvasStore((s) => s.breakpoints)
-
-  const formatProperty = (property: string) => {
-    return property.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`)
-  }
-
-  const getElementCss = (style: CSSProperties) => {
-    return Object.entries(style)
-      .filter(([, value]) => value)
-      .map(([property, value]) => `\t${formatProperty(property)}: ${value}`)
-      .join('; \n')
-  }
+  const [open, setOpen] = useState(false)
+  const [selectedExport, setSelectedExport] = useState<{
+    html: ExportEntry
+    css: ExportEntry
+  }>({
+    html: HTML_EXPORTS[0],
+    css: CSS_EXPORTS[0],
+  })
 
   const handleExport = () => {
-    const html = document.createElement('html')
-    const head = document.createElement('head')
-    const body = document.createElement('body')
+    const exportFunctionKey = `${selectedExport.html.value}-${selectedExport.css.value}`
+    const exportFunction = exportFunctions[exportFunctionKey]
 
-    let css = defaultCss
-    const fontFamilies = new Set<string>()
-
-    // viewport -> {className: CSSProperties}
-    const mediaQueries = {}
-
-    const defaultMediaQuery = breakpoints.find(
-      (bp) => bp.isDefault
-    ) as Breakpoint
-    const smallestMediaQuery = breakpoints.reduce((acc, bp) => {
-      if (bp.width < acc.width) return bp
-      return acc
-    })
-    const isDefaultSmallest = smallestMediaQuery.id === defaultMediaQuery.id
-
-    const deepGenerateElement = (element: Element | string) => {
-      if (typeof element === 'string') {
-        return document.createTextNode(element)
-      }
-
-      const { children, style, id, attributes } = element
-
-      const el = document.createElement(element.type)
-
-      const elementClassName = `baraa-${id}`
-
-      const propertiesInBreakpoints: string[] = []
-
-      Object.keys((attributes || {}) as Record<string, unknown>).forEach(
-        (attribute) => {
-          el.setAttribute(attribute, String(attributes?.[attribute]))
-        }
-      )
-
-      Object.keys(
-        (element.mediaQueries || {}) as Record<string, CSSProperties>
-      ).forEach((mediaQuery) => {
-        if (!mediaQueries[mediaQuery]) {
-          mediaQueries[mediaQuery] = {}
-        }
-
-        propertiesInBreakpoints.push(
-          ...Object.keys(
-            (element.mediaQueries?.[mediaQuery] || {}) as Record<
-              string,
-              unknown
-            >
-          )
-        )
-
-        mediaQueries[mediaQuery] = {
-          ...mediaQueries[mediaQuery],
-          [elementClassName]: element.mediaQueries?.[mediaQuery],
-        }
-      })
-
-      if (!isDefaultSmallest) {
-        mediaQueries[defaultMediaQuery.width] = {
-          ...mediaQueries[defaultMediaQuery.width],
-          [elementClassName]: propertiesInBreakpoints.reduce(
-            (acc, property) => {
-              if (element.mediaQueries?.[defaultMediaQuery.width]?.[property]) {
-                return {
-                  ...acc,
-                  [property]:
-                    element.mediaQueries?.[defaultMediaQuery.width]?.[property],
-                }
-              }
-
-              if (element.style?.[property]) {
-                return {
-                  ...acc,
-                  [property]: element.style?.[property],
-                }
-              }
-
-              return acc
-            },
-            {}
-          ),
-        }
-      }
-
-      const elementCss = getElementCss(style as CSSProperties)
-
-      if (elementCss) {
-        css += `.${elementClassName} { \n${elementCss}; \n}\n\n`
-      }
-
-      if (style.fontFamily) {
-        fontFamilies.add(String(style.fontFamily).split(',')[0])
-      }
-
-      el.className = elementClassName
-
-      Object.entries(
-        (element.attributes as Record<string, unknown>) || {}
-      ).forEach(([key, value]: [string, unknown]) => {
-        el.setAttribute(key, String(value))
-      })
-
-      if (children.length) {
-        children.forEach((child: Element | string) => {
-          el.appendChild(deepGenerateElement(child))
-        })
-      }
-
-      return el
+    if (exportFunction) {
+      exportFunction()
+      setOpen(false)
+      return
     }
 
-    elements.forEach((element) => {
-      body.appendChild(deepGenerateElement(element))
-    })
-
-    const propertiesInBreakpoints: string[] = []
-
-    Object.entries(mediaQueries).forEach(([mediaQuery, styles]) => {
-      const styleString = Object.entries(
-        styles as Record<string, CSSProperties>
-      )
-        .map(([className, style]) => {
-          const properties = Object.keys(style as CSSProperties)
-          propertiesInBreakpoints.push(...properties)
-
-          return `.${className} { \n${getElementCss(
-            style as CSSProperties
-          )}; \n}`
-        })
-        .join('\n\n')
-
-      css += `@media (min-width: ${mediaQuery}px) { \n${styleString} \n}\n\n`
-    })
-
-    const fileName = `baraa-${createId()}`
-
-    head.innerHTML = `<meta charset="UTF-8" />`
-    head.innerHTML = `<meta name="viewport" content="width=device-width, initial-scale=1.0" />`
-    head.innerHTML = `<link rel="stylesheet" href="./${fileName}.css" />`
-    html.appendChild(head)
-
-    html.appendChild(body)
-
-    const htmlFile = new Blob([html.outerHTML], { type: 'text/html' })
-
-    const fontImports = FontsData.filter((font) =>
-      Array.from(fontFamilies).includes(font.family as string)
-    )
-      .map((font) => `@import url('${font.url}');`)
-      .join('\n')
-
-    const cssWithImports = `${fontImports}${css}`
-
-    const cssFile = new Blob([cssWithImports], { type: 'text/css' })
-
-    const htmlFileUrl = URL.createObjectURL(htmlFile)
-    const cssFileUrl = URL.createObjectURL(cssFile)
-
-    const link = document.createElement('a')
-    link.href = htmlFileUrl
-    link.download = `${fileName}.html`
-    link.click()
-
-    const cssLink = document.createElement('a')
-    cssLink.href = cssFileUrl
-    cssLink.download = `${fileName}.css`
-    cssLink.click()
-
-    URL.revokeObjectURL(htmlFileUrl)
-    URL.revokeObjectURL(cssFileUrl)
-
-    link.remove()
-    cssLink.remove()
-
-    html.remove()
-    toast.success('Exported successfully')
+    toast.error('Not implemented yet')
   }
 
   return (
-    <button
-      className="px-2.5 py-1.5 h-7 text-medium !bg-primary text-text rounded text-xs hover:!bg-primary-800 transition-colors ease-in-out duration-150"
-      type="button"
-      onClick={handleExport}>
-      Export
-    </button>
+    <Dialog open={open}>
+      <DialogTrigger asChild>
+        <button
+          className="px-2.5 py-1.5 h-7 text-medium !bg-primary text-text rounded text-xs hover:!bg-primary-800 transition-colors ease-in-out duration-150"
+          type="button"
+          onClick={() => {
+            setOpen(true)
+          }}>
+          Export
+        </button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Export website</DialogTitle>
+          <DialogDescription>
+            Pick a framework to export your website to
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-4">
+          <p className="text-xs font-medium text-neutral-200">HTML</p>
+          <div className="flex gap-3">
+            {HTML_EXPORTS.map((entry) => (
+              <button
+                className="flex flex-col items-center gap-2 group"
+                key={entry.value}
+                type="button"
+                onClick={() => {
+                  setSelectedExport((p) => ({
+                    ...p,
+                    html: entry,
+                  }))
+                }}>
+                <div
+                  className={cn(
+                    'w-20 h-20 p-3 transition-colors duration-150 ease-in-out border rounded-md flex items-center justify-between',
+                    {
+                      'border-primary bg-accent/50':
+                        selectedExport.html.value === entry.value,
+                      'border-border group-hover:bg-accent':
+                        selectedExport.html.value !== entry.value,
+                    }
+                  )}>
+                  {entry.icon}
+                </div>
+                <p className="text-sm">{entry.name}</p>
+              </button>
+            ))}
+          </div>
+          <p className="text-xs font-medium text-neutral-200">CSS</p>
+          <div className="flex gap-3">
+            {CSS_EXPORTS.map((entry) => (
+              <button
+                className="flex flex-col items-center gap-2 group"
+                key={entry.value}
+                type="button"
+                onClick={() => {
+                  setSelectedExport((p) => ({
+                    ...p,
+                    css: entry,
+                  }))
+                }}>
+                <div
+                  className={cn(
+                    'w-20 h-20 p-3 transition-colors duration-150 ease-in-out border rounded-md flex items-center justify-between',
+                    {
+                      'border-primary bg-accent/50':
+                        selectedExport.css.value === entry.value,
+                      'border-border group-hover:bg-accent':
+                        selectedExport.css.value !== entry.value,
+                    }
+                  )}>
+                  {entry.icon}
+                </div>
+                <p className="text-sm">{entry.name}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+        <DialogFooter>
+          <DialogCancel
+            onClick={() => {
+              setOpen(false)
+            }}>
+            Cancel
+          </DialogCancel>
+          <DialogConfirm onClick={handleExport}>Export</DialogConfirm>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }
 
