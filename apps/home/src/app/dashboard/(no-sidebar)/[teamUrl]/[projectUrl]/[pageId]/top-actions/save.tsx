@@ -20,22 +20,8 @@ const SaveButton = () => {
   const saveChanges = useCallback(async () => {
     if (isSaving) return
 
-    const {
-      elements,
-      bodyStyles,
-      customFonts,
-      assets,
-      components,
-      breakpoints,
-      pan,
-      zoom,
-    } = useCanvasStore.getState()
-
-    setIsSaving(true)
-
-    await api.put(
-      `/team/${teamUrlString}/project/${projectUrlString}/page/${pageIdString}`,
-      {
+    try {
+      const {
         elements,
         bodyStyles,
         customFonts,
@@ -44,8 +30,26 @@ const SaveButton = () => {
         breakpoints,
         pan,
         zoom,
-      }
-    )
+      } = useCanvasStore.getState()
+
+      setIsSaving(true)
+
+      await api.put(
+        `/team/${teamUrlString}/project/${projectUrlString}/page/${pageIdString}`,
+        {
+          elements,
+          bodyStyles,
+          customFonts,
+          assets,
+          components,
+          breakpoints,
+          pan,
+          zoom,
+        }
+      )
+    } finally {
+      setIsSaving(false)
+    }
   }, [isSaving, teamUrlString, projectUrlString, pageIdString, setIsSaving])
 
   // auto save changes every 5 minutes
@@ -57,7 +61,6 @@ const SaveButton = () => {
           success: 'Changes saved successfully',
           error: 'Failed to save changes, please try again later',
         })
-        setIsSaving(false)
       },
       1000 * 60 * 5
     )
@@ -96,7 +99,6 @@ const SaveButton = () => {
               success: 'Changes saved successfully',
               error: 'Failed to save changes, please try again later',
             })
-            setIsSaving(false)
           }}>
           <ImportIcon className="w-4 h-4" />
         </TooltipTrigger>
