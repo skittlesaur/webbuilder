@@ -17,15 +17,15 @@ const ComponentsDisplay = () => {
 
   return (
     <>
-      <h1 className="font-medium text-sm">Components</h1>
+      <h1 className="text-sm font-medium">Components</h1>
       <div className="grid grid-cols-[repeat(var(--grid-cols-count),1fr)] gap-4 [&_.icon-wrapper]:bg-transparent [&_.icon-wrapper]:p-0">
         {components.map((component) => (
           <ContextMenu key={component.id}>
             <ContextMenuTrigger>
               <Element
                 Icon={
-                  // @todo: add component icon
-                  <div className="relative overflow-hidden w-full h-full rounded-md bg-white" />
+                  // TODO add component icon
+                  <div className="relative w-full h-full overflow-hidden bg-white rounded-md" />
                 }
                 attributes={component.element.attributes}
                 element={component.element.type}

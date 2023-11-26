@@ -36,7 +36,7 @@ const DashboardTeamProjects = () => {
               }`}
               key={project.id}>
               <div className="flex items-center justify-center w-full transition-colors duration-150 ease-in-out border rounded-lg aspect-video bg-accent border-border group-hover:border-primary">
-                @todo: screenshot
+                TODO: screenshot
               </div>
               <div className="flex flex-col gap-1">
                 <p className="text-white">{project.name}</p>
