@@ -46,8 +46,6 @@ const SaveButton = () => {
         zoom,
       }
     )
-
-    setIsSaving(false)
   }, [isSaving, teamUrlString, projectUrlString, pageIdString, setIsSaving])
 
   // auto save changes every 5 minutes
@@ -59,6 +57,7 @@ const SaveButton = () => {
           success: 'Changes saved successfully',
           error: 'Failed to save changes, please try again later',
         })
+        setIsSaving(false)
       },
       1000 * 60 * 5
     )
@@ -97,6 +96,7 @@ const SaveButton = () => {
               success: 'Changes saved successfully',
               error: 'Failed to save changes, please try again later',
             })
+            setIsSaving(false)
           }}>
           <ImportIcon className="w-4 h-4" />
         </TooltipTrigger>
