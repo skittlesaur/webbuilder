@@ -20,7 +20,14 @@ const HoverIndicator = () => {
 
     if (!containerRect) return
 
-    const relativeY = rect.y - containerRect.y
+    // scroll container
+    const scrollContainer = document
+      .querySelector('#layers-container')
+      ?.querySelector('[data-scroll]')
+
+    const dataScroll = Number(scrollContainer?.getAttribute('data-scroll') ?? 0)
+
+    const relativeY = rect.y - containerRect.y + dataScroll
 
     setYOffset(relativeY)
   }, [hoveredElementId])

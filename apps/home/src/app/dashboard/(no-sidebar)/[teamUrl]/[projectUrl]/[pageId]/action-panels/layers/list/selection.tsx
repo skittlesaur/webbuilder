@@ -46,9 +46,16 @@ const SelectionIndicator = () => {
       .getElementById('layers-container')
       ?.getBoundingClientRect()
 
+    // scroll container
+    const scrollContainer = document.querySelector(
+      '#layers-container'
+    )?.querySelector('[data-scroll]')
+    
+    const dataScroll = Number(scrollContainer?.getAttribute('data-scroll') ?? 0)
+
     if (!rect || !containerRect) return
 
-    const relativeY = rect.y - containerRect.y
+    const relativeY = rect.y - containerRect.y + dataScroll
 
     setYOffset(relativeY)
     setHeight(rect.height)

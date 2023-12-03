@@ -15,6 +15,7 @@ import ElementPropertiesDisplay from './display'
 import { useInteractionsStore } from '@/stores/interactions-store'
 import { findElementByIdArr } from '@/lib/find-element-by-id'
 import { useCanvasStore } from '@/stores/canvas-store'
+import ScrollableWrapper from '@/components/scrollable-wrapper'
 
 enum PropertyPanel {
   STYLE,
@@ -68,7 +69,7 @@ const ElementProperties = () => {
 
   return (
     <Fragment key={`${selectedElementId}-${selectedMediaQuery}`}>
-      <div className="flex items-center justify-between w-full px-2 border-b border-border">
+      <div className="relative z-[1] bg-background flex items-center justify-between w-full px-2 border-b border-border">
         <div className="flex items-center">
           {panels.map((p) => (
             <button
@@ -85,76 +86,80 @@ const ElementProperties = () => {
         </div>
         <MakeComponentButton />
       </div>
-      <ElementPropertiesParent />
-      {activePanel === PropertyPanel.STYLE && (
-        <>
-          <ElementPropertiesPosition
-            bottom={getStyleAttribute('bottom')}
-            left={getStyleAttribute('left')}
-            position={getStyleAttribute('position') as Position}
-            right={getStyleAttribute('right')}
-            top={getStyleAttribute('top')}
-          />
-          <ElementPropertiesDisplay
-            display={getStyleAttribute('display')}
-            flexDirection={getStyleAttribute('flexDirection')}
-            flexWrap={getStyleAttribute('flexWrap')}
-            gap={getStyleAttribute('gap')}
-            alignItems={getStyleAttribute('alignItems')}
-            justifyContent={getStyleAttribute('justifyContent')}
-            visibility={getStyleAttribute('visibility')}
-          />
-          <ElementPropertiesSize
-            height={getStyleAttribute('height')}
-            maxHeight={getStyleAttribute('maxHeight')}
-            maxWidth={getStyleAttribute('maxWidth')}
-            minHeight={getStyleAttribute('minHeight')}
-            minWidth={getStyleAttribute('minWidth')}
-            width={getStyleAttribute('width')}
-          />
-          <ElementPropertiesPaddingAndMargin
-            marginBottom={getStyleAttribute('marginBottom')}
-            marginLeft={getStyleAttribute('marginLeft')}
-            marginRight={getStyleAttribute('marginRight')}
-            marginTop={getStyleAttribute('marginTop')}
-            paddingBottom={getStyleAttribute('paddingBottom')}
-            paddingLeft={getStyleAttribute('paddingLeft')}
-            paddingRight={getStyleAttribute('paddingRight')}
-            paddingTop={getStyleAttribute('paddingTop')}
-          />
-          <ElementPropertiesFill background={getStyleAttribute('background')} />
-          <ElementPropertiesTypography
-            fontFamily={getStyleAttribute('fontFamily')}
-            fontSize={getStyleAttribute('fontSize')}
-            fontWeight={getStyleAttribute('fontWeight')}
-            letterSpacing={getStyleAttribute('letterSpacing')}
-            lineHeight={getStyleAttribute('lineHeight')}
-            textAlign={getStyleAttribute('textAlign')}
-          />
-        </>
-      )}
-      {activePanel === PropertyPanel.ATTRIBUTES && (
-        <>
-          <LinkAttributes
-            href={activeElement.attributes?.href as string | undefined}
-            isAnchor={activeElement.type === 'a'}
-            target={activeElement.attributes?.target as string | undefined}
-          />
-          <ImageAttributes
-            alt={activeElement.attributes?.alt as string | undefined}
-            isImage={activeElement.type === 'img'}
-            src={activeElement.attributes?.src as string | undefined}
-          />
-          <AccessibilityAttributes
-            ariaLabel={
-              activeElement.attributes?.['aria-label'] as string | undefined
-            }
-            ariaRole={
-              activeElement.attributes?.['aria-role'] as string | undefined
-            }
-          />
-        </>
-      )}
+      <ScrollableWrapper>
+        <ElementPropertiesParent />
+        {activePanel === PropertyPanel.STYLE && (
+          <>
+            <ElementPropertiesPosition
+              bottom={getStyleAttribute('bottom')}
+              left={getStyleAttribute('left')}
+              position={getStyleAttribute('position') as Position}
+              right={getStyleAttribute('right')}
+              top={getStyleAttribute('top')}
+            />
+            <ElementPropertiesDisplay
+              alignItems={getStyleAttribute('alignItems')}
+              display={getStyleAttribute('display')}
+              flexDirection={getStyleAttribute('flexDirection')}
+              flexWrap={getStyleAttribute('flexWrap')}
+              gap={getStyleAttribute('gap')}
+              justifyContent={getStyleAttribute('justifyContent')}
+              visibility={getStyleAttribute('visibility')}
+            />
+            <ElementPropertiesSize
+              height={getStyleAttribute('height')}
+              maxHeight={getStyleAttribute('maxHeight')}
+              maxWidth={getStyleAttribute('maxWidth')}
+              minHeight={getStyleAttribute('minHeight')}
+              minWidth={getStyleAttribute('minWidth')}
+              width={getStyleAttribute('width')}
+            />
+            <ElementPropertiesPaddingAndMargin
+              marginBottom={getStyleAttribute('marginBottom')}
+              marginLeft={getStyleAttribute('marginLeft')}
+              marginRight={getStyleAttribute('marginRight')}
+              marginTop={getStyleAttribute('marginTop')}
+              paddingBottom={getStyleAttribute('paddingBottom')}
+              paddingLeft={getStyleAttribute('paddingLeft')}
+              paddingRight={getStyleAttribute('paddingRight')}
+              paddingTop={getStyleAttribute('paddingTop')}
+            />
+            <ElementPropertiesFill
+              background={getStyleAttribute('background')}
+            />
+            <ElementPropertiesTypography
+              fontFamily={getStyleAttribute('fontFamily')}
+              fontSize={getStyleAttribute('fontSize')}
+              fontWeight={getStyleAttribute('fontWeight')}
+              letterSpacing={getStyleAttribute('letterSpacing')}
+              lineHeight={getStyleAttribute('lineHeight')}
+              textAlign={getStyleAttribute('textAlign')}
+            />
+          </>
+        )}
+        {activePanel === PropertyPanel.ATTRIBUTES && (
+          <>
+            <LinkAttributes
+              href={activeElement.attributes?.href as string | undefined}
+              isAnchor={activeElement.type === 'a'}
+              target={activeElement.attributes?.target as string | undefined}
+            />
+            <ImageAttributes
+              alt={activeElement.attributes?.alt as string | undefined}
+              isImage={activeElement.type === 'img'}
+              src={activeElement.attributes?.src as string | undefined}
+            />
+            <AccessibilityAttributes
+              ariaLabel={
+                activeElement.attributes?.['aria-label'] as string | undefined
+              }
+              ariaRole={
+                activeElement.attributes?.['aria-role'] as string | undefined
+              }
+            />
+          </>
+        )}
+      </ScrollableWrapper>
     </Fragment>
   )
 }

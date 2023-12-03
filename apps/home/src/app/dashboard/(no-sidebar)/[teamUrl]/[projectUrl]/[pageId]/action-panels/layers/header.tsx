@@ -8,7 +8,7 @@ const LayersPanelHeader = () => {
     <div className="flex items-center justify-between gap-2">
       <p className="font-medium">Layers</p>
       <button
-        className="w-6 h-6 hover:bg-secondary/50 rounded flex items-center justify-center transition-colors ease-in-out duration-150 -mr-1"
+        className="flex items-center justify-center w-6 h-6 -mr-1 transition-colors duration-150 ease-in-out rounded hover:bg-secondary/50"
         type="button"
         onClick={() => {
           setActivePanel(null)
