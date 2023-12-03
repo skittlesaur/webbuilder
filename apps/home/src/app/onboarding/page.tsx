@@ -65,8 +65,8 @@ const OnboardingPage = () => {
   return (
     <>
       <OnboardingHeader title="Let's make your account" />
-      <div className="flex flex-col items-center max-w-md mx-auto w-full flex-1 gap-6">
-        <div className="flex flex-col gap-2 w-full">
+      <div className="flex flex-col items-center flex-1 w-full max-w-md gap-6 mx-auto">
+        <div className="flex flex-col w-full gap-2">
           <label htmlFor="email">Email</label>
           <Input
             className="!text-lg !bg-accent/40 !h-14 !rounded-xl"
@@ -76,13 +76,13 @@ const OnboardingPage = () => {
             type="email"
           />
         </div>
-        <div className="relative flex flex-col gap-2 w-full">
+        <div className="relative flex flex-col w-full gap-2">
           <label htmlFor="password">Password</label>
           <div className="relative w-full h-full">
             <Input
               className="!text-lg !bg-accent/40 !h-14 !rounded-xl"
               id="password"
-              placeholder="wubba@lubba#dub1dub2"
+              placeholder="Password"
               type={isPasswordHidden ? 'password' : 'text'}
               value={password}
               onBlur={() => {
@@ -94,7 +94,7 @@ const OnboardingPage = () => {
               onFocus={() => setIsPasswordFocused(true)}
             />
             <button
-              className="absolute top-1/2 -translate-y-1/2 right-4 hover:bg-secondary p-2 rounded"
+              className="absolute p-2 -translate-y-1/2 rounded top-1/2 right-4 hover:bg-secondary"
               type="button"
               onClick={() => setIsPasswordHidden((prev) => !prev)}>
               {isPasswordHidden ? <EyeOpenIcon /> : <EyeClosedIcon />}
@@ -104,12 +104,12 @@ const OnboardingPage = () => {
             {isPasswordFocused ? (
               <motion.div
                 animate={{ opacity: 1, y: 20, height: 'auto' }}
-                className="absolute top-full text-xs text-neutral-400 overflow-hidden flex flex-col gap-1"
+                className="absolute flex flex-col gap-1 overflow-hidden text-xs top-full text-neutral-400"
                 exit={{ opacity: 0, y: 20, height: 0 }}
                 initial={{ opacity: 0, y: 20, height: 0 }}
                 key="focused"
                 transition={{ duration: 0.2, ease: 'easeInOut' }}>
-                <div className="flex gap-2 items-center">
+                <div className="flex items-center gap-2">
                   <CheckboxAnimated
                     checked={password.length >= 8}
                     className="w-4 h-4"
@@ -121,7 +121,7 @@ const OnboardingPage = () => {
                     </span>
                   </p>
                 </div>
-                <div className="flex gap-2 items-center">
+                <div className="flex items-center gap-2">
                   <CheckboxAnimated
                     checked={/[A-Z]/.test(password)}
                     className="w-4 h-4"
@@ -133,7 +133,7 @@ const OnboardingPage = () => {
                     </span>
                   </p>
                 </div>
-                <div className="flex gap-2 items-center">
+                <div className="flex items-center gap-2">
                   <CheckboxAnimated
                     checked={/[a-z]/.test(password)}
                     className="w-4 h-4"
@@ -145,7 +145,7 @@ const OnboardingPage = () => {
                     </span>
                   </p>
                 </div>
-                <div className="flex gap-2 items-center">
+                <div className="flex items-center gap-2">
                   <CheckboxAnimated
                     checked={/[0-9]/.test(password)}
                     className="w-4 h-4"
@@ -157,7 +157,7 @@ const OnboardingPage = () => {
                     </span>
                   </p>
                 </div>
-                <div className="flex gap-2 items-center">
+                <div className="flex items-center gap-2">
                   <CheckboxAnimated
                     checked={/[^A-Za-z0-9]/.test(password)}
                     className="w-4 h-4"
@@ -174,7 +174,7 @@ const OnboardingPage = () => {
           </AnimatePresence>
         </div>
       </div>
-      <div className="flex flex-col items-center w-full gap-3">
+      <div className="flex flex-col items-center w-full gap-3 translate-y-4">
         <motion.button
           className="px-8 py-4 rounded-xl !bg-white w-full !text-black font-medium tracking-wide uppercase max-w-md mx-auto relative disabled:!scale-100 disabled:opacity-70"
           disabled={isLoading}
@@ -186,7 +186,7 @@ const OnboardingPage = () => {
           {isLoading ? 'Creating Your Account' : 'Continue'}
         </motion.button>
         <Link
-          className="text-neutral-400 text-sm hover:text-white transition-colors duration-200"
+          className="text-sm transition-colors duration-200 text-neutral-400 hover:text-white"
           href="/login">
           Login instead
         </Link>

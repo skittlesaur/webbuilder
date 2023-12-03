@@ -3,6 +3,7 @@ import { memo, useEffect, useState } from 'react'
 import DraggableIndicator from '../draggable-indicator'
 import GradientEditor from './gradient-editor'
 import TypographyElement from './typography-element'
+import UnstyledDisplay from './unstyled-display'
 import type { Element as ElementType } from '@/stores/canvas-store'
 import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
@@ -19,7 +20,7 @@ const Element = ({
 }) => {
   const draggedElement = useCanvasStore((s) => s.draggedElement)
   const [isHovering, setIsHovering] = useState(false)
-  // const [isUnstyled, setIsUnstyled] = useState(false)
+  const [isUnstyled, setIsUnstyled] = useState(false)
 
   const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
   const hoveredElementId = useInteractionsStore((s) => s.hoveredElementId)
@@ -115,9 +116,9 @@ const Element = ({
     const hasChildren = element.children.length > 0
 
     if (!hasHeight && !hasWidth && !hasChildren) {
-      // setIsUnstyled(true)
+      setIsUnstyled(true)
     } else {
-      // setIsUnstyled(false)
+      setIsUnstyled(false)
     }
   }, [element])
 
@@ -197,7 +198,9 @@ const Element = ({
       {gradientEditor !== null && selectedElementId === element.id && (
         <GradientEditor />
       )}
-      {/* {isUnstyled ? <UnstyledDisplay /> : null} */}
+      {isUnstyled && selectedElementId !== element.id ? (
+        <UnstyledDisplay />
+      ) : null}
       {isTypographyElement(element) ? (
         <TypographyElement element={element} />
       ) : (

@@ -164,7 +164,7 @@ const Element = ({
               scale: dragPosition.snap ? zoom : 1,
               opacity: 0.6,
             }}
-            className="w-24 h-24 absolute"
+            className="absolute w-24 h-24"
             exit={{
               scale: 0.5,
               opacity: 0,

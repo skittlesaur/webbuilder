@@ -97,9 +97,9 @@ model UserPageSettings {
   pageId    String
   user      User?    @relation(fields: [userId], references: [id])
   userId    String?
-  panX      Float    @default(0)
-  panY      Float    @default(0)
-  zoom      Float    @default(1)
+  panX      Float    @default(450)
+  panY      Float    @default(130)
+  zoom      Float    @default(1.7)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

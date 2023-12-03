@@ -64,7 +64,7 @@ const LoginPAge = () => {
               <Input
                 className="!text-lg !bg-accent/40 !h-14 !rounded-xl"
                 id="password"
-                placeholder="wubba@lubba#dub1dub2"
+                placeholder="Password"
                 type={isPasswordHidden ? 'password' : 'text'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

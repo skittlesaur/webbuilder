@@ -21,18 +21,6 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
     return 'Desktop'
   }, [breakpoint.width])
 
-  const hasRelativeParent = useMemo(() => {
-    if (!elements.length) return false
-    return elements.some(
-      (el) =>
-        el.style === undefined ||
-        el.style.position === 'static' ||
-        el.style.position === 'relative' ||
-        el.style.position === 'sticky' ||
-        el.style.position === undefined
-    )
-  }, [elements])
-
   return (
     <div
       className="absolute flex flex-col gap-5 origin-top"
@@ -64,7 +52,6 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
           display: 'flex',
           flexDirection: 'column',
           width: '100%',
-          height: hasRelativeParent ? undefined : '20rem',
           backgroundColor: 'white',
           color: 'black',
           fontSize: '1rem',
@@ -72,6 +59,7 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
           maxWidth: '100%',
           minWidth: '100%',
           overflowX: 'hidden',
+          minHeight: breakpoint.minHeight,
         }}>
         {elements.map((element) => (
           <Element
@@ -85,7 +73,7 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
             element={{
               id: 'root',
               type: 'div',
-              style: { height: '20rem', width: '100%' },
+              style: { height: breakpoint.minHeight, width: '100%' },
               children: [],
             }}
             mediaQuery={breakpoint.isDefault ? null : breakpoint.width}

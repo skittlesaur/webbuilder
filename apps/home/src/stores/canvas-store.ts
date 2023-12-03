@@ -5,6 +5,7 @@ import {  } from 'zustand/middleware'
 export interface Breakpoint {
   id: string
   width: number
+  minHeight: number
   position: {
     x: number
     y: number
@@ -101,11 +102,11 @@ interface CanvasStore {
 
 export const useCanvasStore = create<CanvasStore>(
   (set, get) => ({
-    zoom: 1,
+    zoom: 1.7,
     setZoom: (zoom) => {
       set({ zoom })
     },
-    pan: { x: 0, y: 0 },
+    pan: { x: 450, y: 130 },
     setPan: ({ x, y }) => {
       set({ pan: { x, y } })
     },
@@ -113,6 +114,7 @@ export const useCanvasStore = create<CanvasStore>(
       {
         id: 'desktop',
         width: 1440,
+        minHeight: 1085,
         position: {
           x: 0,
           y: 0
@@ -122,6 +124,7 @@ export const useCanvasStore = create<CanvasStore>(
       {
         id: 'tablet',
         width: 768,
+        minHeight: 1024,
         position: {
           x: 1150,
           y: 0
@@ -130,6 +133,7 @@ export const useCanvasStore = create<CanvasStore>(
       {
         id: 'mobile',
         width: 375,
+        minHeight: 844,
         position: {
           x: 1770,
           y: 0
