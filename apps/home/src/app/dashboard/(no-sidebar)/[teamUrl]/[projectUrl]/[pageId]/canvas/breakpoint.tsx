@@ -57,6 +57,7 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
       </div>
       <div
         data-breakpoint="true"
+        data-default-breakpoint={breakpoint.isDefault ? 'true' : undefined}
         ref={ref}
         style={{
           position: 'relative',

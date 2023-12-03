@@ -39,18 +39,18 @@ const ElementPropertiesPosition = ({
   if (!selectedElementId) return null
 
   return (
-    <div className="p-4 border-b border-border flex flex-col gap-4">
+    <div className="flex flex-col gap-4 p-4 border-b border-border">
       <p className="font-medium">Position</p>
       <div className="flex flex-col gap-3">
         {['absolute', 'fixed'].includes(position) && (
           <div className="grid grid-cols-3 gap-1">
-            <div className="col-span-3 flex items-center justify-center">
+            <div className="flex items-center justify-center col-span-3">
               <InputWithUnit initial={top} type="top" />
             </div>
             <InputWithUnit initial={left} type="left" />
             <div />
             <InputWithUnit initial={right} type="right" />
-            <div className="col-span-3 flex items-center justify-center">
+            <div className="flex items-center justify-center col-span-3">
               <InputWithUnit initial={bottom} type="bottom" />
             </div>
           </div>

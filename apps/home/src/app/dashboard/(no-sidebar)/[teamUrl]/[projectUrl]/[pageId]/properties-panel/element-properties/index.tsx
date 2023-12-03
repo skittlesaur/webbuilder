@@ -6,14 +6,15 @@ import ElementPropertiesSize from './size'
 import ElementPropertiesFill from './fill'
 import ElementPropertiesTypography from './typography'
 import ElementPropertiesPaddingAndMargin from './padding-and-margin'
-import { findElementByIdArr } from '@/lib/find-element-by-id'
-import { useCanvasStore } from '@/stores/canvas-store'
-import { useInteractionsStore } from '@/stores/interactions-store'
 import LinkAttributes from './link'
 import ElementPropertiesParent from './parent'
 import ImageAttributes from './image'
 import AccessibilityAttributes from './accessibility'
 import MakeComponentButton from './make-component'
+import ElementPropertiesDisplay from './display'
+import { useInteractionsStore } from '@/stores/interactions-store'
+import { findElementByIdArr } from '@/lib/find-element-by-id'
+import { useCanvasStore } from '@/stores/canvas-store'
 
 enum PropertyPanel {
   STYLE,
@@ -67,7 +68,7 @@ const ElementProperties = () => {
 
   return (
     <Fragment key={`${selectedElementId}-${selectedMediaQuery}`}>
-      <div className="flex items-center justify-between border-b border-border px-2 w-full">
+      <div className="flex items-center justify-between w-full px-2 border-b border-border">
         <div className="flex items-center">
           {panels.map((p) => (
             <button
@@ -93,6 +94,15 @@ const ElementProperties = () => {
             position={getStyleAttribute('position') as Position}
             right={getStyleAttribute('right')}
             top={getStyleAttribute('top')}
+          />
+          <ElementPropertiesDisplay
+            display={getStyleAttribute('display')}
+            flexDirection={getStyleAttribute('flexDirection')}
+            flexWrap={getStyleAttribute('flexWrap')}
+            gap={getStyleAttribute('gap')}
+            alignItems={getStyleAttribute('alignItems')}
+            justifyContent={getStyleAttribute('justifyContent')}
+            visibility={getStyleAttribute('visibility')}
           />
           <ElementPropertiesSize
             height={getStyleAttribute('height')}
@@ -126,14 +136,14 @@ const ElementProperties = () => {
       {activePanel === PropertyPanel.ATTRIBUTES && (
         <>
           <LinkAttributes
-            isAnchor={activeElement.type === 'a'}
             href={activeElement.attributes?.href as string | undefined}
+            isAnchor={activeElement.type === 'a'}
             target={activeElement.attributes?.target as string | undefined}
           />
           <ImageAttributes
+            alt={activeElement.attributes?.alt as string | undefined}
             isImage={activeElement.type === 'img'}
             src={activeElement.attributes?.src as string | undefined}
-            alt={activeElement.attributes?.alt as string | undefined}
           />
           <AccessibilityAttributes
             ariaLabel={
