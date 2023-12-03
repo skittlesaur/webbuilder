@@ -11,8 +11,8 @@ const SidebarCreateTeamButton = () => {
       <Tooltip>
         <TooltipTrigger asChild>
           <Link
-            className="w-6 h-6 hover:bg-secondary/50 rounded flex items-center justify-center transition-colors ease-in-out duration-150"
-            href="/create?redirect=/dashboard&redirectTitle=Dashboard"
+            className="flex items-center justify-center w-6 h-6 transition-colors duration-150 ease-in-out rounded hover:bg-secondary/50"
+            href="/create?redirect=/app&redirectTitle=Dashboard"
             type="button">
             <AddIcon className="w-4 h-4" />
           </Link>
@@ -32,7 +32,7 @@ const SidebarTeams = () => {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between w-full">
-        <h2 className="font-medium text-white/50 uppercase text-xs">
+        <h2 className="text-xs font-medium uppercase text-white/50">
           My Teams
         </h2>
         <SidebarCreateTeamButton />
@@ -42,7 +42,7 @@ const SidebarTeams = () => {
           <>
             {Array.from({ length: 3 }).map((_, i) => (
               <div
-                className="animate-pulse w-full h-6 bg-accent rounded-md"
+                className="w-full h-6 rounded-md animate-pulse bg-accent"
                 key={i}
               />
             ))}
@@ -53,7 +53,7 @@ const SidebarTeams = () => {
             You don&apos;t have any teams.{' '}
             <Link
               className="text-white/80 hover:text-white"
-              href="/create?redirect=/dashboard&redirectTitle=Dashboard">
+              href="/create?redirect=/app&redirectTitle=Dashboard">
               Create a new team
             </Link>
             .
@@ -69,7 +69,7 @@ const SidebarTeams = () => {
                   teamUrl !== team.url,
               }
             )}
-            href={`/dashboard/${team.url}`}
+            href={`/app/${team.url}`}
             key={team.id}>
             {team.name}
           </Link>

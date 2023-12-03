@@ -24,7 +24,7 @@ const OnboardingUsernamePage = () => {
 
   const handleSubmit = async () => {
     if (user?.username && `@${user.username}` === username) {
-      return router.push('/dashboard')
+      return router.push('/app')
     }
 
     const usernameWithoutAt = username.slice(1)
@@ -53,7 +53,7 @@ const OnboardingUsernamePage = () => {
     try {
       setIsLoading(true)
       await api.post('/user/username', { username: usernameWithoutAt.trim() })
-      router.push('/dashboard')
+      router.push('/app')
     } catch (err) {
       toast.error(getErrorMessage(err) as string)
       setIsLoading(false)

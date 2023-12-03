@@ -18,7 +18,7 @@ const LoginPAge = () => {
   const router = useRouter()
   const { user, mutateUser } = useUser()
 
-  if (user) router.push('/dashboard')
+  if (user) router.push('/app')
 
   const handleSubmit = async () => {
     const email = emailRef.current?.value.trim()
@@ -33,7 +33,7 @@ const LoginPAge = () => {
 
       await mutateUser()
 
-      router.push('/dashboard')
+      router.push('/app')
     } catch (error) {
       setIsLoading(false)
       const message = getErrorMessage(error)

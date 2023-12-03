@@ -19,7 +19,7 @@ const PagesPanelPageItem = ({
         className={cn('block px-3 py-1 text-sm rounded hover:bg-secondary/40', {
           'bg-accent pointer-events-none': isActive,
         })}
-        href={`/dashboard/${teamUrl as string}/${projectUrl as string}/${
+        href={`/app/${teamUrl as string}/${projectUrl as string}/${
           page.id
         }`}
         style={{

@@ -53,7 +53,7 @@ const CreateTeamPage = () => {
       setIsLoading(true)
       const { data: team } = await api.post('/team', { name, url })
       await mutate()
-      router.push(`/dashboard/${team.url}`)
+      router.push(`/app/${team.url}`)
     } catch (error) {
       toast.error(getErrorMessage(error) as string)
       setIsLoading(false)
@@ -67,7 +67,7 @@ const CreateTeamPage = () => {
       <div className="flex items-start justify-between w-full text-sm">
         {redirect && redirectTitle ? (
           <Link
-            className="px-4 py-2 rounded hover:bg-accent text-white/80 hover:text-white transition-colors ease-in-out duration-150"
+            className="px-4 py-2 transition-colors duration-150 ease-in-out rounded hover:bg-accent text-white/80 hover:text-white"
             href={redirect}>
             Return to {redirectTitle}
           </Link>
@@ -76,7 +76,7 @@ const CreateTeamPage = () => {
         )}
         {user ? (
           <div className="flex flex-col px-4">
-            <p className="text-white/50 text-xs">Logged in as:</p>
+            <p className="text-xs text-white/50">Logged in as:</p>
             <p className="text-white">
               {user?.username} ({user?.email})
             </p>
@@ -84,15 +84,15 @@ const CreateTeamPage = () => {
         ) : null}
       </div>
       <div className="max-w-md mx-auto flex-1 w-full flex flex-col gap-8 items-center justify-center pb-[6rem]">
-        <div className="w-full p-6 bg-accent border border-border shadow-lg rounded-xl flex flex-col gap-4">
+        <div className="flex flex-col w-full gap-4 p-6 border shadow-lg bg-accent border-border rounded-xl">
           <div className="flex flex-col gap-2">
-            <label className="block text-white/80 text-xs" htmlFor="team-name">
+            <label className="block text-xs text-white/80" htmlFor="team-name">
               Team Name
             </label>
             <Input className="w-full" placeholder="Team Name" ref={nameRef} />
           </div>
           <div className="flex flex-col gap-2">
-            <label className="block text-white/80 text-xs" htmlFor="team-url">
+            <label className="block text-xs text-white/80" htmlFor="team-url">
               Team URL
             </label>
             <div className="relative">
@@ -121,7 +121,7 @@ const CreateTeamPage = () => {
                 }}
               />
               <p
-                className="text-xs absolute top-1/2 -translate-y-1/2 left-3 text-white/50"
+                className="absolute text-xs -translate-y-1/2 top-1/2 left-3 text-white/50"
                 ref={pRef}>
                 builder.baraa.app/
               </p>
@@ -129,7 +129,7 @@ const CreateTeamPage = () => {
           </div>
         </div>
         <button
-          className="text-sm w-full px-4 py-3 rounded-lg bg-primary uppercase tracking-wide hover:bg-primary/90 transition-colors ease-in-out duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full px-4 py-3 text-sm tracking-wide uppercase transition-colors duration-150 ease-in-out rounded-lg bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={isLoading}
           type="button"
           onClick={handleCreateTeam}>

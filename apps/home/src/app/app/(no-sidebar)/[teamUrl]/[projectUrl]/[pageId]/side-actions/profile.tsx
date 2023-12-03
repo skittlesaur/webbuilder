@@ -10,15 +10,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from 'ui'
+import useUser from '@/resolvers/use-user'
 
 const UserProfile = () => {
   const router = useRouter()
-
-  const user = {
-    name: 'Baraa',
-    username: 'baraa',
-    avatar: 'https://baraa.app/profile.jpeg',
-  }
+  const { user } = useUser()
 
   const name = user?.name || user?.username
   const twoCharsName = name?.slice(0, 2).toUpperCase() || 'BU'
@@ -40,21 +36,9 @@ const UserProfile = () => {
         sideOffset={10}>
         <DropdownMenuItem
           onClick={() => {
-            router.push(`/profiles/${user.username}`)
+            router.push('/profile')
           }}>
           View profile
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => {
-            router.push('/settings')
-          }}>
-          Settings
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => {
-            router.push('/download')
-          }}>
-          Download Application
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

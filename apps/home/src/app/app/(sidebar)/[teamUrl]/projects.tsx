@@ -31,7 +31,7 @@ const DashboardTeamProjects = () => {
           return (
             <Link
               className="flex flex-col gap-3 group"
-              href={`/dashboard/${teamUrl as string}/${project.url}/${
+              href={`/app/${teamUrl as string}/${project.url}/${
                 project.pages?.[0]?.id ?? ''
               }`}
               key={project.id}>

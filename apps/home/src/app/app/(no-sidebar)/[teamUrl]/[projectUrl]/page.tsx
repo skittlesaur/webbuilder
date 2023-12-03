@@ -6,7 +6,7 @@ const ProjectPage = () => {
   const { teamUrl } = useParams()
   const router = useRouter()
 
-  if (teamUrl) router.push(`/dashboard/${teamUrl as string}`)
+  if (teamUrl) router.push(`/app/${teamUrl as string}`)
 
   return null
 }
