@@ -12,7 +12,11 @@
     "html-react-parser": "^5.0.7",
     "next": "14.0.3",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "tsconfig": "*",
+    "eslint-config-custom": "*",
+    "ui": "*",
+    "tailwind-config": "*"
   },
   "devDependencies": {
     "@types/node": "^20",
