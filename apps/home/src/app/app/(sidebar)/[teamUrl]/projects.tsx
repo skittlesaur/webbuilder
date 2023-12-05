@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { Avatar, AvatarFallback, AvatarImage } from 'ui'
+import Image from 'next/image'
 import useTeamProjects from '@/resolvers/use-team-projects'
 import getTimeAgo from '@/lib/time-ago'
 
@@ -35,8 +36,19 @@ const DashboardTeamProjects = () => {
                 project.pages?.[0]?.id ?? ''
               }`}
               key={project.id}>
-              <div className="flex items-center justify-center w-full transition-colors duration-150 ease-in-out border rounded-lg aspect-video bg-accent border-border group-hover:border-primary">
-                TODO: screenshot
+              <div className="relative flex items-center justify-center w-full overflow-hidden transition-colors duration-150 ease-in-out border rounded-lg aspect-video bg-accent border-border group-hover:border-primary">
+                {project.pages?.[0]?.screenshot ? (
+                  <Image
+                    alt={`${project.name}'s screenshot`}
+                    className="object-cover"
+                    src={project.pages?.[0]?.screenshot}
+                    fill
+                  />
+                ) : (
+                  <p>
+                    <span className="text-white/50">No screenshot</span>
+                  </p>
+                )}
               </div>
               <div className="flex flex-col gap-1">
                 <p className="text-white">{project.name}</p>

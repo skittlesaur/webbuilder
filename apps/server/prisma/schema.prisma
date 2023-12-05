@@ -89,6 +89,7 @@ model Page {
   updatedAt        DateTime           @updatedAt
   Project          Project            @relation(fields: [projectId], references: [id])
   userPageSettings UserPageSettings[]
+  screenshot      String?
 }
 
 model UserPageSettings {

@@ -49,6 +49,7 @@ const getTeamProjectsController = async (req: Request, res: Response) => {
           },
           select: {
             id: true,
+            screenshot: true,
           }
         }
       },

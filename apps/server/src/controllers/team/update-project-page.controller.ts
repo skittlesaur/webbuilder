@@ -3,7 +3,7 @@ import { Request, Response } from 'express'
 const updateTeamProjectPageController = async (req: Request, res: Response) => {
   try {
     const { teamUrl, projectUrl, pageId } = req.params
-    const { elements, bodyStyles, customFonts, assets, components, breakpoints, pan, zoom } = req.body
+    const { elements, bodyStyles, customFonts, assets, components, breakpoints, pan, zoom, screenshotUrl } = req.body
     const { prisma, user } = req.context
 
     const team = await prisma.team.findUnique({
@@ -48,6 +48,7 @@ const updateTeamProjectPageController = async (req: Request, res: Response) => {
         assets,
         components,
         breakpoints,
+        ...(screenshotUrl ? { screenshot: screenshotUrl } : undefined)
       }
     })
 

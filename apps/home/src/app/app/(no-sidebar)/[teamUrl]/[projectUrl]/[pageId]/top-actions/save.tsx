@@ -3,9 +3,11 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'ui'
 import { useParams } from 'next/navigation'
 import { toast } from 'sonner'
 import { useCallback, useEffect, useState } from 'react'
+import html2canvas from 'html2canvas'
 import ImportIcon from '@/icons/cloud-upload-outline.svg'
 import { useCanvasStore } from '@/stores/canvas-store'
 import api from '@/lib/api'
+import uploadImage from '@/lib/upload-image'
 
 const SaveButton = () => {
   const [isSaving, setIsSaving] = useState(false)
@@ -19,6 +21,39 @@ const SaveButton = () => {
 
   const saveChanges = useCallback(async () => {
     if (isSaving) return
+
+    const defaultBreakpoint = document.querySelector(
+      '[data-default-breakpoint]'
+    )
+
+    let screenshotUrl: string | null = null
+
+    try {
+      if (defaultBreakpoint) {
+        const breakpointClone = defaultBreakpoint.cloneNode(true) as HTMLElement
+        breakpointClone.id = 'screenshot-clone'
+        breakpointClone.style.position = 'absolute'
+        breakpointClone.style.top = '0'
+        breakpointClone.style.left = '0'
+        breakpointClone.style.zIndex = '-1'
+        breakpointClone.style.minWidth = '800px'
+        breakpointClone.style.minHeight = '450px'
+        breakpointClone.style.maxWidth = '800px'
+        breakpointClone.style.maxHeight = '450px'
+        breakpointClone.style.overflow = 'hidden'
+
+        document.body.appendChild(breakpointClone)
+
+        const canvas = await html2canvas(breakpointClone)
+        const dataURL = canvas.toDataURL()
+
+        screenshotUrl = await uploadImage(dataURL)
+
+        breakpointClone.remove()
+      }
+    } catch (e) {
+      toast.warning('Failed to take screenshot, this will not affect the save')
+    }
 
     try {
       const {
@@ -45,6 +80,7 @@ const SaveButton = () => {
           breakpoints,
           pan,
           zoom,
+          screenshotUrl,
         }
       )
     } finally {

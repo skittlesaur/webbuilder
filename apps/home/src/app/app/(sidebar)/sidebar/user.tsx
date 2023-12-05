@@ -8,9 +8,6 @@ import {
 } from 'ui'
 import Link from 'next/link'
 import useUser from '@/resolvers/use-user'
-import api from '@/lib/api'
-import { toast } from 'sonner'
-import { useRouter } from 'next/navigation'
 
 const SidebarUserAvatar = () => {
   const { user, isUserLoading } = useUser()
@@ -52,9 +49,6 @@ const SidebarUserDetails = () => {
 }
 
 const SidebarUser = () => {
-  const router = useRouter()
-  const { mutateUser } = useUser()
-
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -67,7 +61,7 @@ const SidebarUser = () => {
           </div>
         </button>
       </PopoverTrigger>
-      <PopoverContent align="top" className="flex flex-col mb-2 ml-6 text-sm">
+      <PopoverContent align="start" className="flex flex-col mb-2 ml-6 text-sm">
         <Link className="px-2 py-1 rounded hover:bg-accent" href="/profile">
           Profile
         </Link>
