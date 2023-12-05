@@ -1,5 +1,16 @@
-import { Avatar, AvatarImage, AvatarFallback } from 'ui'
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from 'ui'
+import Link from 'next/link'
 import useUser from '@/resolvers/use-user'
+import api from '@/lib/api'
+import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 
 const SidebarUserAvatar = () => {
   const { user, isUserLoading } = useUser()
@@ -22,7 +33,7 @@ const SidebarUserDetails = () => {
   const { user, isUserLoading } = useUser()
 
   return (
-    <div className="flex flex-col gap-0.5">
+    <div className="flex flex-col gap-0.5 items-start">
       {isUserLoading ? (
         <>
           <div className="w-10 h-4 rounded-md animate-pulse bg-accent" />
@@ -41,14 +52,33 @@ const SidebarUserDetails = () => {
 }
 
 const SidebarUser = () => {
+  const router = useRouter()
+  const { mutateUser } = useUser()
+
   return (
-    <div className="flex items-center justify-between w-full gap-2">
-      <div className="flex items-center gap-2">
-        <SidebarUserAvatar />
-        <SidebarUserDetails />
-      </div>
-      {/* <div className="w-5 h-5 bg-red-50"></div> */}
-    </div>
+    <Popover>
+      <PopoverTrigger asChild>
+        <button
+          className="flex items-center justify-between w-full gap-2"
+          type="button">
+          <div className="flex items-center gap-2">
+            <SidebarUserAvatar />
+            <SidebarUserDetails />
+          </div>
+        </button>
+      </PopoverTrigger>
+      <PopoverContent align="top" className="flex flex-col mb-2 ml-6 text-sm">
+        <Link className="px-2 py-1 rounded hover:bg-accent" href="/profile">
+          Profile
+        </Link>
+        <div className="w-full h-px my-2 bg-border" />
+        <Link
+          className="px-2 py-1 rounded hover:bg-accent text-start"
+          href="/logout">
+          Logout
+        </Link>
+      </PopoverContent>
+    </Popover>
   )
 }
 

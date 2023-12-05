@@ -9,6 +9,7 @@ const useUser = () => {
     user: res.data?.data,
     isUserLoading: res.isLoading,
     isUserError: res.error,
+    isUserValidating: res.isValidating,
     mutateUser: res.mutate,
   }
 }

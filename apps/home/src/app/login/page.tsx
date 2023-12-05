@@ -16,9 +16,9 @@ const LoginPAge = () => {
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
-  const { user, mutateUser } = useUser()
+  const { user, isUserValidating, mutateUser } = useUser()
 
-  if (user) router.push('/app')
+  if (user && !isUserValidating) router.push('/app')
 
   const handleSubmit = async () => {
     const email = emailRef.current?.value.trim()

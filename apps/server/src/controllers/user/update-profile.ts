@@ -1,17 +1,60 @@
 import { Request, Response } from 'express'
+import isValidUsername from '../../lib/is-valid-username'
 
-const updateUserAvatar = async (req: Request, res: Response) => {
+type ProfileUpdates = {
+  name?: string
+  username?: string
+  avatar?: string
+}
+
+const updateUserProfile = async (req: Request, res: Response) => {
   try {
-    const { avatar } = req.body
+    const { avatar, name, username } = req.body
     const { prisma, user } = req.context
+
+    const updates: ProfileUpdates = {}
+
+    if (avatar !== undefined) {
+      updates['avatar'] = avatar
+    }
+
+    if (name !== undefined) {
+      updates['name'] = name
+    }
+
+    if (username !== undefined) {
+      const formattedUsername = username.trim().replace(/\s/g, '')
+      if (!isValidUsername(formattedUsername))
+        return res.status(400).json({
+          message: 'Invalid username'
+        })
+
+      const existingUser = await prisma.user.findUnique({
+        where: {
+          username: formattedUsername
+        }
+      })
+
+      if (existingUser) {
+        return res.status(400).json({
+          message: 'Username already exists'
+        })
+      }
+
+      updates['username'] = formattedUsername
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({
+        message: 'No updates provided'
+      })
+    }
 
     const updatedUser = await prisma.user.update({
       where: {
         id: user?.id
       },
-      data: {
-        avatar
-      }
+      data: updates
     })
 
     return res.status(200).json(updatedUser)
@@ -23,4 +66,4 @@ const updateUserAvatar = async (req: Request, res: Response) => {
   }
 }
 
-export default updateUserAvatar
+export default updateUserProfile
