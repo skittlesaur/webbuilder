@@ -9,6 +9,7 @@ import authRoutes from './routes/auth.routes'
 import prismaMiddleware from './middlewares/prisma.middleware'
 import userRoutes from './routes/user.routes'
 import teamRoutes from './routes/team.routes'
+import publicRoutes from './routes/public.routes'
 
 declare global {
   namespace Express {
@@ -43,6 +44,7 @@ app.get('/ping', (_, res: Response) => {
 app.use('/auth', authRoutes)
 app.use('/user', userRoutes)
 app.use('/team', teamRoutes)
+app.use('/public', publicRoutes)
 
 const PORT = process.env.PORT ?? 1111
 
