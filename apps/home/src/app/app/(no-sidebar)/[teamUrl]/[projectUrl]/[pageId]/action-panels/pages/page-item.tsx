@@ -19,11 +19,9 @@ const PagesPanelPageItem = ({
         className={cn('block px-3 py-1 text-sm rounded hover:bg-secondary/40', {
           'bg-accent pointer-events-none': isActive,
         })}
-        href={`/app/${teamUrl as string}/${projectUrl as string}/${
-          page.id
-        }`}
+        href={`/app/${teamUrl as string}/${projectUrl as string}/${page.id}`}
         style={{
-          marginLeft: `${depth * 0.75}rem`,
+          marginLeft: `${(depth - 1) * 0.75}rem`,
           width: `calc(100%-${depth * 0.75}rem*2)`,
         }}>
         {page.path}
@@ -35,7 +33,7 @@ const PagesPanelPageItem = ({
         <div
           className="absolute bottom-0 w-px rounded bg-border -top-2"
           style={{
-            left: `calc(${depth * 0.75}rem - 0.35rem)`,
+            left: `calc(${(depth - 1) * 0.75}rem - 0.35rem)`,
           }}
         />
       )}

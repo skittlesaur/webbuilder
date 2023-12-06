@@ -26,7 +26,7 @@ const AssetsImages = () => {
   return (
     <>
       <div className="flex items-center justify-between gap-2">
-        <h1 className="font-medium text-sm">Images</h1>
+        <h1 className="text-sm font-medium">Images</h1>
         <AssetsUploadImageButton />
       </div>
       <div className="grid grid-cols-[repeat(var(--grid-cols-count),1fr)] gap-4 [&_.icon-wrapper]:bg-transparent [&_.icon-wrapper]:p-0">
@@ -39,11 +39,11 @@ const AssetsImages = () => {
                     <ContextMenuTrigger>
                       <Element
                         Icon={
-                          <div className="relative overflow-hidden w-full h-full rounded-md bg-white">
+                          <div className="relative w-full h-full overflow-hidden bg-white rounded-md">
                             <Image
                               fill
                               alt={asset.name}
-                              className="w-full h-full object-contain p-2 pointer-events-none select-none"
+                              className="object-contain w-full h-full rounded-md pointer-events-none select-none"
                               src={asset.url}
                             />
                           </div>

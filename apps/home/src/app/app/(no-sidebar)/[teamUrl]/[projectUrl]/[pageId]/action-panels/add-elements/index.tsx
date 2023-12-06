@@ -1,13 +1,11 @@
 'use client'
-
-import ActionPanelSeparator from '../separator'
 import ActionPanelWrapper from '..'
 import AddElementsPanelHeader from './header'
 import LayoutElements from './layout'
-import AddElementsPanelSearch from './search'
 import TypographyElements from './typography'
 import { PanelsEnum } from '@/stores/panels-store'
 import type { Element } from '@/stores/canvas-store'
+import ScrollableWrapper from '@/components/scrollable-wrapper'
 
 export interface PanelElement {
   Icon: JSX.Element
@@ -26,14 +24,16 @@ const DividerElement = () => {
 const AddElementsPanel = () => {
   return (
     <ActionPanelWrapper self={PanelsEnum.AddElements}>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 px-5 pt-6 -mx-5 -mt-6 pb-6 border-b border-border bg-background relative z-[1]">
         <AddElementsPanelHeader />
-        <AddElementsPanelSearch />
       </div>
-      <ActionPanelSeparator />
-      <LayoutElements />
-      <DividerElement />
-      <TypographyElements />
+      <ScrollableWrapper>
+        <div className="flex flex-col gap-8">
+          <LayoutElements />
+          <DividerElement />
+          <TypographyElements />
+        </div>
+      </ScrollableWrapper>
     </ActionPanelWrapper>
   )
 }

@@ -87,7 +87,7 @@ const AssetsUploadImageButton = () => {
     <Dialog open={open}>
       <DialogTrigger asChild>
         <button
-          className="w-6 h-6 hover:bg-secondary/50 rounded flex items-center justify-center transition-colors ease-in-out duration-150 -mr-1"
+          className="flex items-center justify-center w-6 h-6 -mr-1 transition-colors duration-150 ease-in-out rounded hover:bg-secondary/50"
           type="button"
           onClick={() => setOpen(true)}>
           <AddIcon className="w-4 h-4" />
@@ -102,7 +102,7 @@ const AssetsUploadImageButton = () => {
           </DialogDescription>
         </DialogHeader>
         <div
-          className="relative w-full h-32 border-border rounded flex items-center justify-center group text-sm"
+          className="relative flex items-center justify-center w-full h-32 text-sm rounded border-border group"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='8' ry='8' stroke='%231F2937' stroke-width='3' stroke-dasharray='10' stroke-dashoffset='9' stroke-linecap='round'/%3e%3c/svg%3e")`,
           }}>
@@ -126,7 +126,7 @@ const AssetsUploadImageButton = () => {
           </p>
         </div>
         {files.length > 0 && (
-          <div className="flex flex-row w-full gap-3 overflow-x-auto mb-8 py-5 hide-scrollbar">
+          <div className="flex flex-row w-full gap-3 py-5 mb-8 overflow-x-auto hide-scrollbar">
             <AnimatePresence mode="sync">
               {files.map((file) => (
                 <motion.div
@@ -149,7 +149,7 @@ const AssetsUploadImageButton = () => {
                     stiffness: 500,
                     damping: 30,
                   }}>
-                  <div className="w-20 h-20 relative p-2 bg-secondary rounded-lg shadow group">
+                  <div className="relative w-20 h-20 rounded-lg shadow bg-secondary group">
                     <button
                       className="absolute z-10 right-0 top-0 translate-x-1/2 -translate-y-1/2 rounded-full !bg-red-900 w-6 h-6 p-1 scale-90 opacity-0 group-hover:scale-100 group-hover:opacity-100 transition-all ease-in-out duration-100"
                       type="button"
@@ -165,9 +165,12 @@ const AssetsUploadImageButton = () => {
                     <Image
                       fill
                       alt={file.name}
-                      className={cn('object-contain p-2 pointer-events-none', {
-                        'animate-pulse opacity-60': !file.uploaded,
-                      })}
+                      className={cn(
+                        'object-contain pointer-events-none rounded-lg',
+                        {
+                          'animate-pulse opacity-60': !file.uploaded,
+                        }
+                      )}
                       src={URL.createObjectURL(file.file)}
                     />
                   </div>

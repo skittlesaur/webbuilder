@@ -7,6 +7,7 @@ import {
   ContextMenuTrigger,
 } from 'ui'
 import Element from '../../add-elements/element'
+import ActionPanelSeparator from '../../separator'
 import ComponentsDeleteButton from './delete'
 import { useCanvasStore } from '@/stores/canvas-store'
 
@@ -44,6 +45,7 @@ const ComponentsDisplay = () => {
           </ContextMenu>
         ))}
       </div>
+      <ActionPanelSeparator />
     </>
   )
 }
