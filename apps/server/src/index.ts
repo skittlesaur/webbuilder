@@ -10,6 +10,7 @@ import prismaMiddleware from './middlewares/prisma.middleware'
 import userRoutes from './routes/user.routes'
 import teamRoutes from './routes/team.routes'
 import publicRoutes from './routes/public.routes'
+import feedbackRoutes from './routes/feedback'
 
 declare global {
   namespace Express {
@@ -31,10 +32,12 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use(compression())
-app.use(cors({
-  origin: process.env.CORS_ORIGIN,
-  credentials: true,
-}))
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN,
+    credentials: true,
+  })
+)
 app.use(prismaMiddleware)
 
 app.get('/ping', (_, res: Response) => {
@@ -45,6 +48,7 @@ app.use('/auth', authRoutes)
 app.use('/user', userRoutes)
 app.use('/team', teamRoutes)
 app.use('/public', publicRoutes)
+app.use('/feedback', feedbackRoutes)
 
 const PORT = process.env.PORT ?? 1111
 

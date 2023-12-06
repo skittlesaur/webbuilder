@@ -1,7 +1,7 @@
 'use client'
 import { useRouter } from 'next/navigation'
-import useUser from '@/resolvers/use-user'
 import { useEffect } from 'react'
+import useUser from '@/resolvers/use-user'
 
 const EnsureLoggedIn = () => {
   const { user, isUserLoading } = useUser()

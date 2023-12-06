@@ -22,6 +22,7 @@ model User {
   createdProjects    Project[]          @relation("createdBy")
   lastEditedProjects Project[]          @relation("lastEditedBy")
   UserPageSettings   UserPageSettings[]
+  feedbacks          Feedback[]
 }
 
 model UserVerification {
@@ -89,7 +90,7 @@ model Page {
   updatedAt        DateTime           @updatedAt
   Project          Project            @relation(fields: [projectId], references: [id])
   userPageSettings UserPageSettings[]
-  screenshot      String?
+  screenshot       String?
 }
 
 model UserPageSettings {
@@ -103,4 +104,26 @@ model UserPageSettings {
   zoom      Float    @default(1.7)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Feedback {
+  id                       String   @id @default(cuid()) @map("_id")
+  user                     User     @relation(fields: [userId], references: [id])
+  userId                   String
+  experience               Int
+  easyNavigation           Int
+  design                   Int
+  clearInterface           Int
+  exportQuality            Int
+  integrationRating        Int
+  issuesWithExports        String?
+  mostBeneficialFeature    String?
+  missingFeature           String?
+  performanceRating        Int
+  performanceLag           String?
+  learningCurve            Int
+  improvements             String?
+  additionalFeatures       String?
+  recommendationLikelihood Int
+  createdAt                DateTime @default(now())
 }

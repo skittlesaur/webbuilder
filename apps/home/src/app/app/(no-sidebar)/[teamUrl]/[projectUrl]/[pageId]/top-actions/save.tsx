@@ -4,7 +4,7 @@ import { useParams } from 'next/navigation'
 import { toast } from 'sonner'
 import { useCallback, useEffect, useState } from 'react'
 import html2canvas from 'html2canvas'
-import ImportIcon from '@/icons/cloud-upload-outline.svg'
+import SaveIcon from '@/icons/save-outline.svg'
 import { useCanvasStore } from '@/stores/canvas-store'
 import api from '@/lib/api'
 import uploadImage from '@/lib/upload-image'
@@ -136,7 +136,7 @@ const SaveButton = () => {
               error: 'Failed to save changes, please try again later',
             })
           }}>
-          <ImportIcon className="w-4 h-4" />
+          <SaveIcon className="w-4 h-4" />
         </TooltipTrigger>
         <TooltipContent
           className="h-8"

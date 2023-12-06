@@ -11,23 +11,35 @@ import {
 } from '@react-email/components'
 
 interface SlackConfirmEmailProps {
-  verificationCode?: string
+  url?: string
 }
 
-const VerificationEmail = ({
-  verificationCode = '123456',
+const FeedbackEmail = ({
+  url = 'https://builder.baraa.app',
 }: SlackConfirmEmailProps) => (
   <Html>
     <Head />
-    <Preview>Confirm your email address</Preview>
+    <Preview>We have received your feedback</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Heading style={h1}>Confirm your email address</Heading>
+        <Heading style={h1}>
+          Thank you for taking the time to provide feedback!
+        </Heading>
         <Text style={{ ...text, marginBottom: '14px' }}>
-          Copy the code below and paste it into the verification form in your
-          browser. This code will expire in 15 minutes.
+          We have received your feedback and will use it to improve the
+          application. If you want to review your feedback, you can do so at any
+          time by clicking the link below.
         </Text>
-        <code style={code}>{verificationCode}</code>
+        <Link
+          href={url}
+          style={{
+            ...link,
+            fontSize: '18px',
+            fontWeight: 'bold',
+            marginBottom: '14px',
+          }}>
+          {url}
+        </Link>
         <Text style={text}>
           If you didn't request this email, you can safely ignore it.
         </Text>
@@ -136,4 +148,4 @@ const code = {
   textAlign: 'center' as const,
 }
 
-export default VerificationEmail
+export default FeedbackEmail
