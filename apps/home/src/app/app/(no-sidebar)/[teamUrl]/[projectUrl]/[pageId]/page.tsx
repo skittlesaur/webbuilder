@@ -10,6 +10,7 @@ import AssetsAndComponentsPanel from './action-panels/assets-and-components'
 import PagesPanel from './action-panels/pages'
 import { useCanvasStore } from '@/stores/canvas-store'
 import useProjectPage from '@/resolvers/use-project-page'
+import FullLoader from '@/components/full-loader'
 
 const DevTools = dynamic(() => import('./dev-tools'), { ssr: false })
 const Canvas = dynamic(() => import('./canvas'), { ssr: false })
@@ -47,7 +48,7 @@ const ProjectsPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only on mount
   }, [projectPage])
 
-  if (!pageLoaded) return null
+  if (!pageLoaded) return <FullLoader title="Loading Project" />
 
   return (
     <div className="relative flex w-screen h-screen overflow-hidden">
