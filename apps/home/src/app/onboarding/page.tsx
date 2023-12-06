@@ -9,6 +9,7 @@ import Link from 'next/link'
 import OnboardingHeader from './header'
 import api from '@/lib/api'
 import getErrorMessage from '@/lib/get-error-message'
+import useUser from '@/resolvers/use-user'
 
 const OnboardingPage = () => {
   const emailRef = useRef<HTMLInputElement>(null)
@@ -17,6 +18,7 @@ const OnboardingPage = () => {
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+  const { mutateUser } = useUser()
 
   const handleSubmit = async () => {
     const email = emailRef.current?.value.trim()
@@ -53,6 +55,8 @@ const OnboardingPage = () => {
         email,
         password,
       })
+
+      await mutateUser()
 
       router.push('/onboarding/verify')
     } catch (error) {
