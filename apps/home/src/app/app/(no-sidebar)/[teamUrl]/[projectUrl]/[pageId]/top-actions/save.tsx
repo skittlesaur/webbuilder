@@ -11,6 +11,7 @@ import uploadImage from '@/lib/upload-image'
 
 const SaveButton = () => {
   const [isSaving, setIsSaving] = useState(false)
+  const [lastSave, setLastSave] = useState<Date>(new Date())
 
   const { teamUrl, projectUrl, pageId } = useParams()
   const teamUrlString = Array.isArray(teamUrl) ? teamUrl[0] : teamUrl
@@ -21,6 +22,8 @@ const SaveButton = () => {
 
   const saveChanges = useCallback(async () => {
     if (isSaving) return
+
+    setIsSaving(true)
 
     const defaultBreakpoint = document.querySelector(
       '[data-default-breakpoint]'
@@ -67,8 +70,6 @@ const SaveButton = () => {
         zoom,
       } = useCanvasStore.getState()
 
-      setIsSaving(true)
-
       await api.put(
         `/team/${teamUrlString}/project/${projectUrlString}/page/${pageIdString}`,
         {
@@ -83,6 +84,8 @@ const SaveButton = () => {
           screenshotUrl,
         }
       )
+
+      setLastSave(new Date())
     } finally {
       setIsSaving(false)
     }
@@ -92,6 +95,12 @@ const SaveButton = () => {
   useEffect(() => {
     const interval = setInterval(
       () => {
+        if (isSaving) return
+        const now = new Date()
+        const diff = now.getTime() - lastSave.getTime()
+        const diffInMinutes = Math.round(diff / 1000 / 60)
+        if (diffInMinutes < 5) return
+
         toast.promise(saveChanges(), {
           loading: 'Auto saving changes...',
           success: 'Changes saved successfully',
@@ -102,7 +111,7 @@ const SaveButton = () => {
     )
 
     return () => clearInterval(interval)
-  }, [saveChanges])
+  }, [isSaving, lastSave, saveChanges])
 
   // ctrl/cmd + s to save changes
   useEffect(() => {
@@ -110,6 +119,7 @@ const SaveButton = () => {
       if (e.key === 's' && (e.ctrlKey || e.metaKey)) {
         e.preventDefault()
 
+        if (isSaving) return
         toast.promise(saveChanges(), {
           loading: 'Saving changes...',
           success: 'Changes saved successfully',
@@ -121,7 +131,7 @@ const SaveButton = () => {
     window.addEventListener('keydown', handleKeyDown)
 
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [saveChanges])
+  }, [isSaving, saveChanges])
 
   return (
     <TooltipProvider disableHoverableContent delayDuration={300}>
@@ -130,6 +140,7 @@ const SaveButton = () => {
           className="flex items-center justify-center transition-colors duration-150 ease-in-out rounded w-7 h-7 hover:bg-secondary disabled:opacity-50"
           disabled={isSaving}
           onClick={() => {
+            if (isSaving) return
             toast.promise(saveChanges(), {
               loading: 'Saving changes...',
               success: 'Changes saved successfully',
