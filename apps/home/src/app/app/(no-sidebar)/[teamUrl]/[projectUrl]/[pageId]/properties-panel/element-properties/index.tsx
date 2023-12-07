@@ -69,8 +69,7 @@ const ElementProperties = () => {
 
   return (
     <Fragment key={`${selectedElementId}-${selectedMediaQuery}`}>
-      <div className="relative z-[1] bg-background flex items-center justify-between w-full px-2 border-b border-border">
-        <div className="flex items-center">
+      <div className="relative z-[1] bg-background flex items-center w-full px-2 border-b border-border">
           {panels.map((p) => (
             <button
               className={cn('text-xs px-2 py-2', {
@@ -83,11 +82,10 @@ const ElementProperties = () => {
               {p.title}
             </button>
           ))}
-        </div>
-        <MakeComponentButton />
       </div>
       <ScrollableWrapper>
         <ElementPropertiesParent />
+        <MakeComponentButton />
         {activePanel === PropertyPanel.STYLE && (
           <>
             <ElementPropertiesPosition

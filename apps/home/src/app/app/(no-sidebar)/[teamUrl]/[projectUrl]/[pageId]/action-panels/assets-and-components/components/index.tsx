@@ -10,6 +10,7 @@ import Element from '../../add-elements/element'
 import ActionPanelSeparator from '../../separator'
 import ComponentsDeleteButton from './delete'
 import { useCanvasStore } from '@/stores/canvas-store'
+import Image from 'next/image'
 
 const ComponentsDisplay = () => {
   const components = useCanvasStore((state) => state.components)
@@ -25,8 +26,16 @@ const ComponentsDisplay = () => {
             <ContextMenuTrigger>
               <Element
                 Icon={
-                  // TODO add component icon
-                  <div className="relative w-full h-full overflow-hidden bg-white rounded-md" />
+                  <div className="relative w-full h-full overflow-hidden border rounded-md border-border">
+                    {component.screenshot ? (
+                      <Image
+                        fill
+                        alt="Component screenshot"
+                        className="object-contain w-full h-full p-1 pointer-events-none select-none"
+                        src={component.screenshot}
+                      />
+                    ) : null}
+                  </div>
                 }
                 attributes={component.element.attributes}
                 element={component.element.type}

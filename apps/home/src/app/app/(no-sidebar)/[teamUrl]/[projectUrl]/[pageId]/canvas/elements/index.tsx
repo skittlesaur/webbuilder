@@ -137,7 +137,8 @@ const Element = ({
       ...acc,
       ...element.mediaQueries?.[mq],
     }
-  }, {})
+    // eslint-disable-next-line @typescript-eslint/prefer-reduce-type-parameter, @typescript-eslint/no-explicit-any -- no need to specify type
+  }, {} as any)
 
   if (VOID_ELEMENTS.includes(element.type as string))
     return (
@@ -153,11 +154,24 @@ const Element = ({
         style={{
           ...element.style,
           ...queryStyles,
-          padding: isDraggingElement ? `1rem 0` : element.style?.padding,
+          paddingLeft: isDraggingElement
+            ? `0.5rem`
+            : queryStyles?.paddingLeft ?? element.style?.paddingLeft,
+          paddingRight: isDraggingElement
+            ? `0.5rem`
+            : queryStyles?.paddingRight ?? element.style?.paddingRight,
+          paddingTop: isDraggingElement
+            ? `0.5rem`
+            : queryStyles?.paddingTop ?? element.style?.paddingTop,
+          paddingBottom: isDraggingElement
+            ? `0.5rem`
+            : queryStyles?.paddingBottom ?? element.style?.paddingBottom,
           outline: isDraggingElement
             ? '2px solid #923FDE'
-            : element.style?.outline,
-          position: isDraggingElement ? 'relative' : element.style?.position,
+            : queryStyles?.outline ?? element.style?.outline,
+          position: isDraggingElement
+            ? 'relative'
+            : queryStyles?.position ?? element.style?.position,
         }}
         onClick={(e) => {
           e.stopPropagation()
@@ -180,11 +194,24 @@ const Element = ({
       style={{
         ...element.style,
         ...queryStyles,
-        padding: isDraggingElement ? `1rem 0` : element.style?.padding,
+        paddingLeft: isDraggingElement
+          ? `0.5rem`
+          : queryStyles?.paddingLeft ?? element.style?.paddingLeft,
+        paddingRight: isDraggingElement
+          ? `0.5rem`
+          : queryStyles?.paddingRight ?? element.style?.paddingRight,
+        paddingTop: isDraggingElement
+          ? `0.5rem`
+          : queryStyles?.paddingTop ?? element.style?.paddingTop,
+        paddingBottom: isDraggingElement
+          ? `0.5rem`
+          : queryStyles?.paddingBottom ?? element.style?.paddingBottom,
         outline: isDraggingElement
           ? '2px solid #923FDE'
-          : element.style?.outline,
-        position: isDraggingElement ? 'relative' : element.style?.position,
+          : queryStyles?.outline ?? element.style?.outline,
+        position: isDraggingElement
+          ? 'relative'
+          : queryStyles?.position ?? element.style?.position,
       }}
       onClick={(e) => {
         e.stopPropagation()
