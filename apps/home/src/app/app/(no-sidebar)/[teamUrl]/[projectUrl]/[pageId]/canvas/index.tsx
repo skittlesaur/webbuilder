@@ -1,6 +1,7 @@
 'use client'
 import { useCallback, useEffect, useRef } from 'react'
 import { toast } from 'sonner'
+import { Offline } from 'react-detect-offline'
 import Breakpoint from './breakpoint'
 import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
@@ -131,6 +132,12 @@ const Canvas = () => {
       tabIndex={-1}
       onClick={handleClick}
       onKeyDown={() => null}>
+      <Offline>
+        <div className="absolute top-0 left-0 right-0 z-30 px-8 text-sm font-medium text-black border-b border-border bg-amber-500">
+          You are offline. Changes cannot be saved until you are back online,
+          but you can continue working.
+        </div>
+      </Offline>
       {breakpoints.map((breakpoint) => (
         <Breakpoint breakpoint={breakpoint} key={breakpoint.id} />
       ))}

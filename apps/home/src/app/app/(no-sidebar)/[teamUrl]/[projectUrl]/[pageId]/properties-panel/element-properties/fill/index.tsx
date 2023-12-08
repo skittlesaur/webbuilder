@@ -183,6 +183,18 @@ const ElementPropertiesFill = ({ background }: FillProps) => {
   useEffect(() => {
     if (!selectedElementId) return
 
+    if (!fills.length) {
+      updateElementAttribute(
+        selectedElementId,
+        'style',
+        'background',
+        undefined,
+        selectedMediaQuery
+      )
+
+      return
+    }
+
     updateElementAttribute(
       selectedElementId,
       'style',
@@ -213,7 +225,7 @@ const ElementPropertiesFill = ({ background }: FillProps) => {
         .join(', '),
       selectedMediaQuery
     )
-  }, [fills, selectedElementId, updateElementAttribute])
+  }, [fills, selectedElementId, selectedMediaQuery, updateElementAttribute])
 
   useEffect(() => {
     if (colorPicker === null || !gradientEditor) return
@@ -272,16 +284,28 @@ const ElementPropertiesFill = ({ background }: FillProps) => {
       {variableFills.length >= 1 && (
         <div className="relative flex flex-col gap-3">
           {variableFills.map((fill) => (
-            <div className="flex items-center gap-2" key={fill.name}>
-              <div
-                className="w-5 h-5 border rounded-sm border-border"
-                style={{
-                  backgroundColor: `var(--${fill.name
-                    .toLowerCase()
-                    .replace(/ /g, '-')})`,
-                }}
-              />
-              <p className="text-xs">{fill.name}</p>
+            <div
+              className="flex items-center justify-between gap-2"
+              key={fill.name}>
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-5 h-5 border rounded-sm border-border"
+                  style={{
+                    backgroundColor: `var(--${fill.name
+                      .toLowerCase()
+                      .replace(/ /g, '-')})`,
+                  }}
+                />
+                <p className="text-xs truncate">{fill.name}</p>
+              </div>
+              <button
+                className="w-4 h-4 bg-red-400"
+                type="button"
+                onClick={() => {
+                  setFills((prev) => prev.filter((i) => i !== fill))
+                }}>
+                del
+              </button>
             </div>
           ))}
         </div>

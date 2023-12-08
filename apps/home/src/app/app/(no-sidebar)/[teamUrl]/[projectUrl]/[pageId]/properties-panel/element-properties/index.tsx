@@ -48,20 +48,24 @@ const ElementProperties = () => {
   if (!activeElement) return null
 
   const getStyleAttribute = (attribute: string) => {
-    const queries = Object.keys(
-      (activeElement.mediaQueries || {}) as Record<string, unknown>
-    )
-      .filter((mq) => Number(mq) <= (selectedMediaQuery || Infinity))
-      .sort((a, b) => Number(a) - Number(b))
+    if (selectedMediaQuery !== null) {
+      const queries = Object.keys(
+        (activeElement.mediaQueries || {}) as Record<string, unknown>
+      )
+        .filter((mq) => Number(mq) <= (selectedMediaQuery || 0))
+        .sort((a, b) => Number(a) - Number(b))
 
-    const queryStyles = queries.reduce((acc, mq) => {
-      return {
-        ...acc,
-        ...activeElement.mediaQueries?.[mq],
-      }
-    }, {})
+      const queryStyles = queries.reduce((acc, mq) => {
+        return {
+          ...acc,
+          ...activeElement.mediaQueries?.[mq],
+        }
+      }, {})
 
-    return queryStyles[attribute] || activeElement.style[attribute]
+      return queryStyles[attribute] || activeElement.style[attribute]
+    }
+
+    return activeElement.style[attribute]
   }
 
   return (
@@ -145,12 +149,12 @@ const ElementProperties = () => {
               src={activeElement.attributes?.src as string | undefined}
             />
             <InputAttributes
+              disabled={activeElement.attributes?.disabled as boolean}
               isInput={activeElement.type === 'input'}
               placeholder={
                 activeElement.attributes?.placeholder as string | undefined
               }
               type={activeElement.attributes?.type as string | undefined}
-              disabled={activeElement.attributes?.disabled as boolean}
             />
             <AccessibilityAttributes
               ariaLabel={
