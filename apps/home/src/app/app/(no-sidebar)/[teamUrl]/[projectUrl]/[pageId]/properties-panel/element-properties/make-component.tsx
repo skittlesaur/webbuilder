@@ -28,8 +28,7 @@ const MakeComponentButton = () => {
     }
 
     addComponent(newComponent)
-    updateElement({
-      ...element,
+    updateElement(element.id, {
       componentId: newComponent.id,
     })
     toast.success('Component created')

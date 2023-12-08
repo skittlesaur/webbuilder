@@ -1,7 +1,6 @@
 import type { CSSProperties } from 'react'
 import { toast } from 'sonner'
 import { create } from 'zustand'
-import {} from 'zustand/middleware'
 
 export interface Breakpoint {
   id: string
@@ -467,6 +466,34 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
         (component) => component.id !== componentId
       ),
     })
+
+    const deepRemoveComponent = (el: Element): Element | string => {
+      if (typeof el === 'string') return el
+
+      if (el.componentId === componentId) {
+        return {
+          ...el,
+          componentId: undefined,
+        }
+      }
+
+      const updatedChildren = el.children.map((child) =>
+        deepRemoveComponent(child as Element)
+      )
+
+      const filteredChildren = updatedChildren.filter((child) => child !== null)
+
+      return {
+        ...el,
+        children: filteredChildren.flat(),
+      } as Element
+    }
+
+    const newElements = get()
+      .elements.map((el) => deepRemoveComponent(el))
+      .flat() as Element[]
+
+    set({ elements: newElements })
   },
   variables: [],
   setVariables: (variables) => {

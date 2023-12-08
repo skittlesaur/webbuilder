@@ -7,10 +7,22 @@ import {
   ContextMenuTrigger,
 } from 'ui'
 import Image from 'next/image'
+import { createId } from '@paralleldrive/cuid2'
 import Element from '../../add-elements/element'
 import ActionPanelSeparator from '../../separator'
 import ComponentsDeleteButton from './delete'
+import type { Element as ElementType } from '@/stores/canvas-store'
 import { useCanvasStore } from '@/stores/canvas-store'
+
+const deepCloneChildren = (children: ElementType | string) => {
+  if (typeof children === 'string') return children
+
+  return {
+    ...children,
+    id: createId(),
+    children: children.children?.map(deepCloneChildren),
+  }
+}
 
 const ComponentsDisplay = () => {
   const components = useCanvasStore((state) => state.components)
@@ -40,11 +52,10 @@ const ComponentsDisplay = () => {
                 attributes={component.element.attributes}
                 componentId={component.id}
                 element={component.element.type}
-                elementId={component.element.id}
                 mediaQueries={component.element.mediaQueries}
                 style={component.element.style}
                 title={component.name}>
-                {component.element.children}
+                {component.element.children?.map(deepCloneChildren)}
               </Element>
             </ContextMenuTrigger>
             <ContextMenuContent>

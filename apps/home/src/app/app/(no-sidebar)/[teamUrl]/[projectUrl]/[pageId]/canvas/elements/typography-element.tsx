@@ -169,12 +169,9 @@ const TypographyElement = ({ element }: { element: Element }) => {
         return newElement
       })
 
-      const newElement: Element = {
-        ...element,
+      updateElement(element.id, {
         children: newChildren || [],
-      }
-
-      updateElement(newElement)
+      })
     },
   })
 
@@ -239,7 +236,7 @@ const TypographyElement = ({ element }: { element: Element }) => {
               </button>
             ))}
             {/* <button
-              className="p-1 rounded transition-all duration-100 ease-in-out text-neutral-400/80 hover:text-white/90 hover:bg-secondary"
+              className="p-1 transition-all duration-100 ease-in-out rounded text-neutral-400/80 hover:text-white/90 hover:bg-secondary"
               type="button"
               onClick={handleWrapInSpan}>
               <span className="sr-only">Wrap in span</span>
@@ -249,8 +246,8 @@ const TypographyElement = ({ element }: { element: Element }) => {
         </BubbleMenu>
       ) : null}
       <EditorContent
-        editor={editor}
         className="w-full h-full [&_*]:w-full [&_*]:h-full"
+        editor={editor}
         onBlur={() => {
           // clear selection
           window.getSelection()?.removeAllRanges()

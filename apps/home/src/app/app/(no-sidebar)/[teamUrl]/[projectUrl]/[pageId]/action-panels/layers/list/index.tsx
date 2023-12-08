@@ -15,24 +15,19 @@ const LayersList = () => {
   const components = useCanvasStore((s) => s.components)
 
   const recursiveFormat = useCallback(
-    (element) => {
+    (element, componentChild = false) => {
       if (typeof element === 'string') return null
 
+      let isComponent = false
       if (element.componentId) {
         const component = components.find((c) => c.id === element.componentId)
 
-        if (component)
-          return {
-            id: element.id,
-            text: component.name,
-            children: [],
-            component: true,
-          }
+        if (component) isComponent = true
       }
 
       const children =
         element.children
-          .map((child) => recursiveFormat(child))
+          .map((child) => recursiveFormat(child, componentChild || isComponent))
           .filter((child) => child) || []
 
       const someChildString = element.children.find(
@@ -43,6 +38,7 @@ const LayersList = () => {
         id: element.id,
         text: someChildString || element.type,
         children,
+        component: componentChild || isComponent,
       }
     },
     [components]
