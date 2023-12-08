@@ -83,3 +83,29 @@
     transform: rotate(360deg);
   }
 }
+
+.ol-mdx {
+  counter-reset: item;
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.ol-mdx > li {
+  display: flex;
+  align-items: start;
+  counter-increment: item;
+}
+
+.ol-mdx > li::before {
+  margin-top: 2px;
+  content: counter(item);
+  display: inline-block;
+  background-color: #121825;
+  border: 1px solid #1f2937;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.25rem;
+  color: white;
+  text-align: center;
+  margin-right: 0.5rem;
+}

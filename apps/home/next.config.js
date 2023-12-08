@@ -1,4 +1,8 @@
-module.exports = {
+const withMDX = require('@next/mdx')()
+
+module.exports = withMDX({
+  pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
+
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/i,
@@ -18,6 +22,10 @@ module.exports = {
         protocol: 'https',
         hostname: 'builder.baraa.app',
       },
+      {
+        protocol: 'https',
+        hostname: 'baraa.app',
+      },
     ],
   },
 
@@ -30,4 +38,4 @@ module.exports = {
       },
     ]
   },
-}
+})
