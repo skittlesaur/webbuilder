@@ -42,7 +42,7 @@ const FillColorStyles = ({ setFills }) => {
               key={style.name}
               type="button"
               onClick={() => {
-                setFills([style])
+                setFills((prev) => [...prev, style])
                 setStylePickerOpen(false)
               }}>
               <div className="flex items-center gap-1.5">

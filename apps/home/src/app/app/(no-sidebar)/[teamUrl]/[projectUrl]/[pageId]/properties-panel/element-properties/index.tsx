@@ -48,24 +48,20 @@ const ElementProperties = () => {
   if (!activeElement) return null
 
   const getStyleAttribute = (attribute: string) => {
-    if (selectedMediaQuery !== null) {
-      const queries = Object.keys(
-        (activeElement.mediaQueries || {}) as Record<string, unknown>
-      )
-        .filter((mq) => Number(mq) <= (selectedMediaQuery || 0))
-        .sort((a, b) => Number(a) - Number(b))
+    const queries = Object.keys(
+      (activeElement.mediaQueries || {}) as Record<string, unknown>
+    )
+      .filter((mq) => Number(mq) <= (selectedMediaQuery || Infinity))
+      .sort((a, b) => Number(a) - Number(b))
 
-      const queryStyles = queries.reduce((acc, mq) => {
-        return {
-          ...acc,
-          ...activeElement.mediaQueries?.[mq],
-        }
-      }, {})
+    const queryStyles = queries.reduce((acc, mq) => {
+      return {
+        ...acc,
+        ...activeElement.mediaQueries?.[mq],
+      }
+    }, {})
 
-      return queryStyles[attribute] || activeElement.style[attribute]
-    }
-
-    return activeElement.style[attribute]
+    return queryStyles[attribute] || activeElement.style[attribute]
   }
 
   return (

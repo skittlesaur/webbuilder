@@ -1,3 +1,4 @@
+import type { CSSProperties} from 'react';
 import { useMemo, useRef } from 'react'
 import Element from './elements'
 import { useCanvasStore } from '@/stores/canvas-store'
@@ -47,20 +48,24 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
         data-breakpoint="true"
         data-default-breakpoint={breakpoint.isDefault ? 'true' : undefined}
         ref={ref}
-        style={{
-          position: 'relative',
-          display: 'flex',
-          flexDirection: 'column',
-          width: '100%',
-          backgroundColor: 'white',
-          color: 'black',
-          fontSize: '1rem',
-          ...bodyStyles,
-          maxWidth: '100%',
-          minWidth: '100%',
-          overflowX: 'hidden',
-          minHeight: breakpoint.minHeight,
-        }}>
+        style={
+          {
+            position: 'relative',
+            display: 'flex',
+            flexDirection: 'column',
+            width: '100%',
+            backgroundColor: 'white',
+            color: 'black',
+            fontSize: '1rem',
+            ...bodyStyles,
+            maxWidth: '100%',
+            minWidth: '100%',
+            overflowX: 'hidden',
+            minHeight: breakpoint.minHeight,
+            '--vw': `${breakpoint.width}px`,
+            '--vh': `${breakpoint.minHeight}px`,
+          } as CSSProperties
+        }>
         {elements.map((element) => (
           <Element
             element={element}

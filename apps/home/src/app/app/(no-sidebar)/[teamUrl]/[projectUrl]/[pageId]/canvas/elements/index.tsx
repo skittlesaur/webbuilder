@@ -9,7 +9,16 @@ import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
 import isTypographyElement from '@/lib/is-typography-element'
 
-const VOID_ELEMENTS = ['img', 'input', 'br', 'hr', 'link', 'meta', 'input', 'textarea']
+const VOID_ELEMENTS = [
+  'img',
+  'input',
+  'br',
+  'hr',
+  'link',
+  'meta',
+  'input',
+  'textarea',
+]
 
 const Element = ({
   element,
@@ -129,16 +138,73 @@ const Element = ({
   const queries = Object.keys(
     (element.mediaQueries || {}) as Record<string, unknown>
   )
-    .filter((mq) => Number(mq) <= (mediaQuery || 0))
+    .filter((mq) => Number(mq) <= (mediaQuery || Infinity))
     .sort((a, b) => Number(a) - Number(b))
 
   const queryStyles = queries.reduce((acc, mq) => {
+    const query = element.mediaQueries?.[mq]
+    if (!query) return acc
+
+    const formattedQuery = Object.keys(query).reduce((a, key) => {
+      const value = query[key]
+
+      if (value === undefined || value === null) return acc
+
+      if (value.endsWith('vh')) {
+        const num = Number(value.replace('vh', ''))
+        return {
+          ...a,
+          [key]: `calc(var(--vh) * ${num / 100})`,
+        }
+      }
+
+      if (value.endsWith('vw')) {
+        const num = Number(value.replace('vw', ''))
+        return {
+          ...a,
+          [key]: `calc(var(--vw) * ${num / 100})`,
+        }
+      }
+
+      return {
+        ...a,
+        [key]: value,
+      }
+    }, {})
+
     return {
       ...acc,
-      ...element.mediaQueries?.[mq],
+      ...formattedQuery,
     }
     // eslint-disable-next-line @typescript-eslint/prefer-reduce-type-parameter, @typescript-eslint/no-explicit-any -- no need to specify type
   }, {} as any)
+
+  const formattedStyle = Object.keys(element.style || {}).reduce((acc, key) => {
+    const value = element.style?.[key]
+
+    if (value === undefined || value === null) return acc
+
+    if (value.endsWith('vh')) {
+      const num = Number(value.replace('vh', ''))
+      return {
+        ...acc,
+        [key]: `calc(var(--vh) * ${num / 100})`,
+      }
+    }
+
+    if (value.endsWith('vw')) {
+      const num = Number(value.replace('vw', ''))
+      return {
+        ...acc,
+        [key]: `calc(var(--vw) * ${num / 100})`,
+      }
+    }
+
+    return {
+      ...acc,
+      [key]: value,
+    }
+  }, {})
 
   if (VOID_ELEMENTS.includes(element.type as string))
     return (
@@ -152,7 +218,7 @@ const Element = ({
         data-droppable="true"
         id={element.id}
         style={{
-          ...element.style,
+          ...formattedStyle,
           ...queryStyles,
           paddingLeft: isDraggingElement
             ? `0.5rem`
@@ -196,7 +262,7 @@ const Element = ({
       data-droppable="true"
       id={element.id}
       style={{
-        ...element.style,
+        ...formattedStyle,
         ...queryStyles,
         paddingLeft: isDraggingElement
           ? `0.5rem`
@@ -229,9 +295,7 @@ const Element = ({
       {gradientEditor !== null && selectedElementId === element.id && (
         <GradientEditor />
       )}
-      {isUnstyled ? (
-        <UnstyledDisplay />
-      ) : null}
+      {isUnstyled ? <UnstyledDisplay /> : null}
       {isTypographyElement(element) ? (
         <TypographyElement element={element} />
       ) : (

@@ -1,9 +1,10 @@
 import { memo, useEffect, useState } from 'react'
 import FillItem from './item'
-import { useInteractionsStore } from '@/stores/interactions-store'
-import { Variable, useCanvasStore } from '@/stores/canvas-store'
-import {} from 'sonner'
 import FillColorStyles from './color-styles'
+import AddFill from './add'
+import { useInteractionsStore } from '@/stores/interactions-store'
+import type { Variable } from '@/stores/canvas-store'
+import { useCanvasStore } from '@/stores/canvas-store'
 
 export const DEFAULT_COLOR: Fill = {
   type: 'color',
@@ -148,17 +149,17 @@ const ElementPropertiesFill = ({ background }: FillProps) => {
   })
   const [colorPicker, setColorPicker] = useState<number | null>(null)
 
-  // const onAddClick = () => {
-  //   if (fills.length === 0) {
-  //     return setFills([DEFAULT_COLOR])
-  //   }
+  const onAddClick = () => {
+    if (fills.length === 0) {
+      return setFills([DEFAULT_COLOR])
+    }
 
-  //   setFills((prev: Fill[]) => {
-  //     const prevWithoutColors = prev.filter((fill) => fill.type !== 'color')
+    setFills((prev: Fill[]) => {
+      const prevWithoutColors = prev.filter((fill) => fill.type !== 'color')
 
-  //     return [...prevWithoutColors, DEFAULT_GRADIENT]
-  //   })
-  // }
+      return [...prevWithoutColors, DEFAULT_GRADIENT]
+    })
+  }
 
   const onConfirm = (data: Fill, index: number) => {
     if (data.type === 'gradient') {
@@ -240,12 +241,12 @@ const ElementPropertiesFill = ({ background }: FillProps) => {
       <div className="flex items-center justify-between">
         <p className="font-medium">Fill</p>
         <div className="flex flex-row-reverse items-center gap-1">
-          {/* <AddFill
+          <AddFill
             shouldAlert={
               fills.length >= 1 && fills.some((i) => i.type === 'color')
             }
             onAddClick={onAddClick}
-          /> */}
+          />
           <FillColorStyles setFills={setFills} />
         </div>
       </div>

@@ -4,14 +4,14 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Input
+  Input,
 } from 'ui'
 import { useEffect, useState } from 'react'
 import cn from 'classnames'
 import { useInteractionsStore } from '@/stores/interactions-store'
 import { useCanvasStore } from '@/stores/canvas-store'
 
-const units = ['px', '%', 'rem', 'em', 'auto'] as const
+const units = ['px', '%', 'rem', 'em', 'vw', 'vh', 'auto'] as const
 type Unit = (typeof units)[number]
 
 interface InputWithUnitProps {
@@ -79,7 +79,7 @@ const InputWithUnit = ({
   if (!selectedElementId) return null
 
   return (
-    <div className="flex relative">
+    <div className="relative flex">
       <Input
         className={cn({
           '!w-16 col-span-3 mx-auto !text-xs !pr-5': !showMeasure,
@@ -110,6 +110,9 @@ const InputWithUnit = ({
           else if (lastChar === 'p') setUnit('px')
           else if (lastChar === 'e') setUnit('em')
           else if (lastChar === 'r') setUnit('rem')
+          else if (lastChar === 'w') setUnit('vw')
+          else if (lastChar === 'h') setUnit('vh')
+          else if (lastChar === 'a') setUnit('auto')
 
           const num = Number(valFormatted)
           if (Number.isNaN(num)) return
