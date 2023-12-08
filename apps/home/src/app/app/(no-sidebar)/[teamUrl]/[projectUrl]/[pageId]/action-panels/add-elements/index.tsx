@@ -6,6 +6,9 @@ import TypographyElements from './typography'
 import { PanelsEnum } from '@/stores/panels-store'
 import type { Element } from '@/stores/canvas-store'
 import ScrollableWrapper from '@/components/scrollable-wrapper'
+import BasicElements from './basic'
+import MediaElements from './media'
+import FormsElements from './forms'
 
 export interface PanelElement {
   Icon: JSX.Element
@@ -31,7 +34,13 @@ const AddElementsPanel = () => {
         <div className="flex flex-col gap-8">
           <LayoutElements />
           <DividerElement />
+          <BasicElements />
+          <DividerElement />
           <TypographyElements />
+          <DividerElement />
+          <MediaElements />
+          <DividerElement />
+          <FormsElements />
         </div>
       </ScrollableWrapper>
     </ActionPanelWrapper>

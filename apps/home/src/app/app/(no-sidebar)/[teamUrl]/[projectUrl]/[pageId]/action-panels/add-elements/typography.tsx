@@ -38,14 +38,7 @@ const TYPOGRAPHY_ELEMENTS: PanelElement[] = [
       color: '#0070f3',
       textDecoration: 'underline',
     },
-    children: [
-      {
-        id: createId(),
-        type: 'span',
-        children: ['Text Link'],
-        style: {},
-      },
-    ],
+    children: ['Text Link'],
     attributes: {
       href: 'https://baraa.app',
       rel: 'noopener noreferrer',
@@ -57,7 +50,7 @@ const TYPOGRAPHY_ELEMENTS: PanelElement[] = [
 const TypographyElements = () => {
   return (
     <>
-      <h1 className="font-medium text-sm">Typography</h1>
+      <h1 className="text-sm font-medium">Typography</h1>
       <div className="grid grid-cols-[repeat(var(--grid-cols-count),1fr)] gap-4 flex-wrap">
         {TYPOGRAPHY_ELEMENTS.map((element) => (
           <Element

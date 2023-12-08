@@ -1,0 +1,15 @@
+<svg viewBox="0 0 52 45" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0.390244" y="-0.390244" width="50.7317" height="11.9675" rx="2.73171"
+    transform="matrix(1 0 0 -1 0.244019 12.1868)" fill="#121825" />
+  <rect x="0.390244" y="-0.390244" width="50.7317" height="11.9675" rx="2.73171"
+    transform="matrix(1 0 0 -1 0.244019 12.1868)" stroke="#F9FAFB" stroke-width="0.780488"
+    stroke-dasharray="1.56 1.56" />
+  <g opacity="0.7">
+    <rect width="51.5122" height="12.748" rx="3.12195" transform="matrix(1 0 0 -1 0.244019 28.8374)"
+      fill="#121825" />
+  </g>
+  <g opacity="0.7">
+    <rect width="51.5122" height="12.748" rx="3.12195" transform="matrix(1 0 0 -1 0.244019 44.7072)"
+      fill="#121825" />
+  </g>
+</svg>

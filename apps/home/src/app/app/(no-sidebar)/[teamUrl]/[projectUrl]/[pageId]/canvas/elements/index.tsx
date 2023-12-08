@@ -9,7 +9,7 @@ import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
 import isTypographyElement from '@/lib/is-typography-element'
 
-const VOID_ELEMENTS = ['img', 'input', 'br', 'hr', 'link', 'meta']
+const VOID_ELEMENTS = ['img', 'input', 'br', 'hr', 'link', 'meta', 'input', 'textarea']
 
 const Element = ({
   element,
@@ -179,6 +179,10 @@ const Element = ({
           setSelectedElementId(element.id === 'root' ? null : element.id)
           setSelectedMediaQuery(mediaQuery)
         }}
+        onFocus={(e) => {
+          // disables editing of text when clicking on element
+          e.target.blur()
+        }}
       />
     )
 
@@ -225,7 +229,7 @@ const Element = ({
       {gradientEditor !== null && selectedElementId === element.id && (
         <GradientEditor />
       )}
-      {isUnstyled && selectedElementId !== element.id ? (
+      {isUnstyled ? (
         <UnstyledDisplay />
       ) : null}
       {isTypographyElement(element) ? (

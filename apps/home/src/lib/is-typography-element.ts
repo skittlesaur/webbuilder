@@ -10,6 +10,8 @@ const isTypographyElement = (element: Partial<Element> & { type: string }): bool
     'h6',
     'p',
     'span',
+    'a',
+    'label'
   ].includes(element.type as string)
 }
 

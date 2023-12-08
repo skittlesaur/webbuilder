@@ -1,0 +1,9 @@
+<svg viewBox="0 0 65 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="64.5801" height="15.9819" rx="3.91395" transform="matrix(1 0 0 -1 0 15.9819)"
+    fill="#121825" />
+  <rect x="0.49" y="-0.49" width="53.8153" height="15.0019" rx="3.42395"
+    transform="matrix(1 0 0 -1 0 34.898)" fill="#1F2937" />
+  <rect x="0.49" y="-0.49" width="53.8153" height="15.0019" rx="3.42395"
+    transform="matrix(1 0 0 -1 0 34.898)" stroke="#F9FAFB" stroke-width="0.98"
+    stroke-dasharray="1.96 1.96" />
+</svg>

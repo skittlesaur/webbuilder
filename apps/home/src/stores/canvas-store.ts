@@ -29,6 +29,14 @@ export type ElementType =
   | 'sub'
   | 'a'
   | 'img'
+  | 'button'
+  | 'video'
+  | 'form'
+  | 'input'
+  | 'label'
+  | 'textarea'
+  | 'select'
+  | 'option'
 
 export interface Element {
   id: string
