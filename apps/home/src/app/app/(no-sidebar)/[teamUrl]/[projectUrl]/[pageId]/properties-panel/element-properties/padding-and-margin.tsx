@@ -2,6 +2,7 @@ import { useState } from 'react'
 import cn from 'classnames'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'ui'
+import { useDetectClickOutside } from 'react-detect-click-outside'
 import InputWithUnit from './input-with-unit'
 
 const Button = ({
@@ -16,6 +17,11 @@ const Button = ({
   className?: string
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false)
+  const ref = useDetectClickOutside({
+    onTriggered: () => {
+      setIsOpen(false)
+    },
+  })
 
   return (
     <div className="relative">
@@ -42,6 +48,7 @@ const Button = ({
             exit={{ opacity: 0, y: 0 }}
             initial={{ opacity: 0, y: -30 }}
             key={type}
+            ref={ref}
             transition={{ duration: 0.1, ease: 'easeInOut' }}>
             <p className="text-xs tracking-wide text-white/80">{title}</p>
             <div className="flex items-center w-40">
@@ -73,10 +80,10 @@ const ElementPropertiesPaddingAndMargin = (
   props: ElementPropertiesPaddingAndMarginProps
 ) => {
   return (
-    <div className="p-4 border-b border-border flex flex-col gap-4">
+    <div className="flex flex-col gap-4 p-4 border-b border-border">
       <p className="font-medium">Margin & Padding</p>
-      <div className="text-xs w-full h-32 mx-auto border border-border rounded-md flex flex-col p-1">
-        <div className="w-full h-5 flex items-center justify-center">
+      <div className="flex flex-col w-full h-32 p-1 mx-auto text-xs border rounded-md border-border">
+        <div className="flex items-center justify-center w-full h-5">
           <Button
             initial={props.marginTop}
             title="Margin Top"
@@ -84,7 +91,7 @@ const ElementPropertiesPaddingAndMargin = (
           />
         </div>
         <div className="flex flex-1">
-          <div className="w-5 h-full flex items-center justify-center">
+          <div className="flex items-center justify-center w-5 h-full">
             <Button
               className="-rotate-90"
               initial={props.marginLeft}
@@ -92,16 +99,16 @@ const ElementPropertiesPaddingAndMargin = (
               type="marginLeft"
             />
           </div>
-          <div className="flex-1 p-3 m-1 flex flex-col rounded-md border border-border">
-            <div className="w-full h-5 flex items-center justify-center">
+          <div className="flex flex-col flex-1 p-3 m-1 border rounded-md border-border">
+            <div className="flex items-center justify-center w-full h-5">
               <Button
                 initial={props.paddingTop}
                 title="Padding Top"
                 type="paddingTop"
               />
             </div>
-            <div className="flex flex-1 items-center justify-between">
-              <div className="w-5 h-full flex items-center justify-center">
+            <div className="flex items-center justify-between flex-1">
+              <div className="flex items-center justify-center w-5 h-full">
                 <Button
                   className="-rotate-90"
                   initial={props.paddingLeft}
@@ -109,7 +116,7 @@ const ElementPropertiesPaddingAndMargin = (
                   type="paddingLeft"
                 />
               </div>
-              <div className="w-5 h-full flex items-center justify-center">
+              <div className="flex items-center justify-center w-5 h-full">
                 <Button
                   className="rotate-90"
                   initial={props.paddingRight}
@@ -118,7 +125,7 @@ const ElementPropertiesPaddingAndMargin = (
                 />
               </div>
             </div>
-            <div className="w-full h-5 flex items-center justify-center">
+            <div className="flex items-center justify-center w-full h-5">
               <Button
                 initial={props.paddingBottom}
                 title="Padding Bottom"
@@ -126,7 +133,7 @@ const ElementPropertiesPaddingAndMargin = (
               />
             </div>
           </div>
-          <div className="w-5 h-full flex items-center justify-center">
+          <div className="flex items-center justify-center w-5 h-full">
             <Button
               className="rotate-90"
               initial={props.marginRight}
@@ -135,7 +142,7 @@ const ElementPropertiesPaddingAndMargin = (
             />
           </div>
         </div>
-        <div className="w-full h-5 flex items-center justify-center">
+        <div className="flex items-center justify-center w-full h-5">
           <Button
             initial={props.marginBottom}
             title="Margin Bottom"

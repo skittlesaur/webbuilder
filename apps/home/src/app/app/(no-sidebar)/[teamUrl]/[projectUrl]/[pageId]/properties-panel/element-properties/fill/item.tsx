@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Input } from 'ui'
+import { useDetectClickOutside } from 'react-detect-click-outside'
 import { ChromePicker } from 'react-color'
 import cn from 'classnames'
 import {
@@ -17,6 +18,7 @@ interface ItemProps {
   onConfirm: (data: Fill) => void
   colorPickerClick: () => void
   colorPickerOpen: boolean
+  closeColorPicker: () => void
 }
 
 const ColorFill = ({
@@ -24,9 +26,16 @@ const ColorFill = ({
   onConfirm,
   colorPickerClick,
   colorPickerOpen,
+  closeColorPicker,
 }: ItemProps & { fill: { type: 'color' } }) => {
   const [color, setColor] = useState<string>(fill.value)
   const [opacity, setOpacity] = useState<number>(fill.opacity)
+
+  const ref = useDetectClickOutside({
+    onTriggered: () => {
+      closeColorPicker()
+    },
+  })
 
   const handleColorBlur = () => {
     const colorValue = color.startsWith('#')
@@ -53,10 +62,10 @@ const ColorFill = ({
 
   return (
     <>
-      <div className="relative flex items-center gap-2 justify-between">
+      <div className="relative flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <button
-            className="w-5 h-5 rounded-sm border border-border"
+            className="w-5 h-5 border rounded-sm border-border"
             style={{
               background: `${fill.value}${opacityToHex(fill.opacity / 100)}`,
             }}
@@ -96,7 +105,7 @@ const ColorFill = ({
           </div>
         </div>
         <button
-          className="select-none rounded-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+          className="rounded-full select-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
           type="button"
           onClick={() => {
             //
@@ -105,8 +114,10 @@ const ColorFill = ({
         </button>
       </div>
       {colorPickerOpen ? (
-        <div className="select-none bg-background border border-border flex flex-col gap-2 rounded-md overflow-hidden absolute right-full top-0 -translate-x-6 shadow-lg -translate-y-1/2">
-          <div className="flex items-center text-xs px-2 pt-1">
+        <div
+          className="absolute top-0 flex flex-col gap-2 overflow-hidden -translate-x-6 -translate-y-1/2 border rounded-md shadow-lg select-none bg-background border-border right-full"
+          ref={ref}>
+          <div className="flex items-center px-2 pt-1 text-xs">
             {['Color', 'Gradient'].map((item) => (
               <button
                 className={cn('px-1 py-1', {
@@ -155,6 +166,7 @@ const GradientFill = ({
   onConfirm,
   colorPickerClick,
   colorPickerOpen,
+  closeColorPicker,
 }: ItemProps & { fill: { type: 'gradient' } }) => {
   const selectedGradientStep = useInteractionsStore(
     (s) => s.selectedGradientStep
@@ -162,6 +174,11 @@ const GradientFill = ({
   const setSelectedGradientStep = useInteractionsStore(
     (s) => s.setSelectedGradientStep
   )
+  const ref = useDetectClickOutside({
+    onTriggered: () => {
+      closeColorPicker()
+    },
+  })
 
   const [dragging, setDragging] = useState<number | null>(null)
 
@@ -270,10 +287,10 @@ const GradientFill = ({
 
   return (
     <>
-      <div className="relative flex items-center gap-2 justify-between">
+      <div className="relative flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <button
-            className="w-5 h-5 rounded-sm border border-border"
+            className="w-5 h-5 border rounded-sm border-border"
             style={{
               background: gradientToBackground(fill.value, fill.degree),
             }}
@@ -284,8 +301,10 @@ const GradientFill = ({
         </div>
       </div>
       {colorPickerOpen ? (
-        <div className="select-none bg-background border border-border flex flex-col gap-2 rounded-md absolute right-full top-0 -translate-x-6 shadow-lg -translate-y-1/2">
-          <div className="flex items-center text-xs px-2 pt-1">
+        <div
+          className="absolute top-0 flex flex-col gap-2 -translate-x-6 -translate-y-1/2 border rounded-md shadow-lg select-none bg-background border-border right-full"
+          ref={ref}>
+          <div className="flex items-center px-2 pt-1 text-xs">
             {['Color', 'Gradient'].map((item) => (
               <button
                 className={cn('px-1 py-1', {
@@ -305,7 +324,7 @@ const GradientFill = ({
             ))}
           </div>
           <div
-            className="relative h-12 w-full flex items-end mb-2"
+            className="relative flex items-end w-full h-12 mb-2"
             ref={wrapperRef}
             role="button"
             tabIndex={-1}
@@ -345,7 +364,7 @@ const GradientFill = ({
               </button>
             ))}
             <div
-              className="h-4 w-full"
+              className="w-full h-4"
               style={{
                 background: gradientToBackground(fill.value, 90),
               }}
@@ -383,10 +402,12 @@ const FillItem = ({
   onConfirm,
   colorPickerClick,
   colorPickerOpen,
+  closeColorPicker,
 }: ItemProps) => {
   if (fill.type === 'color')
     return (
       <ColorFill
+        closeColorPicker={closeColorPicker}
         colorPickerClick={colorPickerClick}
         colorPickerOpen={colorPickerOpen}
         fill={fill}
@@ -396,6 +417,7 @@ const FillItem = ({
 
   return (
     <GradientFill
+      closeColorPicker={closeColorPicker}
       colorPickerClick={colorPickerClick}
       colorPickerOpen={colorPickerOpen}
       fill={fill}

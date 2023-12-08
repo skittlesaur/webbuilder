@@ -212,7 +212,7 @@ const ElementPropertiesFill = ({ background }: FillProps) => {
   }, [gradientEditor])
 
   return (
-    <div className="p-4 border-b border-border flex flex-col gap-4">
+    <div className="flex flex-col gap-4 p-4 border-b border-border">
       <div className="flex items-center justify-between">
         <p className="font-medium">Fill</p>
         <AddFill
@@ -226,6 +226,7 @@ const ElementPropertiesFill = ({ background }: FillProps) => {
         <div className="relative flex flex-col gap-3">
           {fills.map((fill, index) => (
             <FillItem
+              closeColorPicker={() => setColorPicker(null)}
               colorPickerClick={() => {
                 setColorPicker((prev) => {
                   if (prev === index) return null
