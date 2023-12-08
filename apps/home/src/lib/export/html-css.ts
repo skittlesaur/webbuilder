@@ -1,7 +1,11 @@
 import type { CSSProperties } from 'react'
 import { toast } from 'sonner'
 import { createId } from '@paralleldrive/cuid2'
-import { useCanvasStore, type Breakpoint, type Element } from '@/stores/canvas-store'
+import {
+  useCanvasStore,
+  type Breakpoint,
+  type Element,
+} from '@/stores/canvas-store'
 import FontsData from '@/lib/fonts-data.json'
 
 const defaultCss = `
@@ -65,7 +69,8 @@ const getElementCss = (style: CSSProperties) => {
 }
 
 const exportHtmlCss = () => {
-  const { elements, breakpoints, bodyStyles } = useCanvasStore.getState()
+  const { elements, breakpoints, bodyStyles, variables } =
+    useCanvasStore.getState()
 
   const html = document.createElement('html')
   const head = document.createElement('head')
@@ -73,19 +78,28 @@ const exportHtmlCss = () => {
 
   let css = defaultCss
 
+  if (variables?.length > 0)
+    css += `:root {
+    ${variables
+      .map(
+        (variable) =>
+          `--${variable.name.replace(/ /g, '-').toLowerCase()}: ${
+            variable.value
+          };`
+      )
+      .join('\n')}
+}\n\n`
+
   const bodyCss = getElementCss(bodyStyles as CSSProperties)
 
-  if (bodyCss)
-    css += `body { \n${bodyCss}; \n}\n\n`
+  if (bodyCss) css += `body { \n${bodyCss}; \n}\n\n`
 
   const fontFamilies = new Set<string>()
 
   // viewport -> {className: CSSProperties}
   const mediaQueries = {}
 
-  const defaultMediaQuery = breakpoints.find(
-    (bp) => bp.isDefault
-  ) as Breakpoint
+  const defaultMediaQuery = breakpoints.find((bp) => bp.isDefault) as Breakpoint
   const smallestMediaQuery = breakpoints.reduce((acc, bp) => {
     if (bp.width < acc.width) return bp
     return acc
@@ -120,10 +134,7 @@ const exportHtmlCss = () => {
 
       propertiesInBreakpoints.push(
         ...Object.keys(
-          (element.mediaQueries?.[mediaQuery] || {}) as Record<
-            string,
-            unknown
-          >
+          (element.mediaQueries?.[mediaQuery] || {}) as Record<string, unknown>
         )
       )
 
@@ -136,27 +147,24 @@ const exportHtmlCss = () => {
     if (!isDefaultSmallest) {
       mediaQueries[defaultMediaQuery.width] = {
         ...mediaQueries[defaultMediaQuery.width],
-        [elementClassName]: propertiesInBreakpoints.reduce(
-          (acc, property) => {
-            if (element.mediaQueries?.[defaultMediaQuery.width]?.[property]) {
-              return {
-                ...acc,
-                [property]:
-                  element.mediaQueries?.[defaultMediaQuery.width]?.[property],
-              }
+        [elementClassName]: propertiesInBreakpoints.reduce((acc, property) => {
+          if (element.mediaQueries?.[defaultMediaQuery.width]?.[property]) {
+            return {
+              ...acc,
+              [property]:
+                element.mediaQueries?.[defaultMediaQuery.width]?.[property],
             }
+          }
 
-            if (element.style?.[property]) {
-              return {
-                ...acc,
-                [property]: element.style?.[property],
-              }
+          if (element.style?.[property]) {
+            return {
+              ...acc,
+              [property]: element.style?.[property],
             }
+          }
 
-            return acc
-          },
-          {}
-        ),
+          return acc
+        }, {}),
       }
     }
 
@@ -194,16 +202,12 @@ const exportHtmlCss = () => {
   const propertiesInBreakpoints: string[] = []
 
   Object.entries(mediaQueries).forEach(([mediaQuery, styles]) => {
-    const styleString = Object.entries(
-      styles as Record<string, CSSProperties>
-    )
+    const styleString = Object.entries(styles as Record<string, CSSProperties>)
       .map(([className, style]) => {
         const properties = Object.keys(style as CSSProperties)
         propertiesInBreakpoints.push(...properties)
 
-        return `.${className} { \n${getElementCss(
-          style as CSSProperties
-        )}; \n}`
+        return `.${className} { \n${getElementCss(style as CSSProperties)}; \n}`
       })
       .join('\n\n')
 
