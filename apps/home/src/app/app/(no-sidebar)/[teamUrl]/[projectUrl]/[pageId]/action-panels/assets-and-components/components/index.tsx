@@ -6,11 +6,11 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from 'ui'
+import Image from 'next/image'
 import Element from '../../add-elements/element'
 import ActionPanelSeparator from '../../separator'
 import ComponentsDeleteButton from './delete'
 import { useCanvasStore } from '@/stores/canvas-store'
-import Image from 'next/image'
 
 const ComponentsDisplay = () => {
   const components = useCanvasStore((state) => state.components)

@@ -1,7 +1,7 @@
 import { createId } from '@paralleldrive/cuid2'
 import html2canvas from 'html2canvas'
 import { toast } from 'sonner'
-import type { DefinedComponent } from '@/stores/canvas-store'
+import type { DefinedComponent , Element } from '@/stores/canvas-store'
 import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
 import { findElementByIdArr } from '@/lib/find-element-by-id'
@@ -22,10 +22,20 @@ const MakeComponentButton = () => {
 
     const { id: _, ...rest } = element
 
+    const deepCloneChildren = (children: Element | string) => {
+      if (typeof children === 'string') return children
+
+      return {
+        ...children,
+        id: createId(),
+        children: children.children?.map(deepCloneChildren),
+      }
+    }
+
     const newComponent: DefinedComponent = {
       id: createId(),
       name: 'Component',
-      element: rest,
+      element: deepCloneChildren(rest as Element),
     }
 
     addComponent(newComponent)
