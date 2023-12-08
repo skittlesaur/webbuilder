@@ -72,19 +72,20 @@ const ElementPropertiesParentAndMediaQuery = () => {
           </Tooltip>
         </TooltipProvider>
         <Select
-          defaultValue={selectedMediaQuery || breakpoints[0]?.width}
+          defaultValue={String(selectedMediaQuery || breakpoints[0]?.width)}
           onValueChange={(value) => {
-            const breakpoint = breakpoints.find((b) => b.width === value)
+            const val = Number(value)
+            const breakpoint = breakpoints.find((b) => b.width === val)
             if (!breakpoint) return
             if (breakpoint.isDefault) setSelectedMediaQuery(null)
-            else setSelectedMediaQuery(value)
+            else setSelectedMediaQuery(val)
           }}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Open in" />
           </SelectTrigger>
           <SelectContent>
             {breakpoints.map((b) => (
-              <SelectItem key={b.id} value={b.width}>
+              <SelectItem key={b.id} value={String(b.width)}>
                 {capitalizeFirstLetter(b.id)}
               </SelectItem>
             ))}

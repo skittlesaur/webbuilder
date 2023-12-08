@@ -12,11 +12,11 @@ import ImageAttributes from './image'
 import AccessibilityAttributes from './accessibility'
 import MakeComponentButton from './make-component'
 import ElementPropertiesDisplay from './display'
+import InputAttributes from './input'
 import { useInteractionsStore } from '@/stores/interactions-store'
 import { findElementByIdArr } from '@/lib/find-element-by-id'
 import { useCanvasStore } from '@/stores/canvas-store'
 import ScrollableWrapper from '@/components/scrollable-wrapper'
-import InputAttributes from './input'
 
 enum PropertyPanel {
   STYLE,
