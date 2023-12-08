@@ -16,6 +16,7 @@ import { useInteractionsStore } from '@/stores/interactions-store'
 import { findElementByIdArr } from '@/lib/find-element-by-id'
 import { useCanvasStore } from '@/stores/canvas-store'
 import ScrollableWrapper from '@/components/scrollable-wrapper'
+import InputAttributes from './input'
 
 enum PropertyPanel {
   STYLE,
@@ -70,18 +71,18 @@ const ElementProperties = () => {
   return (
     <Fragment key={`${selectedElementId}-${selectedMediaQuery}`}>
       <div className="relative z-[1] bg-background flex items-center w-full px-2 border-b border-border">
-          {panels.map((p) => (
-            <button
-              className={cn('text-xs px-2 py-2', {
-                'text-white': activePanel === p.panel,
-                'text-white/70': activePanel !== p.panel,
-              })}
-              key={p.panel}
-              type="button"
-              onClick={() => setActivePanel(p.panel)}>
-              {p.title}
-            </button>
-          ))}
+        {panels.map((p) => (
+          <button
+            className={cn('text-xs px-2 py-2', {
+              'text-white': activePanel === p.panel,
+              'text-white/70': activePanel !== p.panel,
+            })}
+            key={p.panel}
+            type="button"
+            onClick={() => setActivePanel(p.panel)}>
+            {p.title}
+          </button>
+        ))}
       </div>
       <ScrollableWrapper>
         <ElementPropertiesParent />
@@ -146,6 +147,14 @@ const ElementProperties = () => {
               alt={activeElement.attributes?.alt as string | undefined}
               isImage={activeElement.type === 'img'}
               src={activeElement.attributes?.src as string | undefined}
+            />
+            <InputAttributes
+              isInput={activeElement.type === 'input'}
+              placeholder={
+                activeElement.attributes?.placeholder as string | undefined
+              }
+              type={activeElement.attributes?.type as string | undefined}
+              disabled={activeElement.attributes?.disabled as boolean}
             />
             <AccessibilityAttributes
               ariaLabel={
