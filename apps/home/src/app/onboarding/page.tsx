@@ -1,7 +1,7 @@
 'use client'
-import { Input, CheckboxAnimated } from 'ui'
+import { Input } from 'ui'
 import { useRef, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
@@ -13,7 +13,6 @@ import useUser from '@/resolvers/use-user'
 
 const OnboardingPage = () => {
   const emailRef = useRef<HTMLInputElement>(null)
-  const [isPasswordFocused, setIsPasswordFocused] = useState(false)
   const [isPasswordHidden, setIsPasswordHidden] = useState(true)
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -89,13 +88,7 @@ const OnboardingPage = () => {
               placeholder="Password"
               type={isPasswordHidden ? 'password' : 'text'}
               value={password}
-              onBlur={() => {
-                const isEmpty = password.length === 0
-                if (isEmpty) setIsPasswordFocused(false)
-                else setIsPasswordFocused(true)
-              }}
               onChange={(e) => setPassword(e.target.value)}
-              onFocus={() => setIsPasswordFocused(true)}
             />
             <button
               className="absolute p-2 -translate-y-1/2 rounded top-1/2 right-4 hover:bg-secondary"

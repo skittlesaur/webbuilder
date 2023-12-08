@@ -1,4 +1,3 @@
-import { createId } from '@paralleldrive/cuid2'
 import Element from './element'
 import type { PanelElement } from '.'
 import HeadingIcon from '@/icons/elements/heading.svg'

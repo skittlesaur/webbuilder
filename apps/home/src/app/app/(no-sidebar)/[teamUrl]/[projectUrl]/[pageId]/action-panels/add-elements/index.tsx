@@ -3,12 +3,12 @@ import ActionPanelWrapper from '..'
 import AddElementsPanelHeader from './header'
 import LayoutElements from './layout'
 import TypographyElements from './typography'
+import FormsElements from './forms'
+import BasicElements from './basic'
+import MediaElements from './media'
 import { PanelsEnum } from '@/stores/panels-store'
 import type { Element } from '@/stores/canvas-store'
 import ScrollableWrapper from '@/components/scrollable-wrapper'
-import BasicElements from './basic'
-import MediaElements from './media'
-import FormsElements from './forms'
 
 export interface PanelElement {
   Icon: JSX.Element
