@@ -21,6 +21,8 @@ const PropertiesPanel = dynamic(() => import('./properties-panel'), {
 const ProjectsPage = () => {
   const [pageLoaded, setPageLoaded] = useState(false)
 
+  const variables = useCanvasStore((s) => s.variables) || []
+
   const setElements = useCanvasStore((s) => s.setElements)
   const setBodyStyles = useCanvasStore((s) => s.setBodyStyles)
   const setCustomFonts = useCanvasStore((s) => s.setCustomFonts)
@@ -28,6 +30,7 @@ const ProjectsPage = () => {
   const setComponents = useCanvasStore((s) => s.setComponents)
   const setZoom = useCanvasStore((s) => s.setZoom)
   const setPan = useCanvasStore((s) => s.setPan)
+  const setVariables = useCanvasStore((s) => s.setVariables)
   const { projectPage } = useProjectPage()
 
   useEffect(() => {
@@ -41,6 +44,7 @@ const ProjectsPage = () => {
       setBodyStyles(projectPage.bodyStyles)
       setCustomFonts(projectPage.customFonts)
       setAssets(projectPage.assets)
+      setVariables(projectPage.variables || [])
       setComponents(projectPage.components)
       setPageLoaded(true)
     }
@@ -51,7 +55,12 @@ const ProjectsPage = () => {
   if (!pageLoaded) return <FullLoader title="Loading Project" />
 
   return (
-    <div className="relative flex w-screen h-screen overflow-hidden">
+    <div
+      className="relative flex w-screen h-screen overflow-hidden"
+      style={variables.reduce((prev, curr) => {
+        prev[`--${curr.name.toLowerCase().replace(/ /g, '-')}`] = curr.value
+        return prev
+      }, {})}>
       <DevTools />
       <SideActions />
       <div className="flex flex-col flex-1">

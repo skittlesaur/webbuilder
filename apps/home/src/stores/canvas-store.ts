@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react'
+import { toast } from 'sonner'
 import { create } from 'zustand'
 import {} from 'zustand/middleware'
 
@@ -85,6 +86,12 @@ export interface Project {
   }[]
 }
 
+export interface Variable {
+  name: string
+  type: 'color' | 'string' | 'number'
+  value: string | number
+}
+
 interface CanvasStore {
   zoom: number
   setZoom: (zoom: number) => void
@@ -133,6 +140,10 @@ interface CanvasStore {
   addComponent: (component: DefinedComponent) => void
   updateComponent: (component: DefinedComponent) => void
   removeComponent: (componentId: string) => void
+  variables: Variable[]
+  setVariables: (variables: Variable[]) => void
+  addVariable: (variable: Variable) => void
+  removeVariable: (variableName: string) => void
 }
 
 export const useCanvasStore = create<CanvasStore>((set, get) => ({
@@ -451,6 +462,22 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
       components: get().components.filter(
         (component) => component.id !== componentId
       ),
+    })
+  },
+  variables: [],
+  setVariables: (variables) => {
+    set({ variables })
+  },
+  addVariable: (variable) => {
+    const existingVariable = get().variables.find(
+      (v) => v.name === variable.name
+    )
+    if (existingVariable) return toast.error('Variable already exists')
+    set({ variables: [...get().variables, variable] })
+  },
+  removeVariable: (variableName) => {
+    set({
+      variables: get().variables.filter((variable) => variable.name !== variableName),
     })
   },
 }))

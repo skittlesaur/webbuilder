@@ -85,6 +85,7 @@ model Page {
   breakpoints      Json[]
   bodyStyles       Json
   assets           Json[]
+  variables        Json[]
   projectId        String
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt

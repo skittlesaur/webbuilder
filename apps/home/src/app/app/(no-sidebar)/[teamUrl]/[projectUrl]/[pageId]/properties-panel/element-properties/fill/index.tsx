@@ -1,9 +1,9 @@
 import { memo, useEffect, useState } from 'react'
-import AddFill from './add'
 import FillItem from './item'
 import { useInteractionsStore } from '@/stores/interactions-store'
-import { useCanvasStore } from '@/stores/canvas-store'
+import { Variable, useCanvasStore } from '@/stores/canvas-store'
 import {} from 'sonner'
+import FillColorStyles from './color-styles'
 
 export const DEFAULT_COLOR: Fill = {
   type: 'color',
@@ -70,9 +70,22 @@ const ElementPropertiesFill = ({ background }: FillProps) => {
   const gradientEditor = useInteractionsStore((s) => s.gradientEditor)
   const setGradientEditor = useInteractionsStore((s) => s.setGradientEditor)
   const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
+  const variables = useCanvasStore((s) => s.variables)
 
-  const [fills, setFills] = useState<Fill[]>(() => {
+  const [fills, setFills] = useState<(Fill | Variable)[]>(() => {
     if (!background) return []
+
+    const isVariable = background?.startsWith('var(--')
+
+    if (isVariable) {
+      const variableName = background.replace('var(--', '').replace(')', '')
+      const variable = variables.find(
+        (v) => v.name.toLowerCase().replace(/ /g, '-') === variableName
+      )
+      if (variable) {
+        return [variable]
+      }
+    }
 
     const isColor = background?.startsWith('#')
     if (isColor) {
@@ -135,17 +148,17 @@ const ElementPropertiesFill = ({ background }: FillProps) => {
   })
   const [colorPicker, setColorPicker] = useState<number | null>(null)
 
-  const onAddClick = () => {
-    if (fills.length === 0) {
-      return setFills([DEFAULT_COLOR])
-    }
+  // const onAddClick = () => {
+  //   if (fills.length === 0) {
+  //     return setFills([DEFAULT_COLOR])
+  //   }
 
-    setFills((prev: Fill[]) => {
-      const prevWithoutColors = prev.filter((fill) => fill.type !== 'color')
+  //   setFills((prev: Fill[]) => {
+  //     const prevWithoutColors = prev.filter((fill) => fill.type !== 'color')
 
-      return [...prevWithoutColors, DEFAULT_GRADIENT]
-    })
-  }
+  //     return [...prevWithoutColors, DEFAULT_GRADIENT]
+  //   })
+  // }
 
   const onConfirm = (data: Fill, index: number) => {
     if (data.type === 'gradient') {
@@ -175,6 +188,9 @@ const ElementPropertiesFill = ({ background }: FillProps) => {
       'background',
       fills
         .filter((fill) => {
+          const isVariable = 'name' in fill
+          if (isVariable) return true
+
           // filter invalid values
           if (fill.type === 'color') {
             return fill.value.length >= 4
@@ -183,6 +199,11 @@ const ElementPropertiesFill = ({ background }: FillProps) => {
           return true
         })
         .map((fill) => {
+          const isVariable = 'name' in fill
+          if (isVariable) {
+            return `var(--${fill.name.toLowerCase().replace(/ /g, '-')})`
+          }
+
           if (fill.type === 'color') {
             return `${fill.value}${opacityToHex(fill.opacity / 100)}`
           }
@@ -211,20 +232,26 @@ const ElementPropertiesFill = ({ background }: FillProps) => {
     })
   }, [gradientEditor])
 
+  const variableFills = fills.filter((fill) => 'name' in fill) as Variable[]
+  const colorFills = fills.filter((fill) => !('name' in fill)) as Fill[]
+
   return (
-    <div className="flex flex-col gap-4 p-4 border-b border-border">
+    <div className="relative flex flex-col gap-4 p-4 border-b border-border">
       <div className="flex items-center justify-between">
         <p className="font-medium">Fill</p>
-        <AddFill
-          shouldAlert={
-            fills.length >= 1 && fills.some((i) => i.type === 'color')
-          }
-          onAddClick={onAddClick}
-        />
+        <div className="flex flex-row-reverse items-center gap-1">
+          {/* <AddFill
+            shouldAlert={
+              fills.length >= 1 && fills.some((i) => i.type === 'color')
+            }
+            onAddClick={onAddClick}
+          /> */}
+          <FillColorStyles setFills={setFills} />
+        </div>
       </div>
-      {fills.length >= 1 && (
+      {colorFills.length >= 1 && (
         <div className="relative flex flex-col gap-3">
-          {fills.map((fill, index) => (
+          {colorFills.map((fill, index) => (
             <FillItem
               closeColorPicker={() => setColorPicker(null)}
               colorPickerClick={() => {
@@ -238,6 +265,23 @@ const ElementPropertiesFill = ({ background }: FillProps) => {
               key={index}
               onConfirm={(data: Fill) => onConfirm(data, index)}
             />
+          ))}
+        </div>
+      )}
+      {variableFills.length >= 1 && (
+        <div className="relative flex flex-col gap-3">
+          {variableFills.map((fill) => (
+            <div className="flex items-center gap-2" key={fill.name}>
+              <div
+                className="w-5 h-5 border rounded-sm border-border"
+                style={{
+                  backgroundColor: `var(--${fill.name
+                    .toLowerCase()
+                    .replace(/ /g, '-')})`,
+                }}
+              />
+              <p className="text-xs">{fill.name}</p>
+            </div>
           ))}
         </div>
       )}

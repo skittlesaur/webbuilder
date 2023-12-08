@@ -54,6 +54,7 @@ const getTeamProjectPageController = async (req: Request, res: Response) => {
         breakpoints: true,
         bodyStyles: true,
         assets: true,
+        variables: true,
       }
     })
 

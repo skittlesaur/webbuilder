@@ -10,7 +10,6 @@ import {
   DEFAULT_COLOR,
   gradientToBackground,
 } from '.'
-import RemoveIcon from '@/icons/remove.svg'
 import { useInteractionsStore } from '@/stores/interactions-store'
 
 interface ItemProps {
@@ -19,14 +18,16 @@ interface ItemProps {
   colorPickerClick: () => void
   colorPickerOpen: boolean
   closeColorPicker: () => void
+  hideGradient?: boolean
 }
 
-const ColorFill = ({
+export const ColorFill = ({
   fill,
   onConfirm,
   colorPickerClick,
   colorPickerOpen,
   closeColorPicker,
+  hideGradient,
 }: ItemProps & { fill: { type: 'color' } }) => {
   const [color, setColor] = useState<string>(fill.value)
   const [opacity, setOpacity] = useState<number>(fill.opacity)
@@ -104,38 +105,40 @@ const ColorFill = ({
             </div>
           </div>
         </div>
-        <button
+        {/* <button
           className="rounded-full select-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
           type="button"
           onClick={() => {
             //
           }}>
           <RemoveIcon className="w-4 h-4" />
-        </button>
+        </button> */}
       </div>
       {colorPickerOpen ? (
         <div
           className="absolute top-0 flex flex-col gap-2 overflow-hidden -translate-x-6 -translate-y-1/2 border rounded-md shadow-lg select-none bg-background border-border right-full"
           ref={ref}>
-          <div className="flex items-center px-2 pt-1 text-xs">
-            {['Color', 'Gradient'].map((item) => (
-              <button
-                className={cn('px-1 py-1', {
-                  'text-neutral-400 hover:text-neutral-200':
-                    item.toLowerCase() !== fill.type,
-                })}
-                key={item}
-                type="button"
-                onClick={() => {
-                  const type = item.toLowerCase()
-                  if (type === fill.type) return
-                  if (type === 'gradient') return onConfirm(DEFAULT_GRADIENT)
-                  if (type === 'color') return onConfirm(DEFAULT_COLOR)
-                }}>
-                {item}
-              </button>
-            ))}
-          </div>
+          {!hideGradient && (
+            <div className="flex items-center px-2 pt-1 text-xs">
+              {['Color', 'Gradient'].map((item) => (
+                <button
+                  className={cn('px-1 py-1', {
+                    'text-neutral-400 hover:text-neutral-200':
+                      item.toLowerCase() !== fill.type,
+                  })}
+                  key={item}
+                  type="button"
+                  onClick={() => {
+                    const type = item.toLowerCase()
+                    if (type === fill.type) return
+                    if (type === 'gradient') return onConfirm(DEFAULT_GRADIENT)
+                    if (type === 'color') return onConfirm(DEFAULT_COLOR)
+                  }}>
+                  {item}
+                </button>
+              ))}
+            </div>
+          )}
           <ChromePicker
             color={`${fill.value}${opacityToHex(fill.opacity / 100)}`}
             onChange={(c: { hex: string; rgb: { a: number } }, e) => {
@@ -143,7 +146,7 @@ const ColorFill = ({
               e.preventDefault()
 
               const hex = c.hex
-              const alpha = c.rgb.a * 100
+              const alpha = Math.round(c.rgb.a * 100)
 
               setColor(hex)
               setOpacity(alpha)
