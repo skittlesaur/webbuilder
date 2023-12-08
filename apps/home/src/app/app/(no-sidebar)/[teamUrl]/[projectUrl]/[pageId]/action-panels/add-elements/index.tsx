@@ -18,6 +18,8 @@ export interface PanelElement {
   children?: Element['children']
   attributes?: Element['attributes']
   mediaQueries?: Element['mediaQueries']
+  componentId?: string
+  elementId?: string
 }
 
 const DividerElement = () => {

@@ -46,6 +46,7 @@ export interface Element {
   style: CSSProperties
   mediaQueries?: Record<string, CSSProperties> // key is the breakpoint width
   attributes?: Record<string, unknown> // special attributes like href, src, alt, etc.
+  componentId?: string
 }
 
 export interface DraggedElement {
@@ -73,7 +74,7 @@ export interface Asset {
 export interface DefinedComponent {
   id: string
   name: string
-  element: Omit<Element, 'id'>
+  element: Element
   screenshot?: string
 }
 
@@ -115,7 +116,7 @@ interface CanvasStore {
     relativePosition?: 'before' | 'after' | 'child'
   ) => void
   removeElement: (elementId: string) => void
-  updateElement: (element: Element) => void
+  updateElement: (elementId: string, updates: Partial<Element>) => void
   updateElementAttribute: (
     elementId: string,
     target: string,
@@ -288,14 +289,17 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
 
     set({ elements: newElements })
   },
-  updateElement: (element) => {
+  updateElement: (elementId, updates) => {
     const elements = get().elements
 
     const updateElement = (el: Element): Element | Element[] | string => {
       if (typeof el === 'string') return el
 
-      if (el.id === element.id) {
-        return element
+      if (el.id === elementId) {
+        return {
+          ...el,
+          ...updates,
+        }
       }
 
       const updatedChildren = el.children.map((child) =>
@@ -477,7 +481,9 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   },
   removeVariable: (variableName) => {
     set({
-      variables: get().variables.filter((variable) => variable.name !== variableName),
+      variables: get().variables.filter(
+        (variable) => variable.name !== variableName
+      ),
     })
   },
 }))

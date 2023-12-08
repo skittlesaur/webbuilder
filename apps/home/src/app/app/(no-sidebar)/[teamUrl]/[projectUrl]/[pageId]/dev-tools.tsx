@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
+import { findElementByIdArr } from '@/lib/find-element-by-id'
 
 const DevTools = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -11,6 +12,8 @@ const DevTools = () => {
   const draggedElement = useCanvasStore((s) => s.draggedElement)
   const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
   const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
+  const elements = useCanvasStore((s) => s.elements)
+  const element = findElementByIdArr(elements, selectedElementId || '')
 
   const DATA = [
     {
@@ -24,6 +27,10 @@ const DevTools = () => {
     {
       title: 'Selected Element',
       value: selectedElementId || 'None',
+    },
+    {
+      title: 'Selected Component Id',
+      value: element?.componentId || 'None',
     },
     {
       title: 'Selected Media Query',

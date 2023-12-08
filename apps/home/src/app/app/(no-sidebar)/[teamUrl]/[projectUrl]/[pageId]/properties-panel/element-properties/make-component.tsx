@@ -1,7 +1,7 @@
 import { createId } from '@paralleldrive/cuid2'
 import html2canvas from 'html2canvas'
 import { toast } from 'sonner'
-import type { DefinedComponent , Element } from '@/stores/canvas-store'
+import type { DefinedComponent } from '@/stores/canvas-store'
 import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
 import { findElementByIdArr } from '@/lib/find-element-by-id'
@@ -13,6 +13,7 @@ const MakeComponentButton = () => {
   )
   const elements = useCanvasStore((state) => state.elements)
   const addComponent = useCanvasStore((state) => state.addComponent)
+  const updateElement = useCanvasStore((state) => state.updateElement)
   const updateComponent = useCanvasStore((state) => state.updateComponent)
 
   const element = findElementByIdArr(elements, selectedElementId as string)
@@ -20,25 +21,17 @@ const MakeComponentButton = () => {
   const handleClick = async () => {
     if (!element) return
 
-    const { id: _, ...rest } = element
-
-    const deepCloneChildren = (children: Element | string) => {
-      if (typeof children === 'string') return children
-
-      return {
-        ...children,
-        id: createId(),
-        children: children.children?.map(deepCloneChildren),
-      }
-    }
-
     const newComponent: DefinedComponent = {
       id: createId(),
       name: 'Component',
-      element: deepCloneChildren(rest as Element),
+      element,
     }
 
     addComponent(newComponent)
+    updateElement({
+      ...element,
+      componentId: newComponent.id,
+    })
     toast.success('Component created')
 
     const defaultBreakpoint = document.querySelector(
@@ -72,13 +65,15 @@ const MakeComponentButton = () => {
     }
   }
 
+  if (element?.componentId) return null
+
   return (
     <div className="items-center p-4 border-b border-border">
       <button
         className="w-full px-2 py-1 text-center border rounded border-border hover:bg-accent text-neutral-400 hover:text-white"
         type="button"
         onClick={handleClick}>
-        Make Component
+        Make component
       </button>
     </div>
   )

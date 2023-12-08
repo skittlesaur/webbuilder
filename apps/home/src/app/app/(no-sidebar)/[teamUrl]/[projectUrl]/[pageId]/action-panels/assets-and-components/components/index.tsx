@@ -38,7 +38,9 @@ const ComponentsDisplay = () => {
                   </div>
                 }
                 attributes={component.element.attributes}
+                componentId={component.id}
                 element={component.element.type}
+                elementId={component.element.id}
                 mediaQueries={component.element.mediaQueries}
                 style={component.element.style}
                 title={component.name}>

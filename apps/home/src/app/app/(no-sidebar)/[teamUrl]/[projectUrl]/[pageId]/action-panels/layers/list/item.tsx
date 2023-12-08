@@ -1,9 +1,11 @@
 import { useInteractionsStore } from '@/stores/interactions-store'
+import cn from 'classnames'
 
 interface ListItemProps {
   item: {
     id: string
     text: string
+    isComponent?: boolean
   }
 }
 
@@ -34,7 +36,14 @@ const ListItem = ({ item }: ListItemProps) => {
         e.stopPropagation()
         setHoveredElementId(null)
       }}>
-      <div className="min-w-[0.875rem] max-w-[0.875rem] min-h-[0.875rem] max-h-[0.875rem] rounded bg-primary/50" />
+      <div
+        className={cn(
+          'min-w-[0.875rem] max-w-[0.875rem] min-h-[0.875rem] max-h-[0.875rem] rounded', {
+            'bg-primary/50': !item.isComponent,
+            'bg-green-400': item.isComponent,
+          }
+        )}
+      />
       <div className="absolute left-[calc(0.4375rem+3px)] top-8 bottom-2 bg-accent z-[-2] w-px" />
       <p className="truncate">{item.text}</p>
     </button>

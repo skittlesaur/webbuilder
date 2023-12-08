@@ -18,6 +18,8 @@ const Element = ({
   children,
   attributes,
   mediaQueries,
+  componentId,
+  elementId,
 }: PanelElement) => {
   const [isDragging, setIsDragging] = useState(false)
   const [dragPosition, setDragPosition] = useState({ x: 0, y: 0, snap: false })
@@ -96,12 +98,13 @@ const Element = ({
 
     const handleMouseUp = () => {
       const newElement: ElementType = {
-        id: createId(),
+        id: elementId || createId(),
         type: element as ElementType['type'],
         children: children ?? [],
         style: style ?? {},
         attributes: attributes ?? {},
         mediaQueries,
+        componentId,
       }
 
       const { relativeId, relativePosition } = draggedElement || {}
@@ -126,8 +129,10 @@ const Element = ({
     addElement,
     attributes,
     children,
+    componentId,
     draggedElement,
     element,
+    elementId,
     isDragging,
     mediaQueries,
     setDraggedElement,

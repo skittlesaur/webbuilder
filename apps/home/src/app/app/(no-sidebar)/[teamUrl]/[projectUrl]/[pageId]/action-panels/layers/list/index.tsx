@@ -12,25 +12,41 @@ import ScrollableWrapper from '@/components/scrollable-wrapper'
 const LayersList = () => {
   const elements = useCanvasStore((s) => s.elements)
   const setElements = useCanvasStore((s) => s.setElements)
+  const components = useCanvasStore((s) => s.components)
 
-  const recursiveFormat = useCallback((element) => {
-    if (typeof element === 'string') return null
+  const recursiveFormat = useCallback(
+    (element) => {
+      if (typeof element === 'string') return null
 
-    const children =
-      element.children
-        .map((child) => recursiveFormat(child))
-        .filter((child) => child) || []
+      if (element.componentId) {
+        const component = components.find((c) => c.id === element.componentId)
 
-    const someChildString = element.children.find(
-      (child) => typeof child === 'string'
-    )
+        if (component)
+          return {
+            id: element.id,
+            text: component.name,
+            children: [],
+            component: true,
+          }
+      }
 
-    return {
-      id: element.id,
-      text: someChildString || element.type,
-      children,
-    }
-  }, [])
+      const children =
+        element.children
+          .map((child) => recursiveFormat(child))
+          .filter((child) => child) || []
+
+      const someChildString = element.children.find(
+        (child) => typeof child === 'string'
+      )
+
+      return {
+        id: element.id,
+        text: someChildString || element.type,
+        children,
+      }
+    },
+    [components]
+  )
 
   const formattedElements = useMemo(() => {
     return elements.map((element) => recursiveFormat(element))
@@ -53,6 +69,7 @@ const LayersList = () => {
               item={{
                 id: item.id,
                 text: item.text,
+                isComponent: item.component,
               }}
             />
           )}
