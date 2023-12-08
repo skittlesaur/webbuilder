@@ -34,7 +34,7 @@ const HTML_EXPORTS = [
 
 const CSS_EXPORTS = [
   {
-    name: 'Vanilla CSS',
+    name: 'CSS3',
     value: 'css',
     icon: <CssIcon />,
   },
