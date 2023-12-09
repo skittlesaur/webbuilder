@@ -129,6 +129,7 @@ const ElementProperties = () => {
               borderWidth={getStyleAttribute('borderWidth')}
             />
             <ElementPropertiesTypography
+              color={getStyleAttribute('color')}
               fontFamily={getStyleAttribute('fontFamily')}
               fontSize={getStyleAttribute('fontSize')}
               fontWeight={getStyleAttribute('fontWeight')}
