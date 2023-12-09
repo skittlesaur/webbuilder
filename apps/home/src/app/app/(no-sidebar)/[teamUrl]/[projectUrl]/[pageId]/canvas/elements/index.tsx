@@ -218,8 +218,9 @@ const Element = ({
         data-droppable="true"
         id={element.id}
         style={{
-          ...formattedStyle,
-          ...queryStyles,
+          ...(mediaQuery === null
+            ? { ...queryStyles, ...formattedStyle }
+            : { ...formattedStyle, ...queryStyles }),
           paddingLeft: isDraggingElement
             ? `0.5rem`
             : queryStyles?.paddingLeft ?? element.style?.paddingLeft,
@@ -262,8 +263,9 @@ const Element = ({
       data-droppable="true"
       id={element.id}
       style={{
-        ...formattedStyle,
-        ...queryStyles,
+        ...(mediaQuery === null
+          ? { ...queryStyles, ...formattedStyle }
+          : { ...formattedStyle, ...queryStyles }),
         paddingLeft: isDraggingElement
           ? `0.5rem`
           : queryStyles?.paddingLeft ?? element.style?.paddingLeft,
