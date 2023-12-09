@@ -92,6 +92,10 @@ export interface Variable {
   value: string | number
 }
 
+export interface BodyStyles extends CSSProperties {
+  mediaQueries?: Record<string, CSSProperties>
+}
+
 interface CanvasStore {
   zoom: number
   setZoom: (zoom: number) => void
@@ -125,8 +129,13 @@ interface CanvasStore {
   ) => void
   draggedElement: DraggedElement | undefined
   setDraggedElement: (draggedElement: DraggedElement | undefined) => void
-  bodyStyles: CSSProperties
-  setBodyStyles: (variables: CSSProperties) => void
+  bodyStyles: BodyStyles
+  setBodyStyles: (styles: BodyStyles) => void
+  updateBodyStyle: (
+    attribute: string,
+    value: unknown,
+    mediaQuery: number | null
+  ) => void
   customFonts: CustomFont[]
   setCustomFonts: (fonts: CustomFont[]) => void
   addCustomFont: (font: CustomFont) => void
@@ -381,6 +390,29 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   bodyStyles: {},
   setBodyStyles: (variables) => {
     set({ bodyStyles: variables })
+  },
+  updateBodyStyle: (attribute, value, mediaQuery) => {
+    const styles = get().bodyStyles
+    if (mediaQuery !== null) {
+      const mq = styles.mediaQueries?.[mediaQuery] || {}
+      mq[attribute] = value
+      set({
+        bodyStyles: {
+          ...styles,
+          mediaQueries: {
+            ...styles.mediaQueries,
+            [mediaQuery]: mq,
+          },
+        },
+      })
+    } else {
+      set({
+        bodyStyles: {
+          ...styles,
+          [attribute]: value,
+        },
+      })
+    }
   },
   customFonts: [],
   setCustomFonts: (fonts) => {

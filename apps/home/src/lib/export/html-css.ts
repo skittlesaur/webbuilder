@@ -90,7 +90,8 @@ const exportHtmlCss = () => {
       .join('\n')}
 }\n\n`
 
-  const bodyCss = getElementCss(bodyStyles as CSSProperties)
+  const { mediaQueries: bodyMediaQueries, ...defaultBodyStyles } = bodyStyles
+  const bodyCss = getElementCss(defaultBodyStyles as CSSProperties)
 
   if (bodyCss) css += `body { \n${bodyCss}; \n}\n\n`
 
@@ -199,20 +200,68 @@ const exportHtmlCss = () => {
     body.appendChild(deepGenerateElement(element))
   })
 
-  const propertiesInBreakpoints: string[] = []
+  const mediaQueriesKeys = Object.keys(mediaQueries)
+  const bodyMediaQueriesKeys = Object.keys(bodyMediaQueries || {})
+  const mediaQueriesToGenerate = new Set([
+    ...mediaQueriesKeys,
+    ...bodyMediaQueriesKeys,
+  ])
 
-  Object.entries(mediaQueries).forEach(([mediaQuery, styles]) => {
-    const styleString = Object.entries(styles as Record<string, CSSProperties>)
+  mediaQueriesToGenerate.delete(String(defaultMediaQuery.width))
+
+  const bodyPropertiesForDefault = new Set()
+
+  mediaQueriesToGenerate.forEach((key) => {
+    const classStyles = mediaQueries[key] || {}
+    const styleString = Object.entries(
+      classStyles as Record<string, CSSProperties>
+    )
       .map(([className, style]) => {
-        const properties = Object.keys(style as CSSProperties)
-        propertiesInBreakpoints.push(...properties)
-
-        return `.${className} { \n${getElementCss(style as CSSProperties)}; \n}`
+        const s = getElementCss(style as CSSProperties)
+        if (!s) return ''
+        return `.${className} { \n${s}; \n}`
       })
+      .filter(Boolean)
       .join('\n\n')
 
-    css += `@media (min-width: ${mediaQuery}px) { \n${styleString} \n}\n\n`
+    const bodyStylesObj = bodyMediaQueries?.[key] || {}
+
+    if (Number(key) < defaultMediaQuery.width) {
+      Object.keys(bodyStylesObj || {}).forEach((property) => {
+        bodyPropertiesForDefault.add(property)
+      })
+    }
+    const bodyStyleString = getElementCss(bodyStylesObj as CSSProperties)
+
+    css += `@media (min-width: ${key}px) {\n`
+    if (bodyStyleString) css += `\tbody { \n${bodyStyleString}; \n}\n\n`
+    css += styleString
+    css += '\n}\n\n'
   })
+
+  const bodyDefaultProperties = Array.from(bodyPropertiesForDefault).reduce(
+    (acc: Record<string, string>, property: string) => {
+      if (bodyStyles?.[property]) {
+        return {
+          ...acc,
+          [property]: bodyStyles?.[property],
+        }
+      }
+
+      return acc
+    },
+    {}
+  )
+
+  const bodyDefaultStyleString = getElementCss(
+    bodyDefaultProperties as CSSProperties
+  )
+
+  if (bodyDefaultStyleString) {
+    css += `@media (min-width: ${defaultMediaQuery.width}px) {\n`
+    css += `\tbody { \n${bodyDefaultStyleString}; \n}\n\n`
+    css += '\n}\n\n'
+  }
 
   const fileName = `baraa-${createId()}`
 

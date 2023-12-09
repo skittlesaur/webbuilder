@@ -59,6 +59,7 @@ export type Fill =
 
 interface FillProps {
   background?: string
+  isBody?: boolean
 }
 
 export const opacityToHex = (opacity: number) => {
@@ -66,16 +67,26 @@ export const opacityToHex = (opacity: number) => {
   return hex.length === 1 ? `0${hex}` : hex
 }
 
-const ElementPropertiesFill = ({ background }: FillProps) => {
+const ElementPropertiesFill = ({ background, isBody }: FillProps) => {
   const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
   const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
   const gradientEditor = useInteractionsStore((s) => s.gradientEditor)
   const setGradientEditor = useInteractionsStore((s) => s.setGradientEditor)
   const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
   const variables = useCanvasStore((s) => s.variables)
+  const updateBodyStyle = useCanvasStore((s) => s.updateBodyStyle)
 
   const [fills, setFills] = useState<(Fill | Variable)[]>(() => {
-    if (!background) return []
+    if (!background)
+      return !isBody
+        ? []
+        : [
+            {
+              type: 'color',
+              value: '#FFFFFF',
+              opacity: 100,
+            },
+          ]
 
     const isVariable = background?.startsWith('var(--')
 
@@ -181,6 +192,46 @@ const ElementPropertiesFill = ({ background }: FillProps) => {
   }, [colorPicker, setGradientEditor])
 
   useEffect(() => {
+    if (isBody) {
+      if (!fills.length)
+        return updateBodyStyle('background', undefined, selectedMediaQuery)
+      if (fills.length === 1 && 'name' in fills[0])
+        return updateBodyStyle(
+          'background',
+          `var(--${fills[0].name.toLowerCase().replace(/ /g, '-')})`,
+          selectedMediaQuery
+        )
+
+      return updateBodyStyle(
+        'background',
+        fills
+          .filter((fill) => {
+            const isVariable = 'name' in fill
+            if (isVariable) return true
+
+            // filter invalid values
+            if (fill.type === 'color') {
+              return fill.value.length >= 4
+            }
+
+            return true
+          })
+          .map((fill) => {
+            const isVariable = 'name' in fill
+            if (isVariable) {
+              return `var(--${fill.name.toLowerCase().replace(/ /g, '-')})`
+            }
+
+            if (fill.type === 'color') {
+              return `${fill.value}${opacityToHex(fill.opacity / 100)}`
+            }
+            return gradientToBackground(fill.value, fill.degree)
+          })
+          .join(', '),
+        selectedMediaQuery
+      )
+    }
+
     if (!selectedElementId) return
 
     if (!fills.length) {
@@ -225,7 +276,14 @@ const ElementPropertiesFill = ({ background }: FillProps) => {
         .join(', '),
       selectedMediaQuery
     )
-  }, [fills, selectedElementId, selectedMediaQuery, updateElementAttribute])
+  }, [
+    fills,
+    isBody,
+    selectedElementId,
+    selectedMediaQuery,
+    updateBodyStyle,
+    updateElementAttribute,
+  ])
 
   useEffect(() => {
     if (colorPicker === null || !gradientEditor) return
@@ -302,7 +360,19 @@ const ElementPropertiesFill = ({ background }: FillProps) => {
                 className="p-1 translate-x-1 border border-transparent rounded hover:bg-accent hover:border-border"
                 type="button"
                 onClick={() => {
-                  setFills((prev) => prev.filter((i) => i !== fill))
+                  setFills((prev) => {
+                    const newFills = prev.filter((i) => i !== fill)
+                    if (isBody && newFills.length === 0)
+                      return [
+                        {
+                          type: 'color',
+                          value: '#FFFFFF',
+                          opacity: 100,
+                        },
+                      ]
+
+                    return newFills
+                  })
                 }}>
                 <RemoveIcon className="w-4 h-4" />
               </button>
@@ -314,4 +384,6 @@ const ElementPropertiesFill = ({ background }: FillProps) => {
   )
 }
 
-export default memo(ElementPropertiesFill, () => true)
+export default memo(ElementPropertiesFill, (prev, next) => {
+  return prev.isBody === next.isBody
+})

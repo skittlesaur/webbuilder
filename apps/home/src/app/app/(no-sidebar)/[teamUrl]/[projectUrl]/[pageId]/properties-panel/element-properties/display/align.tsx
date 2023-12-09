@@ -12,15 +12,19 @@ const alignValues = {
   start: 'Start',
   center: 'Center',
   end: 'End',
-  stretch: 'Stretch'
+  stretch: 'Stretch',
 }
 
-const AlignItems = ({ display, alignItems }) => {
+const AlignItems = ({ isBody, display, alignItems }) => {
   const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
   const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
   const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
+  const updateBodyStyle = useCanvasStore((s) => s.updateBodyStyle)
 
-  if (!selectedElementId || !['flex', 'inline-flex'].includes(display))
+  if (
+    (!isBody && !selectedElementId) ||
+    !['flex', 'inline-flex'].includes(display)
+  )
     return null
 
   return (
@@ -29,13 +33,17 @@ const AlignItems = ({ display, alignItems }) => {
       <Select
         defaultValue={alignItems || Object.keys(alignValues)[0]}
         onValueChange={(value) => {
-          updateElementAttribute(
-            selectedElementId,
-            'style',
-            'alignItems',
-            value,
-            selectedMediaQuery
-          )
+          if (isBody) {
+            updateBodyStyle('alignItems', value, selectedMediaQuery)
+          } else {
+            updateElementAttribute(
+              selectedElementId,
+              'style',
+              'alignItems',
+              value,
+              selectedMediaQuery
+            )
+          }
         }}>
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Position" />

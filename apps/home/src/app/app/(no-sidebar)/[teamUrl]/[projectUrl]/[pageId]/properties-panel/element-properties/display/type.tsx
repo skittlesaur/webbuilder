@@ -19,12 +19,13 @@ export const displays = {
   none: 'None',
 }
 
-const DisplayType = ({ display }) => {
+const DisplayType = ({ isBody, display }) => {
   const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
   const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
   const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
+  const updateBodyStyle = useCanvasStore((s) => s.updateBodyStyle)
 
-  if (!selectedElementId) return null
+  if (!isBody && !selectedElementId) return null
 
   return (
     <div className="grid grid-cols-[0.5fr_1fr] gap-2 items-center">
@@ -32,13 +33,17 @@ const DisplayType = ({ display }) => {
       <Select
         defaultValue={display || Object.keys(displays)[0]}
         onValueChange={(value) => {
-          updateElementAttribute(
-            selectedElementId,
-            'style',
-            'display',
-            value,
-            selectedMediaQuery
-          )
+          if (isBody) {
+            updateBodyStyle('display', value, selectedMediaQuery)
+          } else {
+            updateElementAttribute(
+              selectedElementId,
+              'style',
+              'display',
+              value,
+              selectedMediaQuery
+            )
+          }
         }}>
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Position" />

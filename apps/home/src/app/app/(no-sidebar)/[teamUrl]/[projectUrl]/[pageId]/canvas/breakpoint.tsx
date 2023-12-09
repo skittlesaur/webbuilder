@@ -23,6 +23,35 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
     return 'Desktop'
   }, [breakpoint.width])
 
+  const breakpointStyles = useMemo(() => {
+    const { mediaQueries, ...defaultStyling } = bodyStyles
+
+    const queries = Object.keys((mediaQueries || {}) as Record<string, unknown>)
+      .filter(
+        (mq) =>
+          Number(mq) <= (breakpoint.isDefault ? Infinity : breakpoint.width)
+      )
+      .sort((a, b) => Number(a) - Number(b))
+
+    const queryStyles = queries.reduce((acc, mq) => {
+      return {
+        ...acc,
+        ...mediaQueries?.[mq],
+      }
+    }, {})
+
+    if (breakpoint.isDefault)
+      return {
+        ...queryStyles,
+        ...defaultStyling,
+      }
+
+    return {
+      ...defaultStyling,
+      ...queryStyles,
+    }
+  }, [bodyStyles, breakpoint.isDefault, breakpoint.width])
+
   return (
     <div
       className="absolute flex flex-col gap-5 origin-top"
@@ -56,10 +85,10 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
             display: 'flex',
             flexDirection: 'column',
             width: '100%',
-            backgroundColor: 'white',
+            background: 'white',
             color: 'black',
             fontSize: '1rem',
-            ...bodyStyles,
+            ...breakpointStyles,
             maxWidth: '100%',
             minWidth: '100%',
             overflowX: 'hidden',

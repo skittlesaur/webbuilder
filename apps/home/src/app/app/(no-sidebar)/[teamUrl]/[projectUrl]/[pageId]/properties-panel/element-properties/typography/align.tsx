@@ -24,12 +24,22 @@ const buttons = [
   },
 ]
 
-const AlignText = ({ textAlign }: { textAlign?: string }) => {
+const AlignText = ({
+  textAlign,
+  isBody,
+}: {
+  textAlign?: string
+  isBody?: boolean
+}) => {
   const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
   const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
   const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
+  const updateBodyStyle = useCanvasStore((s) => s.updateBodyStyle)
 
   const handleAlign = (value: string) => {
+    if (isBody) {
+      return updateBodyStyle('textAlign', value, selectedMediaQuery)
+    }
     if (!selectedElementId) return
     updateElementAttribute(
       selectedElementId,
@@ -43,7 +53,7 @@ const AlignText = ({ textAlign }: { textAlign?: string }) => {
   return (
     <div className="relative grid grid-cols-[0.5fr_1fr] gap-2 items-center group">
       <p className="text-gray-400">Align</p>
-      <div className="bg-background border border-border rounded-md grid grid-cols-3 h-9 w-full overflow-hidden">
+      <div className="grid w-full grid-cols-3 overflow-hidden border rounded-md bg-background border-border h-9">
         {buttons.map((button) => (
           <TooltipProvider
             disableHoverableContent

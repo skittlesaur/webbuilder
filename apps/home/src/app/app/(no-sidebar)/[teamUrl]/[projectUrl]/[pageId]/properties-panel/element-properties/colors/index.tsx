@@ -7,20 +7,23 @@ const ElementPropertiesColors = ({
   background,
   borderColor,
   borderWidth,
+  isBody,
 }) => {
   return (
     <div className="relative flex flex-col gap-4 p-4 border-b border-border">
       <p className="font-medium">Colors</p>
-      <TypographyColor color={color} />
+      <TypographyColor color={color} isBody={isBody} />
       <div className="relative flex flex-col gap-3 px-4 -mx-4">
-        <ElementPropertiesFill background={background} />
+        <ElementPropertiesFill background={background} isBody={isBody} />
       </div>
-      <div className="relative flex flex-col gap-3 px-4 -mx-4">
-        <ElementPropertiesBorder
-          borderColor={borderColor}
-          borderWidth={borderWidth}
-        />
-      </div>
+      {!isBody && (
+        <div className="relative flex flex-col gap-3 px-4 -mx-4">
+          <ElementPropertiesBorder
+            borderColor={borderColor}
+            borderWidth={borderWidth}
+          />
+        </div>
+      )}
     </div>
   )
 }

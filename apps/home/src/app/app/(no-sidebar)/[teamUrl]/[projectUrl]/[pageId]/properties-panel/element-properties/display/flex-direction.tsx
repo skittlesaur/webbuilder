@@ -15,12 +15,16 @@ const flexDirections = {
   'column-reverse': 'Column Reverse',
 }
 
-const FlexDirection = ({ display, flexDirection }) => {
+const FlexDirection = ({ isBody, display, flexDirection }) => {
   const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
   const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
   const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
+  const updateBodyStyle = useCanvasStore((s) => s.updateBodyStyle)
 
-  if (!selectedElementId || !['flex', 'inline-flex'].includes(display))
+  if (
+    (!isBody && !selectedElementId) ||
+    !['flex', 'inline-flex'].includes(display)
+  )
     return null
 
   return (
@@ -29,13 +33,17 @@ const FlexDirection = ({ display, flexDirection }) => {
       <Select
         defaultValue={flexDirection || Object.keys(flexDirections)[0]}
         onValueChange={(value) => {
-          updateElementAttribute(
-            selectedElementId,
-            'style',
-            'flexDirection',
-            value,
-            selectedMediaQuery
-          )
+          if (isBody) {
+            updateBodyStyle('flexDirection', value, selectedMediaQuery)
+          } else {
+            updateElementAttribute(
+              selectedElementId,
+              'style',
+              'flexDirection',
+              value,
+              selectedMediaQuery
+            )
+          }
         }}>
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Position" />

@@ -24,13 +24,16 @@ const weightMap = {
 const FontWeight = ({
   fontFamily,
   fontWeight,
+  isBody,
 }: {
   fontFamily?: string
   fontWeight?: string
+  isBody?: boolean
 }) => {
   const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
   const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
   const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
+  const updateBodyStyle = useCanvasStore((s) => s.updateBodyStyle)
 
   const weights = FontsData.find((font) => font.family === fontFamily)?.variants
 
@@ -54,6 +57,10 @@ const FontWeight = ({
       <Select
         defaultValue={String(getSelectedWeight())}
         onValueChange={(val) => {
+          if (isBody) {
+            updateBodyStyle('fontWeight', val, selectedMediaQuery)
+            return
+          }
           if (selectedElementId === null) return
           updateElementAttribute(
             selectedElementId,

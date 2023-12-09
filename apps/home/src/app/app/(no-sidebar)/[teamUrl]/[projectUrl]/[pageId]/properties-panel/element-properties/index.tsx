@@ -3,7 +3,6 @@ import cn from 'classnames'
 import type { Position } from './position'
 import ElementPropertiesPosition from './position'
 import ElementPropertiesSize from './size'
-import ElementPropertiesColors from './colors'
 import ElementPropertiesTypography from './typography'
 import ElementPropertiesPaddingAndMargin from './padding-and-margin'
 import LinkAttributes from './link'
@@ -13,6 +12,7 @@ import AccessibilityAttributes from './accessibility'
 import MakeComponentButton from './make-component'
 import ElementPropertiesDisplay from './display'
 import InputAttributes from './input'
+import ElementPropertiesColors from './colors'
 import { useInteractionsStore } from '@/stores/interactions-store'
 import { findElementByIdArr } from '@/lib/find-element-by-id'
 import { useCanvasStore } from '@/stores/canvas-store'
@@ -34,20 +34,44 @@ const panels = [
   },
 ]
 
-const ElementProperties = () => {
+const ElementProperties = ({ isBody }: { isBody?: boolean }) => {
   const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
   const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
+  const bodyStyles = useCanvasStore((s) => s.bodyStyles)
   const elements = useCanvasStore((s) => s.elements)
   const [activePanel, setActivePanel] = useState(PropertyPanel.STYLE)
 
   const activeElement = useMemo(() => {
-    if (!selectedElementId) return null
+    if (isBody) return null
     return findElementByIdArr(elements, selectedElementId)
-  }, [elements, selectedElementId])
+  }, [elements, isBody, selectedElementId])
 
-  if (!activeElement) return null
+  if (!isBody && !activeElement) return null
 
   const getStyleAttribute = (attribute: string) => {
+    if (isBody) {
+      if (selectedMediaQuery !== null) {
+        const queries = Object.keys(
+          (bodyStyles.mediaQueries || {}) as Record<string, unknown>
+        )
+          .filter((mq) => Number(mq) <= (selectedMediaQuery || 0))
+          .sort((a, b) => Number(a) - Number(b))
+
+        const queryStyles = queries.reduce((acc, mq) => {
+          return {
+            ...acc,
+            ...bodyStyles.mediaQueries?.[mq],
+          }
+        }, {})
+
+        return queryStyles[attribute] || bodyStyles[attribute]
+      }
+
+      return bodyStyles[attribute]
+    }
+
+    if (!activeElement) return null
+
     if (selectedMediaQuery !== null) {
       const queries = Object.keys(
         (activeElement.mediaQueries || {}) as Record<string, unknown>
@@ -70,50 +94,58 @@ const ElementProperties = () => {
 
   return (
     <Fragment key={`${selectedElementId}-${selectedMediaQuery}`}>
-      <div className="relative z-[1] bg-background flex items-center w-full px-2 border-b border-border">
-        {panels.map((p) => (
-          <button
-            className={cn('text-xs px-2 py-2', {
-              'text-white': activePanel === p.panel,
-              'text-white/70': activePanel !== p.panel,
-            })}
-            key={p.panel}
-            type="button"
-            onClick={() => setActivePanel(p.panel)}>
-            {p.title}
-          </button>
-        ))}
-      </div>
+      {!isBody && (
+        <div className="relative z-[1] bg-background flex items-center w-full px-2 border-b border-border">
+          {panels.map((p) => (
+            <button
+              className={cn('text-xs px-2 py-2', {
+                'text-white': activePanel === p.panel,
+                'text-white/70': activePanel !== p.panel,
+              })}
+              key={p.panel}
+              type="button"
+              onClick={() => setActivePanel(p.panel)}>
+              {p.title}
+            </button>
+          ))}
+        </div>
+      )}
       <ScrollableWrapper>
         <ElementPropertiesParent />
-        <MakeComponentButton />
+        {!isBody && <MakeComponentButton />}
         {activePanel === PropertyPanel.STYLE && (
           <>
-            <ElementPropertiesPosition
-              bottom={getStyleAttribute('bottom')}
-              left={getStyleAttribute('left')}
-              position={getStyleAttribute('position') as Position}
-              right={getStyleAttribute('right')}
-              top={getStyleAttribute('top')}
-            />
+            {!isBody && (
+              <ElementPropertiesPosition
+                bottom={getStyleAttribute('bottom')}
+                left={getStyleAttribute('left')}
+                position={getStyleAttribute('position') as Position}
+                right={getStyleAttribute('right')}
+                top={getStyleAttribute('top')}
+              />
+            )}
             <ElementPropertiesDisplay
               alignItems={getStyleAttribute('alignItems')}
               display={getStyleAttribute('display')}
               flexDirection={getStyleAttribute('flexDirection')}
               flexWrap={getStyleAttribute('flexWrap')}
               gap={getStyleAttribute('gap')}
+              isBody={isBody}
               justifyContent={getStyleAttribute('justifyContent')}
               visibility={getStyleAttribute('visibility')}
             />
-            <ElementPropertiesSize
-              height={getStyleAttribute('height')}
-              maxHeight={getStyleAttribute('maxHeight')}
-              maxWidth={getStyleAttribute('maxWidth')}
-              minHeight={getStyleAttribute('minHeight')}
-              minWidth={getStyleAttribute('minWidth')}
-              width={getStyleAttribute('width')}
-            />
+            {!isBody && (
+              <ElementPropertiesSize
+                height={getStyleAttribute('height')}
+                maxHeight={getStyleAttribute('maxHeight')}
+                maxWidth={getStyleAttribute('maxWidth')}
+                minHeight={getStyleAttribute('minHeight')}
+                minWidth={getStyleAttribute('minWidth')}
+                width={getStyleAttribute('width')}
+              />
+            )}
             <ElementPropertiesPaddingAndMargin
+              isBody={isBody}
               marginBottom={getStyleAttribute('marginBottom')}
               marginLeft={getStyleAttribute('marginLeft')}
               marginRight={getStyleAttribute('marginRight')}
@@ -128,18 +160,22 @@ const ElementProperties = () => {
               borderColor={getStyleAttribute('borderColor')}
               borderWidth={getStyleAttribute('borderWidth')}
               color={getStyleAttribute('color')}
+              isBody={isBody}
             />
             <ElementPropertiesTypography
               fontFamily={getStyleAttribute('fontFamily')}
               fontSize={getStyleAttribute('fontSize')}
               fontWeight={getStyleAttribute('fontWeight')}
+              isBody={isBody}
               letterSpacing={getStyleAttribute('letterSpacing')}
               lineHeight={getStyleAttribute('lineHeight')}
               textAlign={getStyleAttribute('textAlign')}
             />
           </>
         )}
-        {activePanel === PropertyPanel.ATTRIBUTES && (
+        {!isBody &&
+        activeElement &&
+        activePanel === PropertyPanel.ATTRIBUTES ? (
           <>
             <LinkAttributes
               href={activeElement.attributes?.href as string | undefined}
@@ -168,7 +204,7 @@ const ElementProperties = () => {
               }
             />
           </>
-        )}
+        ) : null}
       </ScrollableWrapper>
     </Fragment>
   )

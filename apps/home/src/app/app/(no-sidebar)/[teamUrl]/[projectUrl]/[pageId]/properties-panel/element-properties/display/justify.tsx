@@ -16,12 +16,16 @@ const justifyValues = {
   'space-evenly': 'Space Evenly',
 }
 
-const JustifyContent = ({ display, justifyContent }) => {
+const JustifyContent = ({ isBody, display, justifyContent }) => {
   const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
   const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
   const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
+  const updateBodyStyle = useCanvasStore((s) => s.updateBodyStyle)
 
-  if (!selectedElementId || !['flex', 'inline-flex'].includes(display))
+  if (
+    (!isBody && !selectedElementId) ||
+    !['flex', 'inline-flex'].includes(display)
+  )
     return null
 
   return (
@@ -30,13 +34,17 @@ const JustifyContent = ({ display, justifyContent }) => {
       <Select
         defaultValue={justifyContent || Object.keys(justifyValues)[0]}
         onValueChange={(value) => {
-          updateElementAttribute(
-            selectedElementId,
-            'style',
-            'justifyContent',
-            value,
-            selectedMediaQuery
-          )
+          if (isBody) {
+            updateBodyStyle('justifyContent', value, selectedMediaQuery)
+          } else {
+            updateElementAttribute(
+              selectedElementId,
+              'style',
+              'justifyContent',
+              value,
+              selectedMediaQuery
+            )
+          }
         }}>
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Position" />

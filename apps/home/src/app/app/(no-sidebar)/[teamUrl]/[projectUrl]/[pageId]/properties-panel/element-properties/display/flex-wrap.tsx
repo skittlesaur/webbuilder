@@ -14,12 +14,16 @@ const flexWraps = {
   'wrap-reverse': 'Wrap Reverse',
 }
 
-const FlexWrap = ({ display, flexWrap }) => {
+const FlexWrap = ({ isBody, display, flexWrap }) => {
   const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
   const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
   const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
+  const updateBodyStyle = useCanvasStore((s) => s.updateBodyStyle)
 
-  if (!selectedElementId || !['flex', 'inline-flex'].includes(display))
+  if (
+    (!isBody && !selectedElementId) ||
+    !['flex', 'inline-flex'].includes(display)
+  )
     return null
 
   return (
@@ -28,13 +32,17 @@ const FlexWrap = ({ display, flexWrap }) => {
       <Select
         defaultValue={flexWrap || Object.keys(flexWraps)[0]}
         onValueChange={(value) => {
-          updateElementAttribute(
-            selectedElementId,
-            'style',
-            'flexWrap',
-            value,
-            selectedMediaQuery
-          )
+          if (isBody) {
+            updateBodyStyle('flexWrap', value, selectedMediaQuery)
+          } else {
+            updateElementAttribute(
+              selectedElementId,
+              'style',
+              'flexWrap',
+              value,
+              selectedMediaQuery
+            )
+          }
         }}>
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Position" />

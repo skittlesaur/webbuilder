@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import { useState } from 'react'
+import ElementProperties from '../element-properties'
 import Variables from './variables'
 
 enum PropertyPanel {
@@ -38,6 +39,7 @@ const DefaultProperties = () => {
         ))}
       </div>
       {activePanel === PropertyPanel.VARIABLES && <Variables />}
+      {activePanel === PropertyPanel.BODY && <ElementProperties isBody />}
     </>
   )
 }

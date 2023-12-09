@@ -9,7 +9,13 @@ import FontsData from '@/lib/fonts-data.json'
 import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
 
-const TypographyFont = ({ fontFamily }: { fontFamily?: string }) => {
+const TypographyFont = ({
+  fontFamily,
+  isBody,
+}: {
+  fontFamily?: string
+  isBody?: boolean
+}) => {
   const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
   const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
   const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
@@ -17,6 +23,7 @@ const TypographyFont = ({ fontFamily }: { fontFamily?: string }) => {
     family: f.fontFamily,
     variants: f.fontWeights,
   }))
+  const updateBodyStyle = useCanvasStore((s) => s.updateBodyStyle)
 
   return (
     <div className="relative grid grid-cols-[0.5fr_1fr] gap-2 items-center group">
@@ -24,10 +31,15 @@ const TypographyFont = ({ fontFamily }: { fontFamily?: string }) => {
       <Select
         defaultValue={fontFamily || 'Inter'}
         onValueChange={(val) => {
-          if (selectedElementId === null) return
+          if (isBody) {
+            updateBodyStyle('fontFamily', val, selectedMediaQuery)
+            return
+          }
 
           const font = FontsData.find((f) => f.family === val)
           if (!font) return
+
+          if (selectedElementId === null) return
 
           updateElementAttribute(
             selectedElementId,

@@ -10,11 +10,13 @@ const Button = ({
   type,
   title,
   className,
+  isBody = false,
 }: {
   initial?: string
   type: string
   title: string
   className?: string
+  isBody?: boolean
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const ref = useDetectClickOutside({
@@ -55,6 +57,7 @@ const Button = ({
               <InputWithUnit
                 showMeasure
                 initial={initial || '0px'}
+                isBody={isBody}
                 type={type}
               />
             </div>
@@ -66,6 +69,7 @@ const Button = ({
 }
 
 interface ElementPropertiesPaddingAndMarginProps {
+  isBody?: boolean
   marginTop?: string
   marginRight?: string
   marginBottom?: string
@@ -86,6 +90,7 @@ const ElementPropertiesPaddingAndMargin = (
         <div className="flex items-center justify-center w-full h-5">
           <Button
             initial={props.marginTop}
+            isBody={props.isBody}
             title="Margin Top"
             type="marginTop"
           />
@@ -95,6 +100,7 @@ const ElementPropertiesPaddingAndMargin = (
             <Button
               className="-rotate-90"
               initial={props.marginLeft}
+              isBody={props.isBody}
               title="Margin Left"
               type="marginLeft"
             />
@@ -103,6 +109,7 @@ const ElementPropertiesPaddingAndMargin = (
             <div className="flex items-center justify-center w-full h-5">
               <Button
                 initial={props.paddingTop}
+                isBody={props.isBody}
                 title="Padding Top"
                 type="paddingTop"
               />
@@ -112,6 +119,7 @@ const ElementPropertiesPaddingAndMargin = (
                 <Button
                   className="-rotate-90"
                   initial={props.paddingLeft}
+                  isBody={props.isBody}
                   title="Padding Left"
                   type="paddingLeft"
                 />
@@ -120,6 +128,7 @@ const ElementPropertiesPaddingAndMargin = (
                 <Button
                   className="rotate-90"
                   initial={props.paddingRight}
+                  isBody={props.isBody}
                   title="Padding Right"
                   type="paddingRight"
                 />
@@ -128,6 +137,7 @@ const ElementPropertiesPaddingAndMargin = (
             <div className="flex items-center justify-center w-full h-5">
               <Button
                 initial={props.paddingBottom}
+                isBody={props.isBody}
                 title="Padding Bottom"
                 type="paddingBottom"
               />
@@ -137,6 +147,7 @@ const ElementPropertiesPaddingAndMargin = (
             <Button
               className="rotate-90"
               initial={props.marginRight}
+              isBody={props.isBody}
               title="Margin Right"
               type="marginRight"
             />
@@ -145,6 +156,7 @@ const ElementPropertiesPaddingAndMargin = (
         <div className="flex items-center justify-center w-full h-5">
           <Button
             initial={props.marginBottom}
+            isBody={props.isBody}
             title="Margin Bottom"
             type="marginBottom"
           />

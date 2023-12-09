@@ -15,6 +15,7 @@ const units = ['px', '%', 'rem', 'em', 'vw', 'vh', 'auto'] as const
 type Unit = (typeof units)[number]
 
 interface InputWithUnitProps {
+  isBody?: boolean
   initial: string | undefined
   type: string
   showMeasure?: boolean
@@ -22,6 +23,7 @@ interface InputWithUnitProps {
 }
 
 const InputWithUnit = ({
+  isBody = false,
   initial,
   type,
   showMeasure = false,
@@ -30,6 +32,7 @@ const InputWithUnit = ({
   const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
   const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
   const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
+  const updateBodyStyle = useCanvasStore((s) => s.updateBodyStyle)
 
   const [unit, setUnit] = useState<Unit>(() => {
     if (!selectedElementId) return 'px'
@@ -51,21 +54,29 @@ const InputWithUnit = ({
   useEffect(() => {
     if (!selectedElementId) return
     if (unit === 'auto')
-      return updateElementAttribute(
+      if (isBody) {
+        return updateBodyStyle(type, autoValue, selectedMediaQuery)
+      } else {
+        return updateElementAttribute(
+          selectedElementId,
+          'style',
+          type,
+          autoValue,
+          selectedMediaQuery
+        )
+      }
+
+    if (isBody) {
+      updateBodyStyle(type, `${value ?? ''}${unit}`, selectedMediaQuery)
+    } else {
+      updateElementAttribute(
         selectedElementId,
         'style',
         type,
-        autoValue,
+        `${value ?? ''}${unit}`,
         selectedMediaQuery
       )
-
-    updateElementAttribute(
-      selectedElementId,
-      'style',
-      type,
-      `${value ?? ''}${unit}`,
-      selectedMediaQuery
-    )
+    }
   }, [
     unit,
     value,
@@ -74,6 +85,8 @@ const InputWithUnit = ({
     type,
     autoValue,
     selectedMediaQuery,
+    isBody,
+    updateBodyStyle,
   ])
 
   if (!selectedElementId) return null

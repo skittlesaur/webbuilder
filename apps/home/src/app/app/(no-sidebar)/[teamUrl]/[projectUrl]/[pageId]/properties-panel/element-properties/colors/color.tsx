@@ -8,14 +8,18 @@ import { useInteractionsStore } from '@/stores/interactions-store'
 import rgbToHex from '@/lib/rgb-to-hex'
 import RemoveIcon from '@/icons/remove.svg'
 
-const TypographyColor = ({ color }) => {
+const TypographyColor = ({ color, isBody }) => {
   const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
   const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
   const variables = useCanvasStore((s) => s.variables)
   const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
+  const updateBodyStyle = useCanvasStore((s) => s.updateBodyStyle)
 
   const getComputedColor = () => {
-    const element = document.getElementById(selectedElementId || '')
+    const element = document.querySelector(
+      isBody ? '[data-breakpoint="true"]' : `#${selectedElementId}`
+    )
+
     const computedStyle = window.getComputedStyle(element as Element)
     const c = computedStyle.color
 
@@ -92,6 +96,15 @@ const TypographyColor = ({ color }) => {
         <FillColorStyles
           setFills={(fills) => {
             setSelectedColor(fills[0])
+
+            if (isBody) {
+              return updateBodyStyle(
+                'color',
+                `var(--${fills[0].name.toLowerCase().replace(/ /g, '-')})`,
+                selectedMediaQuery
+              )
+            }
+
             if (selectedElementId === null) return
 
             updateElementAttribute(
@@ -119,7 +132,6 @@ const TypographyColor = ({ color }) => {
           fill={selectedColor}
           onConfirm={(data: Fill & { type: 'color' }) => {
             setSelectedColor(data)
-            if (selectedElementId === null) return
 
             const { value, opacity } = data
             const opacityHex = Math.round((opacity / 100) * 255).toString(16)
@@ -127,6 +139,12 @@ const TypographyColor = ({ color }) => {
               opacityHex.length === 1 ? `0${opacityHex}` : opacityHex
             const opacityValue = opacity === 100 ? '' : opacityHexFormatted
             const c = `${value}${opacityValue}`
+
+            if (isBody) {
+              return updateBodyStyle('color', c, selectedMediaQuery)
+            }
+
+            if (selectedElementId === null) return
 
             updateElementAttribute(
               selectedElementId,

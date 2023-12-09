@@ -6,7 +6,7 @@ interface InteractionsStore {
   setIsDraggingElement: (isDragging: boolean) => void
   hoveredElementId: string | null
   setHoveredElementId: (id: string | null) => void
-  selectedElementId: string | null
+  selectedElementId: string
   setSelectedElementId: (id: string | null) => void
   selectedMediaQuery: number | null
   setSelectedMediaQuery: (index: number | null) => void
@@ -21,9 +21,9 @@ export const useInteractionsStore = create<InteractionsStore>((set) => ({
   setIsDraggingElement: (isDragging) => { set({ isDraggingElement: isDragging }) },
   hoveredElementId: null,
   setHoveredElementId: (id) => { set({ hoveredElementId: id }) },
-  selectedElementId: null,
+  selectedElementId: 'body',
   setSelectedElementId: (id) => {
-    set({ selectedElementId: id })
+    set({ selectedElementId: id ?? 'body' })
     if (id === null) set({ selectedMediaQuery: null })
   },
   selectedMediaQuery: null,
