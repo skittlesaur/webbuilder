@@ -9,7 +9,7 @@ import {
   DEFAULT_GRADIENT,
   DEFAULT_COLOR,
   gradientToBackground,
-} from '.'
+} from './fill'
 import { useInteractionsStore } from '@/stores/interactions-store'
 
 interface ItemProps {
@@ -301,6 +301,24 @@ const GradientFill = ({
             onClick={colorPickerClick}
           />
           <p className="text-xs text-neutral-400">Gradient</p>
+        </div>
+        <div className="relative -ml-px">
+          <Input
+            className="!py-1 !px-2 !text-xs !h-6 pr-2 !w-20"
+            value={fill.degree}
+            onChange={(e) => {
+              const value = Number(e.target.value)
+              if (isNaN(value)) return
+
+              onConfirm({
+                ...fill,
+                degree: value,
+              })
+            }}
+          />
+          <p className="select-none pointer-events-none absolute right-2 leading-[0] top-1/2 -translate-y-1/2 text-xs text-gray-400">
+            deg
+          </p>
         </div>
       </div>
       {colorPickerOpen ? (

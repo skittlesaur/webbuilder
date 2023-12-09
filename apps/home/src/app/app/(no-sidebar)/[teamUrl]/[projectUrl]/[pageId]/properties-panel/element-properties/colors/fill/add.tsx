@@ -1,4 +1,3 @@
-import AddIcon from '@/icons/add.svg'
 import { useState } from 'react'
 import {
   AlertDialog,
@@ -11,6 +10,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from 'ui'
+import AddIcon from '@/icons/add.svg'
 
 const AddFill = ({ shouldAlert, onAddClick }) => {
   const [isOpen, setIsOpen] = useState(false)

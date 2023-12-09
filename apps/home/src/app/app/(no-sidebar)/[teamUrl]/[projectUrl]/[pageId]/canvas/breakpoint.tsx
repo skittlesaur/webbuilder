@@ -1,6 +1,7 @@
-import type { CSSProperties} from 'react';
+import type { CSSProperties } from 'react'
 import { useMemo, useRef } from 'react'
 import Element from './elements'
+import GradientEditor from './gradient-editor'
 import { useCanvasStore } from '@/stores/canvas-store'
 import type { Breakpoint as BreakpointType } from '@/stores/canvas-store'
 
@@ -47,6 +48,7 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
       <div
         data-breakpoint="true"
         data-default-breakpoint={breakpoint.isDefault ? 'true' : undefined}
+        id={breakpoint.id}
         ref={ref}
         style={
           {
@@ -66,6 +68,10 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
             '--vh': `${breakpoint.minHeight}px`,
           } as CSSProperties
         }>
+        <GradientEditor
+          breakpointId={breakpoint.id}
+          mediaQuery={breakpoint.isDefault ? null : breakpoint.width}
+        />
         {elements.map((element) => (
           <Element
             element={element}

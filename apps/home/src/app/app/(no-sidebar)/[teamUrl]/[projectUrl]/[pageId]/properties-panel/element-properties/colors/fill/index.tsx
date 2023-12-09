@@ -1,10 +1,11 @@
 import { memo, useEffect, useState } from 'react'
-import FillItem from './item'
-import FillColorStyles from './color-styles'
+import FillItem from '../item'
+import FillColorStyles from '../color-styles'
 import AddFill from './add'
 import { useInteractionsStore } from '@/stores/interactions-store'
 import type { Variable } from '@/stores/canvas-store'
 import { useCanvasStore } from '@/stores/canvas-store'
+import RemoveIcon from '@/icons/remove.svg'
 
 export const DEFAULT_COLOR: Fill = {
   type: 'color',
@@ -164,13 +165,12 @@ const ElementPropertiesFill = ({ background }: FillProps) => {
   const onConfirm = (data: Fill, index: number) => {
     if (data.type === 'gradient') {
       setGradientEditor(data)
-    } else {
-      setFills((prev: Fill[]) => {
-        const newFills = [...prev]
-        newFills[index] = data
-        return newFills
-      })
     }
+    setFills((prev: Fill[]) => {
+      const newFills = [...prev]
+      newFills[index] = data
+      return newFills
+    })
   }
 
   useEffect(() => {
@@ -249,9 +249,9 @@ const ElementPropertiesFill = ({ background }: FillProps) => {
   const colorFills = fills.filter((fill) => !('name' in fill)) as Fill[]
 
   return (
-    <div className="relative flex flex-col gap-4 p-4 border-b border-border">
+    <>
       <div className="flex items-center justify-between">
-        <p className="font-medium">Fill</p>
+        <p>Fill</p>
         <div className="flex flex-row-reverse items-center gap-1">
           <AddFill
             shouldAlert={
@@ -299,18 +299,18 @@ const ElementPropertiesFill = ({ background }: FillProps) => {
                 <p className="text-xs truncate">{fill.name}</p>
               </div>
               <button
-                className="w-4 h-4 bg-red-400"
+                className="p-1 translate-x-1 border border-transparent rounded hover:bg-accent hover:border-border"
                 type="button"
                 onClick={() => {
                   setFills((prev) => prev.filter((i) => i !== fill))
                 }}>
-                del
+                <RemoveIcon className="w-4 h-4" />
               </button>
             </div>
           ))}
         </div>
       )}
-    </div>
+    </>
   )
 }
 

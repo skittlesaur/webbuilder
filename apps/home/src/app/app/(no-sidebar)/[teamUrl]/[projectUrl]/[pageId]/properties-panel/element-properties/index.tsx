@@ -3,7 +3,7 @@ import cn from 'classnames'
 import type { Position } from './position'
 import ElementPropertiesPosition from './position'
 import ElementPropertiesSize from './size'
-import ElementPropertiesFill from './fill'
+import ElementPropertiesColors from './colors'
 import ElementPropertiesTypography from './typography'
 import ElementPropertiesPaddingAndMargin from './padding-and-margin'
 import LinkAttributes from './link'
@@ -123,8 +123,10 @@ const ElementProperties = () => {
               paddingRight={getStyleAttribute('paddingRight')}
               paddingTop={getStyleAttribute('paddingTop')}
             />
-            <ElementPropertiesFill
+            <ElementPropertiesColors
               background={getStyleAttribute('background')}
+              borderColor={getStyleAttribute('borderColor')}
+              borderWidth={getStyleAttribute('borderWidth')}
             />
             <ElementPropertiesTypography
               fontFamily={getStyleAttribute('fontFamily')}

@@ -1,7 +1,6 @@
 import cn from 'classnames'
 import { memo, useEffect, useState } from 'react'
 import DraggableIndicator from '../draggable-indicator'
-import GradientEditor from './gradient-editor'
 import TypographyElement from './typography-element'
 import UnstyledDisplay from './unstyled-display'
 import type { Element as ElementType } from '@/stores/canvas-store'
@@ -37,7 +36,6 @@ const Element = ({
   const setSelectedElementId = useInteractionsStore(
     (s) => s.setSelectedElementId
   )
-  const gradientEditor = useInteractionsStore((s) => s.gradientEditor)
   const isDraggingElement = useInteractionsStore((s) => s.isDraggingElement)
   const setSelectedMediaQuery = useInteractionsStore(
     (s) => s.setSelectedMediaQuery
@@ -150,7 +148,7 @@ const Element = ({
 
       if (value === undefined || value === null) return acc
 
-      if (value.endsWith('vh')) {
+      if (String(value).endsWith('vh')) {
         const num = Number(value.replace('vh', ''))
         return {
           ...a,
@@ -158,7 +156,7 @@ const Element = ({
         }
       }
 
-      if (value.endsWith('vw')) {
+      if (String(value).endsWith('vw')) {
         const num = Number(value.replace('vw', ''))
         return {
           ...a,
@@ -184,7 +182,7 @@ const Element = ({
 
     if (value === undefined || value === null) return acc
 
-    if (value.endsWith('vh')) {
+    if (String(value).endsWith('vh')) {
       const num = Number(value.replace('vh', ''))
       return {
         ...acc,
@@ -192,7 +190,7 @@ const Element = ({
       }
     }
 
-    if (value.endsWith('vw')) {
+    if (String(value).endsWith('vw')) {
       const num = Number(value.replace('vw', ''))
       return {
         ...acc,
@@ -294,9 +292,6 @@ const Element = ({
       {draggedElement && draggedElement?.relativeId === element.id ? (
         <DraggableIndicator position={draggedElement.relativePosition} />
       ) : null}
-      {gradientEditor !== null && selectedElementId === element.id && (
-        <GradientEditor />
-      )}
       {isUnstyled ? <UnstyledDisplay /> : null}
       {isTypographyElement(element) ? (
         <TypographyElement element={element} />
