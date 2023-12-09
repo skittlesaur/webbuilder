@@ -127,9 +127,9 @@ const ElementProperties = () => {
               background={getStyleAttribute('background')}
               borderColor={getStyleAttribute('borderColor')}
               borderWidth={getStyleAttribute('borderWidth')}
+              color={getStyleAttribute('color')}
             />
             <ElementPropertiesTypography
-              color={getStyleAttribute('color')}
               fontFamily={getStyleAttribute('fontFamily')}
               fontSize={getStyleAttribute('fontSize')}
               fontWeight={getStyleAttribute('fontWeight')}

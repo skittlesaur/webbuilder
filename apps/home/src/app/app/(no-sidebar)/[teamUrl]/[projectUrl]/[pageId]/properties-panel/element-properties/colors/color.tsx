@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import type { Fill } from '../colors/fill'
-import { ColorFill } from '../colors/item'
-import FillColorStyles from '../colors/color-styles'
+import type { Fill } from './fill'
+import { ColorFill } from './item'
+import FillColorStyles from './color-styles'
 import type { Variable } from '@/stores/canvas-store'
 import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
@@ -88,7 +88,7 @@ const TypographyColor = ({ color }) => {
   return (
     <div className="relative flex flex-col gap-3 px-4 -mx-4">
       <div className="flex items-center justify-between">
-        <p className="text-gray-400">Color</p>
+        <p>Text</p>
         <FillColorStyles
           setFills={(fills) => {
             setSelectedColor(fills[0])

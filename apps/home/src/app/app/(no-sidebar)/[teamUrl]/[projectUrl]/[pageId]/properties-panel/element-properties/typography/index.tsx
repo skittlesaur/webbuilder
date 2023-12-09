@@ -1,11 +1,9 @@
 import InputWithUnit from '../input-with-unit'
 import AlignText from './align'
-import TypographyColor from './color'
 import TypographyFont from './font'
 import FontWeight from './weight'
 
 const ElementPropertiesTypography = ({
-  color,
   fontFamily,
   fontWeight,
   fontSize,
@@ -21,7 +19,6 @@ const ElementPropertiesTypography = ({
       <div className="flex flex-col gap-3">
         <TypographyFont fontFamily={family} />
         <FontWeight fontFamily={family} fontWeight={fontWeight} />
-        <TypographyColor color={color} />
         <div className="relative grid grid-cols-[0.5fr_1fr] gap-2 items-center group">
           <p className="text-gray-400">Size</p>
           <InputWithUnit
