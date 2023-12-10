@@ -75,12 +75,7 @@ interface ExportHtmlCssOptions {
   skipVariables?: boolean
 }
 
-const exportHtmlCss = ({
-  overrideElements,
-  skipDownload,
-  skipBodyStyles,
-  skipVariables,
-}: ExportHtmlCssOptions) => {
+const exportHtmlCss = (options: ExportHtmlCssOptions) => {
   const {
     elements: elementsState,
     breakpoints,
@@ -88,9 +83,9 @@ const exportHtmlCss = ({
     variables: variablesState,
   } = useCanvasStore.getState()
 
-  const elements = overrideElements || elementsState
-  const bodyStyles = skipBodyStyles ? {} : bodyStylesState
-  const variables = skipVariables ? [] : variablesState
+  const elements = options?.overrideElements || elementsState
+  const bodyStyles = options?.skipBodyStyles ? {} : bodyStylesState
+  const variables = options?.skipVariables ? [] : variablesState
 
   const html = document.createElement('html')
   const head = document.createElement('head')
@@ -303,7 +298,7 @@ const exportHtmlCss = ({
 
   const cssWithImports = `${fontImports}${css}`
 
-  if (skipDownload) {
+  if (options?.skipDownload) {
     return {
       htmlString: html.outerHTML,
       css: cssWithImports,
