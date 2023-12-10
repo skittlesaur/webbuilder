@@ -59,12 +59,12 @@ const ExportButton = () => {
     css: CSS_EXPORTS[0],
   })
 
-  const handleExport = () => {
+  const handleExport = async () => {
     const exportFunctionKey = `${selectedExport.html.value}-${selectedExport.css.value}`
     const exportFunction = exportFunctions[exportFunctionKey]
 
     if (exportFunction) {
-      exportFunction()
+      await exportFunction()
       setOpen(false)
       return
     }

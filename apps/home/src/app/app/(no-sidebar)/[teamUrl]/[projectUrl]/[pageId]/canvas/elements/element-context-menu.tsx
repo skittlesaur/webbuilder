@@ -57,7 +57,7 @@ const ElementContextMenu = ({
   }
 
   const getHtmlCss = useCallback(async () => {
-    const exportData = exportHtmlCss({
+    const exportData = await exportHtmlCss({
       overrideElements: [element],
       skipDownload: true,
       skipBodyStyles: true,

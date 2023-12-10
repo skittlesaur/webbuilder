@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
 import { toast } from 'sonner'
 import { createId } from '@paralleldrive/cuid2'
+import { format } from 'prettier/standalone'
 import {
   useCanvasStore,
   type Breakpoint,
@@ -75,7 +76,7 @@ interface ExportHtmlCssOptions {
   skipVariables?: boolean
 }
 
-const exportHtmlCss = (options: ExportHtmlCssOptions) => {
+const exportHtmlCss = async (options: ExportHtmlCssOptions) => {
   const {
     elements: elementsState,
     breakpoints,
@@ -288,7 +289,12 @@ const exportHtmlCss = (options: ExportHtmlCssOptions) => {
 
   html.appendChild(body)
 
-  const htmlFile = new Blob([html.outerHTML], { type: 'text/html' })
+  const formattedHtml = await format(html.outerHTML, {
+    parser: 'html',
+    plugins: [require('prettier/parser-html')],
+  })
+
+  const htmlFile = new Blob([formattedHtml], { type: 'text/html' })
 
   const fontImports = FontsData.filter((font) =>
     Array.from(fontFamilies).includes(font.family as string)
@@ -298,15 +304,20 @@ const exportHtmlCss = (options: ExportHtmlCssOptions) => {
 
   const cssWithImports = `${fontImports}${css}`
 
+  const formattedCss = await format(cssWithImports, {
+    parser: 'css',
+    plugins: [require('prettier/parser-postcss')],
+  })
+
   if (options?.skipDownload) {
     return {
-      htmlString: html.outerHTML,
-      css: cssWithImports,
+      htmlString: formattedHtml,
+      css: formattedCss,
       htmlNode: html,
     }
   }
 
-  const cssFile = new Blob([cssWithImports], { type: 'text/css' })
+  const cssFile = new Blob([formattedCss], { type: 'text/css' })
 
   const htmlFileUrl = URL.createObjectURL(htmlFile)
   const cssFileUrl = URL.createObjectURL(cssFile)
