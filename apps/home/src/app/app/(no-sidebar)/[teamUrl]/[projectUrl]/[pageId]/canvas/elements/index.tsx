@@ -1,8 +1,10 @@
 import cn from 'classnames'
 import { memo, useEffect, useState } from 'react'
+import { createId } from '@paralleldrive/cuid2'
 import DraggableIndicator from '../draggable-indicator'
 import TypographyElement from './typography-element'
 import UnstyledDisplay from './unstyled-display'
+import ElementContextMenu from './element-context-menu'
 import type {
   DraggedElement,
   Element as ElementType,
@@ -10,8 +12,6 @@ import type {
 import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
 import isTypographyElement from '@/lib/is-typography-element'
-import {} from 'sonner'
-import { createId } from '@paralleldrive/cuid2'
 
 const VOID_ELEMENTS = [
   'img',
@@ -393,8 +393,97 @@ const Element = ({
     }
   }, {})
 
-  if (VOID_ELEMENTS.includes(element.type as string))
+  const isVoidElement = VOID_ELEMENTS.includes(element.type as string)
+
+  if (isVoidElement)
     return (
+      <ElementContextMenu isVoidElement element={element}>
+        <Type
+          {...element.attributes}
+          className={cn({
+            'ring-2 !ring-primary': selectedElementId === element.id,
+            'ring-2 ring-primary/70':
+              isHovering || hoveredElementId === element.id,
+          })}
+          data-droppable="true"
+          id={element.id}
+          style={{
+            ...(mediaQuery === null
+              ? { ...queryStyles, ...formattedStyle }
+              : { ...formattedStyle, ...queryStyles }),
+            paddingLeft: isDraggingElement
+              ? `0.5rem`
+              : queryStyles?.paddingLeft ?? element.style?.paddingLeft,
+            paddingRight: isDraggingElement
+              ? `0.5rem`
+              : queryStyles?.paddingRight ?? element.style?.paddingRight,
+            paddingTop: isDraggingElement
+              ? `0.5rem`
+              : queryStyles?.paddingTop ?? element.style?.paddingTop,
+            paddingBottom: isDraggingElement
+              ? `0.5rem`
+              : queryStyles?.paddingBottom ?? element.style?.paddingBottom,
+            outline: isDraggingElement
+              ? '2px solid #923FDE'
+              : queryStyles?.outline ?? element.style?.outline,
+            // eslint-disable-next-line no-nested-ternary -- no need to simplify
+            position: drag.active
+              ? 'absolute'
+              : isDraggingElement
+              ? 'relative'
+              : queryStyles?.position ?? element.style?.position,
+            top: drag.active
+              ? `${drag.y}px`
+              : queryStyles?.top ?? element.style?.top,
+            left: drag.active
+              ? `${drag.x}px`
+              : queryStyles?.left ?? element.style?.left,
+            zIndex: drag.active
+              ? 1000
+              : queryStyles?.zIndex ?? element.style?.zIndex,
+            scale: drag.active
+              ? 0.5
+              : queryStyles?.scale ?? element.style?.scale,
+            opacity: drag.active
+              ? 0.5
+              : queryStyles?.opacity ?? element.style?.opacity,
+          }}
+          onClick={(e) => {
+            e.stopPropagation()
+            e.preventDefault()
+            setSelectedElementId(element.id === 'root' ? null : element.id)
+            setSelectedMediaQuery(mediaQuery)
+          }}
+          onFocus={(e) => {
+            // disables editing of text when clicking on element
+            e.target.blur()
+          }}
+          onMouseDown={(e) => {
+            if (e.button === 0) {
+              e.stopPropagation()
+              setDrag({
+                x: e.clientX,
+                y: e.clientY,
+                active: false,
+                mouseDown: true,
+              })
+            }
+          }}
+          onMouseUp={(e) => {
+            if (e.button === 0) {
+              setDrag((prev) => ({
+                ...prev,
+                mouseDown: false,
+                active: false,
+              }))
+            }
+          }}
+        />
+      </ElementContextMenu>
+    )
+
+  return (
+    <ElementContextMenu element={element}>
       <Type
         {...element.attributes}
         className={cn({
@@ -449,10 +538,6 @@ const Element = ({
           setSelectedElementId(element.id === 'root' ? null : element.id)
           setSelectedMediaQuery(mediaQuery)
         }}
-        onFocus={(e) => {
-          // disables editing of text when clicking on element
-          e.target.blur()
-        }}
         onMouseDown={(e) => {
           if (e.button === 0) {
             e.stopPropagation()
@@ -472,100 +557,24 @@ const Element = ({
               active: false,
             }))
           }
-        }}
-      />
-    )
-
-  return (
-    <Type
-      {...element.attributes}
-      className={cn({
-        'ring-2 !ring-primary': selectedElementId === element.id,
-        'ring-2 ring-primary/70': isHovering || hoveredElementId === element.id,
-      })}
-      data-droppable="true"
-      id={element.id}
-      style={{
-        ...(mediaQuery === null
-          ? { ...queryStyles, ...formattedStyle }
-          : { ...formattedStyle, ...queryStyles }),
-        paddingLeft: isDraggingElement
-          ? `0.5rem`
-          : queryStyles?.paddingLeft ?? element.style?.paddingLeft,
-        paddingRight: isDraggingElement
-          ? `0.5rem`
-          : queryStyles?.paddingRight ?? element.style?.paddingRight,
-        paddingTop: isDraggingElement
-          ? `0.5rem`
-          : queryStyles?.paddingTop ?? element.style?.paddingTop,
-        paddingBottom: isDraggingElement
-          ? `0.5rem`
-          : queryStyles?.paddingBottom ?? element.style?.paddingBottom,
-        outline: isDraggingElement
-          ? '2px solid #923FDE'
-          : queryStyles?.outline ?? element.style?.outline,
-        // eslint-disable-next-line no-nested-ternary -- no need to simplify
-        position: drag.active
-          ? 'absolute'
-          : isDraggingElement
-          ? 'relative'
-          : queryStyles?.position ?? element.style?.position,
-        top: drag.active
-          ? `${drag.y}px`
-          : queryStyles?.top ?? element.style?.top,
-        left: drag.active
-          ? `${drag.x}px`
-          : queryStyles?.left ?? element.style?.left,
-        zIndex: drag.active
-          ? 1000
-          : queryStyles?.zIndex ?? element.style?.zIndex,
-        scale: drag.active ? 0.5 : queryStyles?.scale ?? element.style?.scale,
-        opacity: drag.active
-          ? 0.5
-          : queryStyles?.opacity ?? element.style?.opacity,
-      }}
-      onClick={(e) => {
-        e.stopPropagation()
-        e.preventDefault()
-        setSelectedElementId(element.id === 'root' ? null : element.id)
-        setSelectedMediaQuery(mediaQuery)
-      }}
-      onMouseDown={(e) => {
-        if (e.button === 0) {
-          e.stopPropagation()
-          setDrag({
-            x: e.clientX,
-            y: e.clientY,
-            active: false,
-            mouseDown: true,
-          })
-        }
-      }}
-      onMouseUp={(e) => {
-        if (e.button === 0) {
-          setDrag((prev) => ({
-            ...prev,
-            mouseDown: false,
-            active: false,
-          }))
-        }
-      }}>
-      {draggedElement && draggedElement?.relativeId === element.id ? (
-        <DraggableIndicator position={draggedElement.relativePosition} />
-      ) : null}
-      {isUnstyled ? <UnstyledDisplay /> : null}
-      {isTypographyElement(element) ? (
-        <TypographyElement element={element} />
-      ) : (
-        element.children.map((child) => (
-          <Element
-            element={child}
-            key={typeof child === 'string' ? child : child.id}
-            mediaQuery={mediaQuery}
-          />
-        ))
-      )}
-    </Type>
+        }}>
+        {draggedElement && draggedElement?.relativeId === element.id ? (
+          <DraggableIndicator position={draggedElement.relativePosition} />
+        ) : null}
+        {isUnstyled ? <UnstyledDisplay /> : null}
+        {isTypographyElement(element) ? (
+          <TypographyElement element={element} />
+        ) : (
+          element.children.map((child) => (
+            <Element
+              element={child}
+              key={typeof child === 'string' ? child : child.id}
+              mediaQuery={mediaQuery}
+            />
+          ))
+        )}
+      </Type>
+    </ElementContextMenu>
   )
 }
 

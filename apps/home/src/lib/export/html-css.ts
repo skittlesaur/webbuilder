@@ -8,7 +8,7 @@ import {
 } from '@/stores/canvas-store'
 import FontsData from '@/lib/fonts-data.json'
 
-const defaultCss = `
+export const defaultCss = `
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
     
 * {
@@ -68,9 +68,29 @@ const getElementCss = (style: CSSProperties) => {
     .join('; \n')
 }
 
-const exportHtmlCss = () => {
-  const { elements, breakpoints, bodyStyles, variables } =
-    useCanvasStore.getState()
+interface ExportHtmlCssOptions {
+  overrideElements?: Element[]
+  skipDownload?: boolean
+  skipBodyStyles?: boolean
+  skipVariables?: boolean
+}
+
+const exportHtmlCss = ({
+  overrideElements,
+  skipDownload,
+  skipBodyStyles,
+  skipVariables,
+}: ExportHtmlCssOptions) => {
+  const {
+    elements: elementsState,
+    breakpoints,
+    bodyStyles: bodyStylesState,
+    variables: variablesState,
+  } = useCanvasStore.getState()
+
+  const elements = overrideElements || elementsState
+  const bodyStyles = skipBodyStyles ? {} : bodyStylesState
+  const variables = skipVariables ? [] : variablesState
 
   const html = document.createElement('html')
   const head = document.createElement('head')
@@ -282,6 +302,14 @@ const exportHtmlCss = () => {
     .join('\n')
 
   const cssWithImports = `${fontImports}${css}`
+
+  if (skipDownload) {
+    return {
+      htmlString: html.outerHTML,
+      css: cssWithImports,
+      htmlNode: html,
+    }
+  }
 
   const cssFile = new Blob([cssWithImports], { type: 'text/css' })
 
