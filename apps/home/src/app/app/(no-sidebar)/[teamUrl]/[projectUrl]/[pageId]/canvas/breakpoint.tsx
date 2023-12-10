@@ -1,9 +1,11 @@
 import type { CSSProperties } from 'react'
 import { useMemo, useRef } from 'react'
+import cn from 'classnames'
 import Element from './elements'
 import GradientEditor from './gradient-editor'
 import { useCanvasStore } from '@/stores/canvas-store'
 import type { Breakpoint as BreakpointType } from '@/stores/canvas-store'
+import { useInteractionsStore } from '@/stores/interactions-store'
 
 interface BreakpointProps {
   breakpoint: BreakpointType
@@ -14,6 +16,10 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
   const zoom = useCanvasStore((s) => s.zoom)
   const elements = useCanvasStore((s) => s.elements)
   const bodyStyles = useCanvasStore((s) => s.bodyStyles)
+  const setSelectedMediaQuery = useInteractionsStore(
+    (s) => s.setSelectedMediaQuery
+  )
+  const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
 
   const ref = useRef<HTMLDivElement>(null)
 
@@ -54,14 +60,26 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
 
   return (
     <div
-      className="absolute flex flex-col gap-5 origin-top"
+      className={cn('absolute flex flex-col gap-5 origin-top rounded', {
+        'outline outline-2 outline-offset-8 outline-primary':
+          selectedMediaQuery === breakpoint.width,
+      })}
       data-breakpoint={breakpoint.id}
+      role="button"
       style={{
         width: breakpoint.width,
         transform: `scale(${zoom * 0.2}) translate(${pan.x}px, ${pan.y}px)`,
         left:
           breakpoint.position.x * zoom * 0.2 - breakpoint.width / 2 + pan.x / 2,
         top: breakpoint.position.y * zoom * 0.2 + pan.y / 2,
+      }}
+      tabIndex={0}
+      onClick={() =>
+        setSelectedMediaQuery(breakpoint.isDefault ? null : breakpoint.width)
+      }
+      onKeyDown={(e) => {
+        if (e.key === 'Enter')
+          setSelectedMediaQuery(breakpoint.isDefault ? null : breakpoint.width)
       }}>
       <div
         className="flex items-center gap-4 px-5 py-2 rounded bg-accent"
@@ -101,24 +119,15 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
           breakpointId={breakpoint.id}
           mediaQuery={breakpoint.isDefault ? null : breakpoint.width}
         />
-        {elements.map((element) => (
-          <Element
-            element={element}
-            key={element.id}
-            mediaQuery={breakpoint.isDefault ? null : breakpoint.width}
-          />
-        ))}
-        {elements.length === 0 && (
-          <Element
-            element={{
-              id: 'root',
-              type: 'div',
-              style: { height: breakpoint.minHeight, width: '100%' },
-              children: [],
-            }}
-            mediaQuery={breakpoint.isDefault ? null : breakpoint.width}
-          />
-        )}
+        <Element
+          element={{
+            id: 'root',
+            type: 'div',
+            style: { minHeight: breakpoint.minHeight, width: breakpoint.width },
+            children: elements,
+          }}
+          mediaQuery={breakpoint.isDefault ? null : breakpoint.width}
+        />
       </div>
     </div>
   )
