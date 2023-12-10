@@ -13,12 +13,14 @@ const LAYOUT_ELEMENTS: PanelElement[] = [
     title: 'Section',
     element: 'section',
     style: {},
+    children: [],
   },
   {
     Icon: <ContainerIcon className="w-full h-full" />,
     title: 'Container',
     element: 'div',
     style: {},
+    children: [],
   },
   {
     Icon: <GridIcon className="w-full h-full" />,
@@ -84,7 +86,7 @@ const LAYOUT_ELEMENTS: PanelElement[] = [
 const LayoutElements = () => {
   return (
     <>
-      <h1 className="font-medium text-sm">Layout</h1>
+      <h1 className="text-sm font-medium">Layout</h1>
       <div className="grid grid-cols-[repeat(var(--grid-cols-count),1fr)] gap-4 flex-wrap">
         {LAYOUT_ELEMENTS.map((element) => (
           <Element

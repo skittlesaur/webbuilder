@@ -10,6 +10,7 @@ const BASIC_ELEMENTS: PanelElement[] = [
     title: 'Div Block',
     element: 'div',
     style: {},
+    children: [],
   },
   {
     Icon: <ListItemIcon className="w-full h-full" />,

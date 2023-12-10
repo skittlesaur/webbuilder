@@ -17,6 +17,7 @@ const FORMS_ELEMENTS: PanelElement[] = [
     title: 'From Group',
     element: 'form',
     style: {},
+    children: [],
   },
   {
     Icon: <LabelIcon className="w-full h-full" />,
@@ -58,6 +59,7 @@ const FORMS_ELEMENTS: PanelElement[] = [
       type: 'text',
       placeholder: 'Input',
     },
+    children: [],
   },
   {
     Icon: <TextAreaIcon className="w-full h-full" />,
@@ -84,6 +86,7 @@ const FORMS_ELEMENTS: PanelElement[] = [
     attributes: {
       placeholder: 'Text Area',
     },
+    children: [],
   },
   {
     Icon: <CheckboxIcon className="w-full h-full" />,
@@ -93,6 +96,7 @@ const FORMS_ELEMENTS: PanelElement[] = [
     attributes: {
       type: 'checkbox',
     },
+    children: [],
   },
   {
     Icon: <RadioIcon className="w-full h-full" />,
@@ -102,6 +106,7 @@ const FORMS_ELEMENTS: PanelElement[] = [
     attributes: {
       type: 'radio',
     },
+    children: [],
   },
   {
     Icon: <SelectIcon className="w-full h-full" />,
