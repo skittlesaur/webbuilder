@@ -51,7 +51,8 @@ export interface Element {
 export interface DraggedElement {
   relativeId: string
   relativePosition: 'before' | 'after' | 'child'
-  type: ElementType
+  type: ElementType | 'grouped'
+  element?: Element
 }
 
 export interface CustomFont {

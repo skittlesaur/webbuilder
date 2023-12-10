@@ -3,10 +3,15 @@ import { memo, useEffect, useState } from 'react'
 import DraggableIndicator from '../draggable-indicator'
 import TypographyElement from './typography-element'
 import UnstyledDisplay from './unstyled-display'
-import type { Element as ElementType } from '@/stores/canvas-store'
+import type {
+  DraggedElement,
+  Element as ElementType,
+} from '@/stores/canvas-store'
 import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
 import isTypographyElement from '@/lib/is-typography-element'
+import {} from 'sonner'
+import { createId } from '@paralleldrive/cuid2'
 
 const VOID_ELEMENTS = [
   'img',
@@ -27,8 +32,22 @@ const Element = ({
   mediaQuery: number | null
 }) => {
   const draggedElement = useCanvasStore((s) => s.draggedElement)
+  const setDraggedElement = useCanvasStore((s) => s.setDraggedElement)
+  const setIsDraggingElement = useInteractionsStore(
+    (s) => s.setIsDraggingElement
+  )
+  const addElement = useCanvasStore((s) => s.addElement)
+
+  const removeElement = useCanvasStore((s) => s.removeElement)
+
   const [isHovering, setIsHovering] = useState(false)
   const [isUnstyled, setIsUnstyled] = useState(false)
+  const [drag, setDrag] = useState({
+    x: 0,
+    y: 0,
+    active: false,
+    mouseDown: false,
+  })
 
   const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
   const hoveredElementId = useInteractionsStore((s) => s.hoveredElementId)
@@ -128,6 +147,176 @@ const Element = ({
       setIsUnstyled(false)
     }
   }, [element])
+
+  useEffect(() => {
+    const mouseMoveListener = (e: MouseEvent) => {
+      if (!drag.active || typeof element === 'string') {
+        setDrag({
+          x: 0,
+          y: 0,
+          active: false,
+          mouseDown: false,
+        })
+        setDraggedElement(undefined)
+        setIsDraggingElement(false)
+        return
+      }
+
+      const { clientX, clientY } = e
+
+      setDrag({
+        x: clientX,
+        y: clientY,
+        active: true,
+        mouseDown: true,
+      })
+
+      const getChildrenIds = (el: ElementType): string[] => {
+        if (typeof el === 'string') return []
+
+        return el.children.reduce<string[]>((acc, child) => {
+          if (typeof child === 'string') return acc
+
+          return [...acc, child.id, ...getChildrenIds(child)]
+        }, [])
+      }
+
+      const childrenIds = getChildrenIds(element)
+
+      const intersectingElements = document
+        .elementsFromPoint(clientX, clientY)
+        .filter(
+          (el: HTMLElement) =>
+            el.dataset.droppable === 'true' &&
+            ![element.id, ...childrenIds].includes(el.id)
+        )
+
+      let closestElementToCursor = intersectingElements[0] as HTMLElement
+      let closestDistance = Infinity
+
+      intersectingElements.forEach((el) => {
+        const rect = el.getBoundingClientRect()
+        const distance = Math.sqrt(
+          (rect.x - clientX) ** 2 + (rect.y - clientY) ** 2
+        )
+
+        if (distance < closestDistance) {
+          closestDistance = distance
+          closestElementToCursor = el as HTMLElement
+        }
+      })
+
+      if (!closestElementToCursor) return setDraggedElement(undefined)
+
+      // if the closest element is a typography element, we want to
+      // snap to the typography element's parent instead (no child)
+      // so an offset of 0.5 is used while the default is 0.2
+      const offset =
+        isTypographyElement({
+          type: closestElementToCursor.tagName.toLowerCase() as ElementType['type'],
+        }) && element.type !== 'a'
+          ? 0.5
+          : 0.2
+      const elementRect = closestElementToCursor.getBoundingClientRect()
+
+      let relativePosition: DraggedElement['relativePosition']
+
+      if (clientY < elementRect.y + elementRect.height * offset) {
+        relativePosition = 'before'
+      } else if (clientY > elementRect.y + elementRect.height * (1 - offset)) {
+        relativePosition = 'after'
+      } else {
+        relativePosition = 'child'
+      }
+
+      setDraggedElement({
+        relativeId: closestElementToCursor.id,
+        relativePosition,
+        type: 'grouped',
+        element,
+      })
+    }
+
+    const mouseUpListener = () => {
+      if (!drag.active) return
+
+      const {
+        relativeId,
+        relativePosition,
+        element: droppedElement,
+      } = draggedElement || {}
+
+      if (!droppedElement) {
+        setDrag({
+          x: 0,
+          y: 0,
+          active: false,
+          mouseDown: false,
+        })
+
+        setDraggedElement(undefined)
+        setIsDraggingElement(false)
+        return
+      }
+
+      addElement(
+        {
+          ...droppedElement,
+          id: createId(),
+        },
+        relativeId,
+        relativePosition
+      )
+
+      setDrag({
+        x: 0,
+        y: 0,
+        active: false,
+        mouseDown: false,
+      })
+
+      setDraggedElement(undefined)
+      setIsDraggingElement(false)
+      removeElement(droppedElement.id)
+    }
+
+    if (drag.active) {
+      window.addEventListener('mousemove', mouseMoveListener)
+      window.addEventListener('mouseup', mouseUpListener)
+    } else {
+      window.removeEventListener('mousemove', mouseMoveListener)
+      window.removeEventListener('mouseup', mouseUpListener)
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', mouseMoveListener)
+      window.removeEventListener('mouseup', mouseUpListener)
+    }
+  }, [
+    addElement,
+    drag.active,
+    draggedElement,
+    element,
+    removeElement,
+    setDraggedElement,
+    setIsDraggingElement,
+  ])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!drag.mouseDown) return
+
+      setDrag((prev) => ({
+        ...prev,
+        active: true,
+      }))
+      setIsDraggingElement(true)
+    }, 200)
+
+    return () => {
+      clearInterval(interval)
+    }
+  }, [drag.mouseDown, setIsDraggingElement])
 
   if (typeof element === 'string') return element
 
@@ -234,9 +423,25 @@ const Element = ({
           outline: isDraggingElement
             ? '2px solid #923FDE'
             : queryStyles?.outline ?? element.style?.outline,
-          position: isDraggingElement
+          // eslint-disable-next-line no-nested-ternary -- no need to simplify
+          position: drag.active
+            ? 'absolute'
+            : isDraggingElement
             ? 'relative'
             : queryStyles?.position ?? element.style?.position,
+          top: drag.active
+            ? `${drag.y}px`
+            : queryStyles?.top ?? element.style?.top,
+          left: drag.active
+            ? `${drag.x}px`
+            : queryStyles?.left ?? element.style?.left,
+          zIndex: drag.active
+            ? 1000
+            : queryStyles?.zIndex ?? element.style?.zIndex,
+          scale: drag.active ? 0.5 : queryStyles?.scale ?? element.style?.scale,
+          opacity: drag.active
+            ? 0.5
+            : queryStyles?.opacity ?? element.style?.opacity,
         }}
         onClick={(e) => {
           e.stopPropagation()
@@ -247,6 +452,26 @@ const Element = ({
         onFocus={(e) => {
           // disables editing of text when clicking on element
           e.target.blur()
+        }}
+        onMouseDown={(e) => {
+          if (e.button === 0) {
+            e.stopPropagation()
+            setDrag({
+              x: e.clientX,
+              y: e.clientY,
+              active: false,
+              mouseDown: true,
+            })
+          }
+        }}
+        onMouseUp={(e) => {
+          if (e.button === 0) {
+            setDrag((prev) => ({
+              ...prev,
+              mouseDown: false,
+              active: false,
+            }))
+          }
         }}
       />
     )
@@ -279,15 +504,51 @@ const Element = ({
         outline: isDraggingElement
           ? '2px solid #923FDE'
           : queryStyles?.outline ?? element.style?.outline,
-        position: isDraggingElement
+        // eslint-disable-next-line no-nested-ternary -- no need to simplify
+        position: drag.active
+          ? 'absolute'
+          : isDraggingElement
           ? 'relative'
           : queryStyles?.position ?? element.style?.position,
+        top: drag.active
+          ? `${drag.y}px`
+          : queryStyles?.top ?? element.style?.top,
+        left: drag.active
+          ? `${drag.x}px`
+          : queryStyles?.left ?? element.style?.left,
+        zIndex: drag.active
+          ? 1000
+          : queryStyles?.zIndex ?? element.style?.zIndex,
+        scale: drag.active ? 0.5 : queryStyles?.scale ?? element.style?.scale,
+        opacity: drag.active
+          ? 0.5
+          : queryStyles?.opacity ?? element.style?.opacity,
       }}
       onClick={(e) => {
         e.stopPropagation()
         e.preventDefault()
         setSelectedElementId(element.id === 'root' ? null : element.id)
         setSelectedMediaQuery(mediaQuery)
+      }}
+      onMouseDown={(e) => {
+        if (e.button === 0) {
+          e.stopPropagation()
+          setDrag({
+            x: e.clientX,
+            y: e.clientY,
+            active: false,
+            mouseDown: true,
+          })
+        }
+      }}
+      onMouseUp={(e) => {
+        if (e.button === 0) {
+          setDrag((prev) => ({
+            ...prev,
+            mouseDown: false,
+            active: false,
+          }))
+        }
       }}>
       {draggedElement && draggedElement?.relativeId === element.id ? (
         <DraggableIndicator position={draggedElement.relativePosition} />
