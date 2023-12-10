@@ -259,14 +259,17 @@ const Element = ({
         return
       }
 
+      const id = createId()
+
       addElement(
         {
           ...droppedElement,
-          id: createId(),
+          id,
         },
         relativeId,
         relativePosition
       )
+      setSelectedElementId(id)
 
       setDrag({
         x: 0,
@@ -300,6 +303,7 @@ const Element = ({
     removeElement,
     setDraggedElement,
     setIsDraggingElement,
+    setSelectedElementId,
   ])
 
   useEffect(() => {

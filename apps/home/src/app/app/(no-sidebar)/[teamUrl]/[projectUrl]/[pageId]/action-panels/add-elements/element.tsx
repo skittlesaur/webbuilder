@@ -31,6 +31,9 @@ const Element = ({
   const setIsDraggingElement = useInteractionsStore(
     (s) => s.setIsDraggingElement
   )
+  const setSelectedElementId = useInteractionsStore(
+    (s) => s.setSelectedElementId
+  )
 
   useEffect(() => {
     if (!isDragging) return
@@ -111,6 +114,7 @@ const Element = ({
 
       if (relativeId && relativePosition) {
         addElement(newElement, relativeId, relativePosition)
+        setSelectedElementId(newElement.id)
       }
 
       setIsDragging(false)
@@ -137,6 +141,7 @@ const Element = ({
     mediaQueries,
     setDraggedElement,
     setIsDraggingElement,
+    setSelectedElementId,
     style,
   ])
 

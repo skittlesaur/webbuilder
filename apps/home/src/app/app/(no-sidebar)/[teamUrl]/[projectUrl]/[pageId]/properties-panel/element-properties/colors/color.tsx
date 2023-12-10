@@ -20,6 +20,13 @@ const TypographyColor = ({ color, isBody }) => {
       isBody ? '[data-breakpoint="true"]' : `#${selectedElementId}`
     )
 
+    if (!element)
+      return {
+        type: 'color' as const,
+        value: '#000000',
+        opacity: 100,
+      }
+
     const computedStyle = window.getComputedStyle(element as Element)
     const c = computedStyle.color
 

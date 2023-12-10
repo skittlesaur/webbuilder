@@ -60,10 +60,13 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
 
   return (
     <div
-      className={cn('absolute flex flex-col gap-5 origin-top rounded', {
-        'outline outline-2 outline-offset-8 outline-primary':
-          selectedMediaQuery === breakpoint.width,
-      })}
+      className={cn(
+        'absolute flex flex-col gap-5 origin-top rounded focus-visible:ring-0 focus-visible:outline-none',
+        {
+          'outline outline-2 outline-offset-8 outline-primary':
+            selectedMediaQuery === breakpoint.width,
+        }
+      )}
       data-breakpoint={breakpoint.id}
       role="button"
       style={{

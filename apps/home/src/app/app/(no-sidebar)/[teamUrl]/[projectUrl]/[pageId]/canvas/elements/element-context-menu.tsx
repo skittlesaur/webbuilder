@@ -137,6 +137,7 @@ const ElementContextMenu = ({
       const validatedJson = deepValidate(json)
 
       addElement(validatedJson as Element, element.id, position)
+      setSelectedElementId(validatedJson?.[0]?.id || null)
 
       toast.success('Pasted element')
     } catch (err) {
