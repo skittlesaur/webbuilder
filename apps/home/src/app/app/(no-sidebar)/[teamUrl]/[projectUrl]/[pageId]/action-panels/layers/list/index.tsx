@@ -125,7 +125,7 @@ const LayersList = () => {
 
               if (el.children) {
                 el.children = el.children.map((child, index) => {
-                  if (index === targetPath[depth + 1]) {
+                  if (index === targetPath[depth]) {
                     return findAndUpdateRecursive(child, depth + 1)
                   }
 
