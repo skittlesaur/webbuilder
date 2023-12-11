@@ -11,8 +11,7 @@ const isTypographyElement = (element: Partial<Element> & { type: string }): bool
     'p',
     'span',
     'a',
-    'label',
-    'button'
+    'label'
   ].includes(element.type as string)
 }
 
