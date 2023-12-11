@@ -2,10 +2,12 @@ import type { CSSProperties } from 'react'
 import { toast } from 'sonner'
 import { createId } from '@paralleldrive/cuid2'
 import { format } from 'prettier/standalone'
-import {
-  useCanvasStore,
-  type Breakpoint,
-  type Element,
+import { useCanvasStore } from '@/stores/canvas-store'
+import type {
+  Variable,
+  BodyStyles,
+  Breakpoint,
+  Element,
 } from '@/stores/canvas-store'
 import FontsData from '@/lib/fonts-data.json'
 
@@ -71,6 +73,9 @@ const getElementCss = (style: CSSProperties) => {
 
 interface ExportHtmlCssOptions {
   overrideElements?: Element[]
+  overrideBodyStyles?: BodyStyles
+  overrideVariables?: Variable[]
+  overrideBreakpoints?: Breakpoint[]
   skipDownload?: boolean
   skipBodyStyles?: boolean
   skipVariables?: boolean
@@ -79,14 +84,19 @@ interface ExportHtmlCssOptions {
 const exportHtmlCss = async (options: ExportHtmlCssOptions) => {
   const {
     elements: elementsState,
-    breakpoints,
+    breakpoints: breakpointsState,
     bodyStyles: bodyStylesState,
     variables: variablesState,
   } = useCanvasStore.getState()
 
   const elements = options?.overrideElements || elementsState
-  const bodyStyles = options?.skipBodyStyles ? {} : bodyStylesState
-  const variables = options?.skipVariables ? [] : variablesState
+  const bodyStyles = options?.skipBodyStyles
+    ? {}
+    : options?.overrideBodyStyles || bodyStylesState
+  const variables = options?.skipVariables
+    ? []
+    : options?.overrideVariables || variablesState
+  const breakpoints = options?.overrideBreakpoints || breakpointsState
 
   const html = document.createElement('html')
   const head = document.createElement('head')

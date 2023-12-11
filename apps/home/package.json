@@ -48,6 +48,7 @@
     "react-use-measure": "^2.1.1",
     "react-virtualized": "^9.22.5",
     "react-window": "^1.8.9",
+    "react-wrap-balancer": "^1.1.0",
     "sonner": "^1.1.0",
     "swr": "^2.2.4",
     "tailwindcss-animate": "^1.0.7",

@@ -9,32 +9,36 @@ const getPublicPage = async (req: Request, res: Response) => {
     const project = await prisma.project.findFirst({
       where: {
         url: domain,
-      }
+      },
     })
 
     if (!project) {
       return res.status(404).send('Not found')
     }
 
-    const startWithSlash = page?.toString().startsWith('/') ? `${page}` : `/${page}`
+    const startWithSlash = page?.toString().startsWith('/')
+      ? `${page}`
+      : `/${page}`
 
     const pageContent = await prisma.page.findFirst({
       where: {
         projectId: project.id,
         path: startWithSlash,
-      }
+      },
     })
 
     if (!pageContent) {
       return res.status(404).send('Not found')
     }
 
-    return res.status(200).json(pageContent)
+    return res.status(200).json({
+      ...pageContent,
+      projectTitle: project.name,
+    })
   } catch (error) {
     console.error(error)
     return res.status(500).send('Internal server error')
   }
 }
-
 
 export default getPublicPage

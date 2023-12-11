@@ -11,7 +11,7 @@ const FullLoader = ({
     <div className="fixed inset-0 flex flex-col items-center justify-center gap-6 bg-background">
       <Spinner />
       {title || paragraph ? (
-        <div className="flex flex-col">
+        <div className="flex flex-col text-text">
           {title ? <h1>{title}</h1> : null}
           {paragraph ? (
             <p className="text-sm text-neutral-400">{paragraph}</p>

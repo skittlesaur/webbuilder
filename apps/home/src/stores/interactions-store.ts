@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { Fill } from '@/app/app/(no-sidebar)/[teamUrl]/[projectUrl]/[pageId]/properties-panel/element-properties/colors/fill'
+import type { Fill } from '@/app/(root)/app/(no-sidebar)/[teamUrl]/[projectUrl]/[pageId]/properties-panel/element-properties/colors/fill'
 
 interface InteractionsStore {
   isDraggingElement: boolean
