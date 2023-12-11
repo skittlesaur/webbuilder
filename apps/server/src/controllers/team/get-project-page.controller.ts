@@ -55,6 +55,7 @@ const getTeamProjectPageController = async (req: Request, res: Response) => {
         bodyStyles: true,
         assets: true,
         variables: true,
+        updatedAt: true,
       }
     })
 
@@ -78,7 +79,8 @@ const getTeamProjectPageController = async (req: Request, res: Response) => {
 
     return res.status(200).json({
       ...page,
-      ...userPageSettings
+      ...userPageSettings,
+      projectUrl: project.url,
     })
   } catch (error) {
     console.error('Error getting team project page', error)
