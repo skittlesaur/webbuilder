@@ -36,7 +36,7 @@ const AssetsImages = () => {
               <TooltipProvider disableHoverableContent delayDuration={200}>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <ContextMenuTrigger>
+                    <ContextMenuTrigger asChild>
                       <Element
                         Icon={
                           <div className="relative w-full h-full overflow-hidden bg-white rounded-md">

@@ -148,7 +148,7 @@ const ElementContextMenu = ({
   return (
     <AlertDialog>
       <ContextMenu>
-        <ContextMenuTrigger>{children}</ContextMenuTrigger>
+        <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
         <ContextMenuContent>
           <ContextMenuItem onClick={handleSelectElement}>
             {selectedElementId === element.id ? 'Deselect' : 'Select'} Element

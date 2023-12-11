@@ -35,7 +35,7 @@ const ComponentsDisplay = () => {
       <div className="grid grid-cols-[repeat(var(--grid-cols-count),1fr)] gap-4 [&_.icon-wrapper]:bg-transparent [&_.icon-wrapper]:p-0">
         {components.map((component) => (
           <ContextMenu key={component.id}>
-            <ContextMenuTrigger>
+            <ContextMenuTrigger asChild>
               <Element
                 Icon={
                   <div className="relative w-full h-full overflow-hidden border rounded-md border-border">
