@@ -10,7 +10,7 @@ const HoverIndicator = () => {
 
     const element = document.getElementById(`layer-${hoveredElementId}`)
 
-    if (!element) return
+    if (!element) return setYOffset(0)
 
     // get position relative to container
     const rect = element.getBoundingClientRect()
@@ -18,7 +18,7 @@ const HoverIndicator = () => {
       .getElementById('layers-container')
       ?.getBoundingClientRect()
 
-    if (!containerRect) return
+    if (!containerRect) return setYOffset(0)
 
     // scroll container
     const scrollContainer = document

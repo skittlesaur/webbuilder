@@ -33,11 +33,19 @@ const SelectionIndicator = () => {
   }, [selectedElementId, setSelectedElementId])
 
   useEffect(() => {
-    if (!selectedElementId) return
+    if (!selectedElementId) {
+      setYOffset(0)
+      setHeight(0)
+      return
+    }
 
     const element = document.getElementById(`layer-${selectedElementId}`)
 
-    if (!element) return
+    if (!element) {
+      setYOffset(0)
+      setHeight(0)
+      return
+    }
 
     // get position relative to container
     const parentLiElement = element.closest('li')
@@ -53,7 +61,11 @@ const SelectionIndicator = () => {
     
     const dataScroll = Number(scrollContainer?.getAttribute('data-scroll') ?? 0)
 
-    if (!rect || !containerRect) return
+    if (!rect || !containerRect) {
+      setYOffset(0)
+      setHeight(0)
+      return
+    }
 
     const relativeY = rect.y - containerRect.y + dataScroll
 
