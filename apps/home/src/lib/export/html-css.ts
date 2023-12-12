@@ -79,6 +79,7 @@ interface ExportHtmlCssOptions {
   skipDownload?: boolean
   skipBodyStyles?: boolean
   skipVariables?: boolean
+  skipDefaultCss?: boolean
 }
 
 const exportHtmlCss = async (options: ExportHtmlCssOptions) => {
@@ -102,7 +103,7 @@ const exportHtmlCss = async (options: ExportHtmlCssOptions) => {
   const head = document.createElement('head')
   const body = document.createElement('body')
 
-  let css = defaultCss
+  let css = options?.skipDefaultCss ? '' : defaultCss
 
   if (variables?.length > 0)
     css += `:root {

@@ -39,6 +39,7 @@ const LayersList = () => {
         text: someChildString || element.type,
         children,
         component: componentChild || isComponent,
+        element,
       }
     },
     [components]
@@ -66,6 +67,7 @@ const LayersList = () => {
                 id: item.id,
                 text: item.text,
                 isComponent: item.component,
+                element: item.element,
               }}
             />
           )}

@@ -1,11 +1,14 @@
-import { useInteractionsStore } from '@/stores/interactions-store'
 import cn from 'classnames'
+import ElementContextMenu from '../../../canvas/elements/element-context-menu'
+import { useInteractionsStore } from '@/stores/interactions-store'
+import type { Element } from '@/stores/canvas-store'
 
 interface ListItemProps {
   item: {
     id: string
     text: string
     isComponent?: boolean
+    element: Element
   }
 }
 
@@ -17,36 +20,39 @@ const ListItem = ({ item }: ListItemProps) => {
   )
 
   return (
-    <button
-      className="text-sm flex items-center gap-2 p-0.5 h-7 w-full cursor-default"
-      id={`layer-${item.id}`}
-      type="button"
-      onClick={() => {
-        if (selectedElementId === item.id) {
-          setSelectedElementId(null)
-        } else {
-          setSelectedElementId(item.id)
-        }
-      }}
-      onMouseEnter={(e) => {
-        e.stopPropagation()
-        setHoveredElementId(item.id)
-      }}
-      onMouseLeave={(e) => {
-        e.stopPropagation()
-        setHoveredElementId(null)
-      }}>
-      <div
-        className={cn(
-          'min-w-[0.875rem] max-w-[0.875rem] min-h-[0.875rem] max-h-[0.875rem] rounded', {
-            'bg-primary/50': !item.isComponent,
-            'bg-green-400': item.isComponent,
+    <ElementContextMenu element={item.element}>
+      <button
+        className="text-sm flex items-center gap-2 p-0.5 h-7 w-full cursor-default"
+        id={`layer-${item.id}`}
+        type="button"
+        onClick={() => {
+          if (selectedElementId === item.id) {
+            setSelectedElementId(null)
+          } else {
+            setSelectedElementId(item.id)
           }
-        )}
-      />
-      <div className="absolute left-[calc(0.4375rem+3px)] top-8 bottom-2 bg-accent z-[-2] w-px" />
-      <p className="truncate">{item.text}</p>
-    </button>
+        }}
+        onMouseEnter={(e) => {
+          e.stopPropagation()
+          setHoveredElementId(item.id)
+        }}
+        onMouseLeave={(e) => {
+          e.stopPropagation()
+          setHoveredElementId(null)
+        }}>
+        <div
+          className={cn(
+            'min-w-[0.875rem] max-w-[0.875rem] min-h-[0.875rem] max-h-[0.875rem] rounded',
+            {
+              'bg-primary/50': !item.isComponent,
+              'bg-green-400': item.isComponent,
+            }
+          )}
+        />
+        <div className="absolute left-[calc(0.4375rem+3px)] top-8 bottom-2 bg-accent z-[-2] w-px" />
+        <p className="truncate">{item.text}</p>
+      </button>
+    </ElementContextMenu>
   )
 }
 

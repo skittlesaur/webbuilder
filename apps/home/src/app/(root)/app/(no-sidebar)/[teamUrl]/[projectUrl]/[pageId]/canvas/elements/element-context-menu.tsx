@@ -21,7 +21,7 @@ import { format } from 'prettier/standalone'
 import { toast } from 'sonner'
 import { createId } from '@paralleldrive/cuid2'
 import { useInteractionsStore } from '@/stores/interactions-store'
-import exportHtmlCss, { defaultCss } from '@/lib/export/html-css'
+import exportHtmlCss from '@/lib/export/html-css'
 import type { Element } from '@/stores/canvas-store'
 import { useCanvasStore } from '@/stores/canvas-store'
 
@@ -62,6 +62,7 @@ const ElementContextMenu = ({
       skipDownload: true,
       skipBodyStyles: true,
       skipVariables: true,
+      skipDefaultCss: true,
     })
 
     const htmlNode = exportData?.htmlNode
@@ -82,7 +83,7 @@ const ElementContextMenu = ({
       plugins: [require('prettier/parser-html')],
     })
 
-    const elementCss = exportData?.css?.replace(defaultCss, '')
+    const elementCss = exportData?.css
 
     const prettierCss = await format(elementCss || '', {
       parser: 'css',
