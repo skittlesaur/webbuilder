@@ -109,7 +109,6 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
             background: 'white',
             color: 'black',
             fontSize: '1rem',
-            ...breakpointStyles,
             maxWidth: '100%',
             minWidth: '100%',
             overflowX: 'hidden',
@@ -126,7 +125,11 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
           element={{
             id: 'root',
             type: 'div',
-            style: { minHeight: breakpoint.minHeight, width: breakpoint.width },
+            style: {
+              ...breakpointStyles,
+              minHeight: breakpoint.minHeight,
+              width: breakpoint.width,
+            },
             children: elements,
           }}
           mediaQuery={breakpoint.isDefault ? null : breakpoint.width}
