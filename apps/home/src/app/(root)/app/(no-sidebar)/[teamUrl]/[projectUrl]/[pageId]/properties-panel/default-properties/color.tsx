@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { Input } from 'ui'
 import { useDetectClickOutside } from 'react-detect-click-outside'
+import Image from 'next/image'
 import { ColorFill } from '../element-properties/colors/item'
 import { opacityToHex, type Fill } from '../element-properties/colors/fill'
 import { useCanvasStore } from '@/stores/canvas-store'
@@ -49,15 +50,27 @@ const ColorStyle = () => {
           ref={ref}>
           <div className="flex items-center justify-between gap-4">
             <p className="text-xs font-medium">Create a new color style</p>
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-            >
+            <button type="button" onClick={() => setOpen(false)}>
               <CloseIcon className="w-4 h-4 text-neutral-400 hover:text-white" />
             </button>
           </div>
           <div className="w-full h-px bg-border" />
-          <div className="w-full h-16 rounded bg-neutral-300" />
+          <div className="relative w-full h-16 overflow-hidden rounded">
+            <div
+              className="absolute inset-0 z-[1]"
+              style={{
+                backgroundColor: `${fill.value}${opacityToHex(
+                  fill.opacity / 100
+                )}`,
+              }}
+            />
+            <Image
+              fill
+              alt="Square pattern"
+              className="object-cover w-full h-full"
+              src="/square-pattern.jpeg"
+            />
+          </div>
           <div className="flex items-center justify-between gap-4">
             <p className="text-xs font-medium">Name</p>
             <Input
