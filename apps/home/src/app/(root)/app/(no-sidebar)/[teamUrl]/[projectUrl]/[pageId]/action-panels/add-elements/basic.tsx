@@ -1,8 +1,10 @@
+import { createId } from '@paralleldrive/cuid2'
 import Element from './element'
 import type { PanelElement } from '.'
 import DivBlockIcon from '@/icons/elements/div-block.svg'
 import ListItemIcon from '@/icons/elements/list-item.svg'
 import ButtonIcon from '@/icons/elements/button.svg'
+import SpanIcon from '@/icons/elements/span.svg'
 
 const BASIC_ELEMENTS: PanelElement[] = [
   {
@@ -22,6 +24,13 @@ const BASIC_ELEMENTS: PanelElement[] = [
     children: ['List Item'],
   },
   {
+    Icon: <SpanIcon className="w-full h-full" />,
+    title: 'Span',
+    element: 'span',
+    style: {},
+    children: ['Span'],
+  },
+  {
     Icon: <ButtonIcon className="w-full h-full" />,
     title: 'Button',
     element: 'button',
@@ -35,7 +44,14 @@ const BASIC_ELEMENTS: PanelElement[] = [
       paddingTop: '0.5rem',
       paddingBottom: '0.5rem',
     },
-    children: ['Button'],
+    children: [
+      {
+        id: createId(),
+        type: 'span',
+        style: {},
+        children: ['Button'],
+      },
+    ],
   },
 ]
 

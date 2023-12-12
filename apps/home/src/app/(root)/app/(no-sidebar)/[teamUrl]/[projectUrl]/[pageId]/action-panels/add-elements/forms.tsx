@@ -157,7 +157,14 @@ const FORMS_ELEMENTS: PanelElement[] = [
     attributes: {
       type: 'submit',
     },
-    children: ['Submit'],
+    children: [
+      {
+        id: createId(),
+        type: 'span',
+        style: {},
+        children: ['Submit'],
+      },
+    ],
   },
 ]
 
