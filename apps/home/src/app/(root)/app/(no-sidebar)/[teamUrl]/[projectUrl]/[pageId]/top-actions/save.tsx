@@ -25,6 +25,18 @@ const SaveButton = () => {
 
     setIsSaving(true)
 
+    const {
+      elements,
+      bodyStyles,
+      customFonts,
+      assets,
+      variables,
+      components,
+      breakpoints,
+      pan,
+      zoom,
+    } = useCanvasStore.getState()
+
     const defaultBreakpoint = document.querySelector(
       '[data-default-breakpoint]'
     )
@@ -45,6 +57,15 @@ const SaveButton = () => {
         breakpointClone.style.maxHeight = '450px'
         breakpointClone.style.overflow = 'hidden'
 
+        document.body.setAttribute(
+          'style',
+          variables
+            .map(
+              (v) => `--${v.name.toLowerCase().replace(/ /g, '-')}: ${v.value};`
+            )
+            .join(' ')
+        )
+
         document.body.appendChild(breakpointClone)
 
         const canvas = await html2canvas(breakpointClone)
@@ -52,6 +73,7 @@ const SaveButton = () => {
 
         screenshotUrl = await uploadImage(dataURL)
 
+        document.body.removeAttribute('style')
         breakpointClone.remove()
       }
     } catch (e) {
@@ -59,18 +81,6 @@ const SaveButton = () => {
     }
 
     try {
-      const {
-        elements,
-        bodyStyles,
-        customFonts,
-        assets,
-        variables,
-        components,
-        breakpoints,
-        pan,
-        zoom,
-      } = useCanvasStore.getState()
-
       await api.put(
         `/team/${teamUrlString}/project/${projectUrlString}/page/${pageIdString}`,
         {
