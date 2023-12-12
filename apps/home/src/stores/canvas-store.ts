@@ -1,7 +1,6 @@
 import type { CSSProperties } from 'react'
 import { toast } from 'sonner'
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
 
 export interface Breakpoint {
   id: string
@@ -99,9 +98,6 @@ export interface BodyStyles extends CSSProperties {
 }
 
 interface CanvasStore {
-  projectUrl?: string
-  setProjectUrl: (projectId: string) => void
-  lastUpdated?: Date
   zoom: number
   setZoom: (zoom: number) => void
   pan: {
@@ -160,433 +156,394 @@ interface CanvasStore {
   removeVariable: (variableName: string) => void
 }
 
-export const useCanvasStore = create<CanvasStore>()(
-  persist(
-    (set, get) => ({
-      projectUrl: undefined,
-      setProjectUrl: (projectId) => {
-        set({ projectUrl: projectId })
+export const useCanvasStore = create<CanvasStore>((set, get) => ({
+  zoom: 1.7,
+  setZoom: (zoom) => {
+    set({ zoom })
+  },
+  pan: { x: 450, y: 130 },
+  setPan: ({ x, y }) => {
+    set({ pan: { x, y } })
+  },
+  breakpoints: [
+    {
+      id: 'desktop',
+      width: 1440,
+      minHeight: 1085,
+      position: {
+        x: 0,
+        y: 0,
       },
-      zoom: 1.7,
-      setZoom: (zoom) => {
-        set({ zoom })
+      isDefault: true,
+    },
+    {
+      id: 'tablet',
+      width: 768,
+      minHeight: 1024,
+      position: {
+        x: 1150,
+        y: 0,
       },
-      pan: { x: 450, y: 130 },
-      setPan: ({ x, y }) => {
-        set({ pan: { x, y } })
+    },
+    {
+      id: 'mobile',
+      width: 375,
+      minHeight: 844,
+      position: {
+        x: 1770,
+        y: 0,
       },
-      breakpoints: [
-        {
-          id: 'desktop',
-          width: 1440,
-          minHeight: 1085,
-          position: {
-            x: 0,
-            y: 0,
-          },
-          isDefault: true,
-        },
-        {
-          id: 'tablet',
-          width: 768,
-          minHeight: 1024,
-          position: {
-            x: 1150,
-            y: 0,
-          },
-        },
-        {
-          id: 'mobile',
-          width: 375,
-          minHeight: 844,
-          position: {
-            x: 1770,
-            y: 0,
-          },
-        },
-      ],
-      setBreakpoints: (breakpoints) => {
-        set({ breakpoints })
-      },
-      updateBreakpoint: (id, breakpoint) => {
-        set({
-          breakpoints: get().breakpoints.map((bp) => {
-            if (bp.id === id) {
-              return {
-                ...bp,
-                ...breakpoint,
-              }
-            }
-            return bp
-          }),
-        })
-      },
-      selectedIds: [],
-      setSelectedIds: (ids) => {
-        set({ selectedIds: ids })
-      },
-      addSelectedId: (id) => {
-        set({ selectedIds: [...get().selectedIds, id] })
-      },
-      removeSelectedId: (id) => {
-        set({
-          selectedIds: get().selectedIds.filter(
-            (selectedId) => selectedId !== id
-          ),
-        })
-      },
-      elements: [],
-      setElements: (elements) => {
-        set({ elements })
-      },
-      addElement: (element, relativeId, relativePosition) => {
-        if (!relativeId || relativeId === 'root') {
-          set({ elements: [...get().elements, element] })
-          return
-        }
-
-        // relativeId is the nearest sibling element to the new element
-        // relativePosition is the position of the new element relative to the relativeId
-
-        const updateElement = (el: Element): Element | Element[] | string => {
-          if (typeof el === 'string') return el
-
-          if (el.id === relativeId) {
-            if (relativePosition === 'before') {
-              return [element, el]
-            }
-            if (relativePosition === 'after') {
-              return [el, element]
-            }
-            if (relativePosition === 'child') {
-              return {
-                ...el,
-                children: [...el.children, element],
-              }
-            }
+    },
+  ],
+  setBreakpoints: (breakpoints) => {
+    set({ breakpoints })
+  },
+  updateBreakpoint: (id, breakpoint) => {
+    set({
+      breakpoints: get().breakpoints.map((bp) => {
+        if (bp.id === id) {
+          return {
+            ...bp,
+            ...breakpoint,
           }
+        }
+        return bp
+      }),
+    })
+  },
+  selectedIds: [],
+  setSelectedIds: (ids) => {
+    set({ selectedIds: ids })
+  },
+  addSelectedId: (id) => {
+    set({ selectedIds: [...get().selectedIds, id] })
+  },
+  removeSelectedId: (id) => {
+    set({
+      selectedIds: get().selectedIds.filter((selectedId) => selectedId !== id),
+    })
+  },
+  elements: [],
+  setElements: (elements) => {
+    set({ elements })
+  },
+  addElement: (element, relativeId, relativePosition) => {
+    if (!relativeId || relativeId === 'root') {
+      set({ elements: [...get().elements, element] })
+      return
+    }
 
-          const updatedChildren = el.children.map((child) =>
-            updateElement(child as Element)
-          )
+    // relativeId is the nearest sibling element to the new element
+    // relativePosition is the position of the new element relative to the relativeId
 
+    const updateElement = (el: Element): Element | Element[] | string => {
+      if (typeof el === 'string') return el
+
+      if (el.id === relativeId) {
+        if (relativePosition === 'before') {
+          return [element, el]
+        }
+        if (relativePosition === 'after') {
+          return [el, element]
+        }
+        if (relativePosition === 'child') {
           return {
             ...el,
-            children: updatedChildren.flat(),
+            children: [...el.children, element],
           }
         }
+      }
 
-        const newElements = get()
-          .elements.map((el) => updateElement(el))
-          .flat() as Element[]
+      const updatedChildren = el.children.map((child) =>
+        updateElement(child as Element)
+      )
 
-        set({ elements: newElements })
-      },
-      removeElement: (elementId) => {
-        const elements = get().elements
+      return {
+        ...el,
+        children: updatedChildren.flat(),
+      }
+    }
 
-        const deepRemoveElement = (el: Element): Element | string | null => {
-          if (typeof el === 'string') return el
+    const newElements = get()
+      .elements.map((el) => updateElement(el))
+      .flat() as Element[]
 
-          if (el.id === elementId) {
-            return null
-          }
+    set({ elements: newElements })
+  },
+  removeElement: (elementId) => {
+    const elements = get().elements
 
-          const updatedChildren = el.children.map((child) =>
-            deepRemoveElement(child as Element)
-          )
+    const deepRemoveElement = (el: Element): Element | string | null => {
+      if (typeof el === 'string') return el
 
-          const filteredChildren = updatedChildren.filter(
-            (child) => child !== null
-          )
+      if (el.id === elementId) {
+        return null
+      }
 
-          return {
-            ...el,
-            children: filteredChildren.flat(),
-          } as Element
+      const updatedChildren = el.children.map((child) =>
+        deepRemoveElement(child as Element)
+      )
+
+      const filteredChildren = updatedChildren.filter((child) => child !== null)
+
+      return {
+        ...el,
+        children: filteredChildren.flat(),
+      } as Element
+    }
+
+    const newElements = elements
+      .map((el) => deepRemoveElement(el))
+      .filter((el) => el !== null) as Element[]
+
+    set({ elements: newElements })
+  },
+  updateElement: (elementId, updates) => {
+    const elements = get().elements
+
+    const updateElement = (el: Element): Element | Element[] | string => {
+      if (typeof el === 'string') return el
+
+      if (el.id === elementId) {
+        return {
+          ...el,
+          ...updates,
         }
+      }
 
-        const newElements = elements
-          .map((el) => deepRemoveElement(el))
-          .filter((el) => el !== null) as Element[]
+      const updatedChildren = el.children.map((child) =>
+        updateElement(child as Element)
+      )
 
-        set({ elements: newElements })
-      },
-      updateElement: (elementId, updates) => {
-        const elements = get().elements
+      return {
+        ...el,
+        children: updatedChildren.flat(),
+      }
+    }
 
-        const updateElement = (el: Element): Element | Element[] | string => {
-          if (typeof el === 'string') return el
+    const newElements = elements.map((el) => updateElement(el)) as Element[]
+    set({ elements: newElements })
+  },
+  updateElementAttribute: (elementId, target, attribute, value, mediaQuery) => {
+    const elements = get().elements
 
-          if (el.id === elementId) {
-            return {
+    const updateElement = (el: Element): Element | Element[] | string => {
+      if (typeof el === 'string') return el
+
+      if (el.id === elementId) {
+        if (target === 'style' && mediaQuery) {
+          const mq = el.mediaQueries ? el.mediaQueries[mediaQuery] : undefined
+
+          if (mq && el[target][attribute] === value) {
+            const update = {
               ...el,
-              ...updates,
             }
-          }
+            delete update.mediaQueries?.[mediaQuery][attribute]
+            if (
+              Object.keys(update.mediaQueries?.[mediaQuery] || {}).length === 0
+            ) {
+              delete update.mediaQueries?.[mediaQuery]
+            }
 
-          const updatedChildren = el.children.map((child) =>
-            updateElement(child as Element)
-          )
+            return update
+          }
 
           return {
             ...el,
-            children: updatedChildren.flat(),
-          }
-        }
-
-        const newElements = elements.map((el) => updateElement(el)) as Element[]
-        set({ elements: newElements })
-      },
-      updateElementAttribute: (
-        elementId,
-        target,
-        attribute,
-        value,
-        mediaQuery
-      ) => {
-        const elements = get().elements
-
-        const updateElement = (el: Element): Element | Element[] | string => {
-          if (typeof el === 'string') return el
-
-          if (el.id === elementId) {
-            if (target === 'style' && mediaQuery) {
-              const mq = el.mediaQueries
-                ? el.mediaQueries[mediaQuery]
-                : undefined
-
-              if (mq && el[target][attribute] === value) {
-                const update = {
-                  ...el,
-                }
-                delete update.mediaQueries?.[mediaQuery][attribute]
-                if (
-                  Object.keys(update.mediaQueries?.[mediaQuery] || {})
-                    .length === 0
-                ) {
-                  delete update.mediaQueries?.[mediaQuery]
-                }
-
-                return update
-              }
-
-              return {
-                ...el,
-                mediaQueries: {
-                  ...el.mediaQueries,
-                  [mediaQuery]: {
-                    ...mq,
-                    [attribute]: value,
-                  },
-                },
-              }
-            }
-
-            const data = el[target]
-            return {
-              ...el,
-              [target]: {
-                ...data,
+            mediaQueries: {
+              ...el.mediaQueries,
+              [mediaQuery]: {
+                ...mq,
                 [attribute]: value,
               },
-            }
-          }
-
-          const updatedChildren = el.children.map((child) =>
-            updateElement(child as Element)
-          )
-
-          return {
-            ...el,
-            children: updatedChildren.flat(),
-          }
-        }
-
-        const newElements = elements.map((el) => updateElement(el)) as Element[]
-
-        set({ elements: newElements })
-      },
-      draggedElement: undefined,
-      setDraggedElement: (draggedElement) => {
-        set({ draggedElement })
-      },
-      bodyStyles: {},
-      setBodyStyles: (variables) => {
-        set({ bodyStyles: variables })
-      },
-      updateBodyStyle: (attribute, value, mediaQuery) => {
-        const styles = get().bodyStyles
-        if (mediaQuery !== null) {
-          const mq = styles.mediaQueries?.[mediaQuery] || {}
-          mq[attribute] = value
-          set({
-            bodyStyles: {
-              ...styles,
-              mediaQueries: {
-                ...styles.mediaQueries,
-                [mediaQuery]: mq,
-              },
             },
-          })
-        } else {
-          set({
-            bodyStyles: {
-              ...styles,
-              [attribute]: value,
-            },
-          })
-        }
-      },
-      customFonts: [],
-      setCustomFonts: (fonts) => {
-        set({ customFonts: fonts })
-      },
-      addCustomFont: (font) => {
-        set({ customFonts: [...get().customFonts, font] })
-      },
-      removeCustomFont: (fontFamily) => {
-        set({
-          customFonts: get().customFonts.filter(
-            (font) => font.fontFamily !== fontFamily
-          ),
-        })
-      },
-      assets: [],
-      setAssets: (assets) => {
-        set({ assets })
-      },
-      addAsset: (asset) => {
-        set({ assets: [asset, ...get().assets].flat() })
-      },
-      deleteAsset: (assetId) => {
-        const asset = get().assets.find((a) => a.id === assetId)
-
-        set({ assets: get().assets.filter((a) => a.id !== assetId) })
-
-        // delete elements that use this asset
-        const elements = get().elements
-        const newElements = elements.map((el) => {
-          const updateElement = (e: Element): Element | Element[] | string => {
-            if (typeof e === 'string') return e
-
-            if (e.attributes?.src === asset?.url) {
-              return {
-                ...e,
-                attributes: {
-                  ...e.attributes,
-                  src: '',
-                },
-              }
-            }
-
-            const updatedChildren = e.children.map((child) =>
-              updateElement(child as Element)
-            )
-
-            const filteredChildren = updatedChildren.filter(
-              (child) => child !== null
-            )
-
-            return {
-              ...e,
-              children: filteredChildren.flat(),
-            } as Element
           }
-
-          return updateElement(el)
-        })
-
-        set({ elements: newElements as Element[] })
-      },
-      components: [],
-      setComponents: (components) => {
-        set({ components })
-      },
-      addComponent: (component) => {
-        set({ components: [component, ...get().components] })
-      },
-      updateComponent: (component) => {
-        set({
-          components: get().components.map((c) => {
-            if (c.id === component.id) {
-              return component
-            }
-            return c
-          }),
-        })
-      },
-      removeComponent: (componentId) => {
-        set({
-          components: get().components.filter(
-            (component) => component.id !== componentId
-          ),
-        })
-
-        const deepRemoveComponent = (el: Element): Element | string => {
-          if (typeof el === 'string') return el
-
-          if (el.componentId === componentId) {
-            return {
-              ...el,
-              componentId: undefined,
-            }
-          }
-
-          const updatedChildren = el.children.map((child) =>
-            deepRemoveComponent(child as Element)
-          )
-
-          const filteredChildren = updatedChildren.filter(
-            (child) => child !== null
-          )
-
-          return {
-            ...el,
-            children: filteredChildren.flat(),
-          } as Element
         }
 
-        const newElements = get()
-          .elements.map((el) => deepRemoveComponent(el))
-          .flat() as Element[]
+        const data = el[target]
+        return {
+          ...el,
+          [target]: {
+            ...data,
+            [attribute]: value,
+          },
+        }
+      }
 
-        set({ elements: newElements })
-      },
-      variables: [],
-      setVariables: (variables) => {
-        set({ variables })
-      },
-      addVariable: (variable) => {
-        const existingVariable = get().variables.find(
-          (v) => v.name === variable.name
-        )
-        if (existingVariable) return toast.error('Variable already exists')
-        set({ variables: [...get().variables, variable] })
-      },
-      removeVariable: (variableName) => {
-        set({
-          variables: get().variables.filter(
-            (variable) => variable.name !== variableName
-          ),
-        })
-      },
-    }),
-    {
-      name: 'canvas',
-      partialize: (state) => ({
-        projectUrl: state.projectUrl,
-        pan: state.pan,
-        zoom: state.zoom,
-        breakpoints: state.breakpoints,
-        elements: state.elements,
-        bodyStyles: state.bodyStyles,
-        customFonts: state.customFonts,
-        assets: state.assets,
-        components: state.components,
-        variables: state.variables,
-        lastUpdated: new Date()
-      }),
+      const updatedChildren = el.children.map((child) =>
+        updateElement(child as Element)
+      )
+
+      return {
+        ...el,
+        children: updatedChildren.flat(),
+      }
     }
-  )
-)
+
+    const newElements = elements.map((el) => updateElement(el)) as Element[]
+
+    set({ elements: newElements })
+  },
+  draggedElement: undefined,
+  setDraggedElement: (draggedElement) => {
+    set({ draggedElement })
+  },
+  bodyStyles: {},
+  setBodyStyles: (variables) => {
+    set({ bodyStyles: variables })
+  },
+  updateBodyStyle: (attribute, value, mediaQuery) => {
+    const styles = get().bodyStyles
+    if (mediaQuery !== null) {
+      const mq = styles.mediaQueries?.[mediaQuery] || {}
+      mq[attribute] = value
+      set({
+        bodyStyles: {
+          ...styles,
+          mediaQueries: {
+            ...styles.mediaQueries,
+            [mediaQuery]: mq,
+          },
+        },
+      })
+    } else {
+      set({
+        bodyStyles: {
+          ...styles,
+          [attribute]: value,
+        },
+      })
+    }
+  },
+  customFonts: [],
+  setCustomFonts: (fonts) => {
+    set({ customFonts: fonts })
+  },
+  addCustomFont: (font) => {
+    set({ customFonts: [...get().customFonts, font] })
+  },
+  removeCustomFont: (fontFamily) => {
+    set({
+      customFonts: get().customFonts.filter(
+        (font) => font.fontFamily !== fontFamily
+      ),
+    })
+  },
+  assets: [],
+  setAssets: (assets) => {
+    set({ assets })
+  },
+  addAsset: (asset) => {
+    set({ assets: [asset, ...get().assets].flat() })
+  },
+  deleteAsset: (assetId) => {
+    const asset = get().assets.find((a) => a.id === assetId)
+
+    set({ assets: get().assets.filter((a) => a.id !== assetId) })
+
+    // delete elements that use this asset
+    const elements = get().elements
+    const newElements = elements.map((el) => {
+      const updateElement = (e: Element): Element | Element[] | string => {
+        if (typeof e === 'string') return e
+
+        if (e.attributes?.src === asset?.url) {
+          return {
+            ...e,
+            attributes: {
+              ...e.attributes,
+              src: '',
+            },
+          }
+        }
+
+        const updatedChildren = e.children.map((child) =>
+          updateElement(child as Element)
+        )
+
+        const filteredChildren = updatedChildren.filter(
+          (child) => child !== null
+        )
+
+        return {
+          ...e,
+          children: filteredChildren.flat(),
+        } as Element
+      }
+
+      return updateElement(el)
+    })
+
+    set({ elements: newElements as Element[] })
+  },
+  components: [],
+  setComponents: (components) => {
+    set({ components })
+  },
+  addComponent: (component) => {
+    set({ components: [component, ...get().components] })
+  },
+  updateComponent: (component) => {
+    set({
+      components: get().components.map((c) => {
+        if (c.id === component.id) {
+          return component
+        }
+        return c
+      }),
+    })
+  },
+  removeComponent: (componentId) => {
+    set({
+      components: get().components.filter(
+        (component) => component.id !== componentId
+      ),
+    })
+
+    const deepRemoveComponent = (el: Element): Element | string => {
+      if (typeof el === 'string') return el
+
+      if (el.componentId === componentId) {
+        return {
+          ...el,
+          componentId: undefined,
+        }
+      }
+
+      const updatedChildren = el.children.map((child) =>
+        deepRemoveComponent(child as Element)
+      )
+
+      const filteredChildren = updatedChildren.filter((child) => child !== null)
+
+      return {
+        ...el,
+        children: filteredChildren.flat(),
+      } as Element
+    }
+
+    const newElements = get()
+      .elements.map((el) => deepRemoveComponent(el))
+      .flat() as Element[]
+
+    set({ elements: newElements })
+  },
+  variables: [],
+  setVariables: (variables) => {
+    set({ variables })
+  },
+  addVariable: (variable) => {
+    const existingVariable = get().variables.find(
+      (v) => v.name === variable.name
+    )
+    if (existingVariable) return toast.error('Variable already exists')
+    set({ variables: [...get().variables, variable] })
+  },
+  removeVariable: (variableName) => {
+    set({
+      variables: get().variables.filter(
+        (variable) => variable.name !== variableName
+      ),
+    })
+  },
+}))

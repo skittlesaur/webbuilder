@@ -22,10 +22,7 @@ const ProjectsPage = () => {
   const [pageLoaded, setPageLoaded] = useState(false)
 
   const variables = useCanvasStore((s) => s.variables) || []
-  const lastUpdated = useCanvasStore((s) => s.lastUpdated)
-  const projectUrl = useCanvasStore((s) => s.projectUrl)
 
-  const setProjectUrl = useCanvasStore((s) => s.setProjectUrl)
   const setElements = useCanvasStore((s) => s.setElements)
   const setBodyStyles = useCanvasStore((s) => s.setBodyStyles)
   const setCustomFonts = useCanvasStore((s) => s.setCustomFonts)
@@ -38,17 +35,6 @@ const ProjectsPage = () => {
 
   useEffect(() => {
     if (projectPage) {
-      const isDbNotUpdated =
-        lastUpdated &&
-        lastUpdated > projectPage.updatedAt &&
-        projectUrl === projectPage.projectUrl
-
-      if (isDbNotUpdated) {
-        setPageLoaded(true)
-        return
-      }
-
-      setProjectUrl(projectPage.projectUrl)
       setElements(projectPage.elements)
       setZoom(projectPage.zoom ?? 1)
       setPan({
