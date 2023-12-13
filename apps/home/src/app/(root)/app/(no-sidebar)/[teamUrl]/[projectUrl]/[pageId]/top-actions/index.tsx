@@ -4,6 +4,7 @@ import BackButton from './back-button'
 import ExportButton from './export'
 import ImportSite from './import-site'
 import SaveButton from './save'
+import AiButton from './ai'
 import useProject from '@/resolvers/use-project'
 
 const TopActions = () => {
@@ -35,6 +36,7 @@ const TopActions = () => {
         <div className="flex flex-row-reverse items-center gap-1">
           <SaveButton />
           <ImportSite />
+          <AiButton />
         </div>
       </div>
     </div>

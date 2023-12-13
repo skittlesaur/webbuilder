@@ -23,6 +23,7 @@ model User {
   lastEditedProjects Project[]          @relation("lastEditedBy")
   UserPageSettings   UserPageSettings[]
   feedbacks          Feedback[]
+  remainingTokens    Int                @default(5)
 }
 
 model UserVerification {

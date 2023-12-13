@@ -16,20 +16,60 @@ if (!aiSecret) {
 const generateElementController = async (req: Request, res: Response) => {
   try {
     const { prompt } = req.body
-    const { user } = req.context
+    const { pageId } = req.params
+    const { user, prisma } = req.context
 
     if (!prompt) {
       return res.status(400).json({ message: 'Prompt is required' })
     }
 
+    const remainingTokens = user?.remainingTokens ?? 0
+
+    if (remainingTokens <= 0) {
+      return res.status(403).json({ message: 'You have no remaining tokens' })
+    }
+
+    const page = await prisma.page.findUnique({
+      where: {
+        id: pageId,
+      },
+      select: {
+        variables: true,
+      },
+    })
+
+    if (!page) {
+      return res.status(404).json({ message: 'Page not found' })
+    }
+
+    await prisma.user.update({
+      where: {
+        id: user?.id,
+      },
+      data: {
+        remainingTokens: remainingTokens - 1,
+      },
+    })
+
     const auth = jwt.sign(
       {
         userId: user?.id,
       },
-      aiSecret
+      aiSecret,
+      {
+        expiresIn: '5m',
+      }
     )
 
-    return res.redirect(307, `${GENERATE_ELEMENT_FUNCTION_URL}?auth=${auth}`)
+    const searchParams = new URLSearchParams({
+      auth,
+      variables: JSON.stringify(page.variables),
+    })
+
+    return res.redirect(
+      307,
+      `${GENERATE_ELEMENT_FUNCTION_URL}?${searchParams.toString()}`
+    )
   } catch (error) {
     console.log(error)
     res.status(500).json({ message: 'Something went wrong' })

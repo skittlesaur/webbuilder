@@ -338,7 +338,7 @@ const ImportSite = () => {
         <TooltipProvider disableHoverableContent delayDuration={300}>
           <Tooltip>
             <TooltipTrigger
-              className="w-7 h-7 flex items-center justify-center rounded hover:bg-secondary"
+              className="flex items-center justify-center rounded w-7 h-7 hover:bg-secondary"
               onClick={() => setOpen(true)}>
               <ImportIcon className="w-4 h-4" />
             </TooltipTrigger>

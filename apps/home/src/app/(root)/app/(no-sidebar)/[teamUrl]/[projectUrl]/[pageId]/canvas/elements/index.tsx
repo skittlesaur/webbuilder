@@ -27,9 +27,11 @@ const VOID_ELEMENTS = [
 const Element = ({
   element,
   mediaQuery,
+  previewMode = false,
 }: {
   element: ElementType | string
   mediaQuery: number | null
+  previewMode?: boolean
 }) => {
   const draggedElement = useCanvasStore((s) => s.draggedElement)
   const setDraggedElement = useCanvasStore((s) => s.setDraggedElement)
@@ -112,14 +114,14 @@ const Element = ({
   useEffect(() => {
     if (typeof element === 'string') return
 
-    if (isHovering && hoveredElementId !== element.id) {
+    if (isHovering && hoveredElementId !== element.id && !previewMode) {
       setHoveredElementId(element.id)
-    } else if (!isHovering && hoveredElementId === element.id) {
+    } else if (!isHovering && hoveredElementId === element.id && !previewMode) {
       setHoveredElementId(null)
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps -- no need to update when other props change since it will cause unexpected behavior
-  }, [isHovering])
+  }, [isHovering, previewMode])
 
   useEffect(() => {
     if (typeof element === 'string') {
@@ -455,7 +457,7 @@ const Element = ({
           onClick={(e) => {
             e.stopPropagation()
             e.preventDefault()
-            setSelectedElementId(element.id === 'root' ? null : element.id)
+            setSelectedElementId(element.id === 'root' || previewMode ? null : element.id)
             setSelectedMediaQuery(mediaQuery)
           }}
           onFocus={(e) => {
@@ -539,7 +541,9 @@ const Element = ({
         onClick={(e) => {
           e.stopPropagation()
           e.preventDefault()
-          setSelectedElementId(element.id === 'root' ? null : element.id)
+          setSelectedElementId(
+            element.id === 'root' || previewMode ? null : element.id
+          )
           setSelectedMediaQuery(mediaQuery)
         }}
         onMouseDown={(e) => {

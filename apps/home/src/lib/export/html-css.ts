@@ -65,7 +65,7 @@ const formatProperty = (property: string) => {
 }
 
 const getElementCss = (style: CSSProperties) => {
-  return Object.entries(style)
+  return Object.entries(style || {})
     .filter(([, value]) => value)
     .map(([property, value]) => `\t${formatProperty(property)}: ${value}`)
     .join('; \n')
@@ -202,7 +202,7 @@ const exportHtmlCss = async (options: ExportHtmlCssOptions) => {
       css += `.${elementClassName} { \n${elementCss}; \n}\n\n`
     }
 
-    if (style.fontFamily) {
+    if (style?.fontFamily) {
       fontFamilies.add(String(style.fontFamily).split(',')[0])
     }
 

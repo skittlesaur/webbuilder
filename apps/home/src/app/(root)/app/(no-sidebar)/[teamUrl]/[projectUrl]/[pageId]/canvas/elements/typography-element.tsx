@@ -66,8 +66,7 @@ const TypographyElement = ({ element }: { element: Element }) => {
 
         return {
           type: 'text',
-          text: e.children
-            .map((c) => {
+          text: e.children.map((c) => {
               return getContent(c).text
             })
             .join(''),

@@ -15,6 +15,7 @@ const MakeComponentButton = () => {
   const addComponent = useCanvasStore((state) => state.addComponent)
   const updateElement = useCanvasStore((state) => state.updateElement)
   const updateComponent = useCanvasStore((state) => state.updateComponent)
+  const variables = useCanvasStore((state) => state.variables)
 
   const element = findElementByIdArr(elements, selectedElementId as string)
 
@@ -49,6 +50,15 @@ const MakeComponentButton = () => {
       clone.style.left = '0'
       clone.style.zIndex = '-1'
 
+      document.body.setAttribute(
+        'style',
+        variables
+          .map(
+            (v) => `--${v.name.toLowerCase().replace(/ /g, '-')}: ${v.value};`
+          )
+          .join(' ')
+      )
+
       document.body.appendChild(clone)
 
       const canvas = await html2canvas(clone)
@@ -56,6 +66,8 @@ const MakeComponentButton = () => {
       clone.remove()
 
       const screenshotUrl = await uploadImage(dataURL)
+
+      document.body.removeAttribute('style')
 
       updateComponent({
         ...newComponent,
