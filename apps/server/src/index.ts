@@ -11,6 +11,7 @@ import userRoutes from './routes/user.routes'
 import teamRoutes from './routes/team.routes'
 import publicRoutes from './routes/public.routes'
 import feedbackRoutes from './routes/feedback'
+import aiRoutes from './routes/ai.routes'
 
 declare global {
   namespace Express {
@@ -49,6 +50,7 @@ app.use('/user', userRoutes)
 app.use('/team', teamRoutes)
 app.use('/public', publicRoutes)
 app.use('/feedback', feedbackRoutes)
+app.use('/ai', aiRoutes)
 
 const PORT = process.env.PORT ?? 1111
 
