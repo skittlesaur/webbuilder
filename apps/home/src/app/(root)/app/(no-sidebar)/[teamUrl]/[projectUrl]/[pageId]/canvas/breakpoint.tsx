@@ -126,9 +126,11 @@ const Breakpoint = ({ breakpoint }: BreakpointProps) => {
             id: 'root',
             type: 'div',
             style: {
-              ...breakpointStyles,
-              minHeight: breakpoint.minHeight,
-              width: breakpoint.width,
+              default: {
+                ...breakpointStyles,
+                minHeight: breakpoint.minHeight,
+                width: breakpoint.width,
+              },
             },
             children: elements,
           }}

@@ -24,6 +24,7 @@ const TypographyFont = ({
     variants: f.fontWeights,
   }))
   const updateBodyStyle = useCanvasStore((s) => s.updateBodyStyle)
+  const selectedState = useInteractionsStore((s) => s.selectedState)
 
   return (
     <div className="relative grid grid-cols-[0.5fr_1fr] gap-2 items-center group">
@@ -46,7 +47,8 @@ const TypographyFont = ({
             'style',
             'fontFamily',
             `${font.family}, Inter, sans-serif`,
-            selectedMediaQuery
+            selectedMediaQuery,
+            selectedState
           )
         }}>
         <SelectTrigger className="truncate">

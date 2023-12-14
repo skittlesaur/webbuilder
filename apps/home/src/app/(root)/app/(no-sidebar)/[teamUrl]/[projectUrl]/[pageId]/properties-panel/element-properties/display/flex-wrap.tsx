@@ -19,6 +19,7 @@ const FlexWrap = ({ isBody, display, flexWrap }) => {
   const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
   const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
   const updateBodyStyle = useCanvasStore((s) => s.updateBodyStyle)
+  const selectedState = useInteractionsStore((s) => s.selectedState)
 
   if (
     (!isBody && !selectedElementId) ||
@@ -40,7 +41,8 @@ const FlexWrap = ({ isBody, display, flexWrap }) => {
               'style',
               'flexWrap',
               value,
-              selectedMediaQuery
+              selectedMediaQuery,
+              selectedState
             )
           }
         }}>

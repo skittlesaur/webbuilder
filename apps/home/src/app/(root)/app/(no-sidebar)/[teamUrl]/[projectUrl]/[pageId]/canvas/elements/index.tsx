@@ -33,6 +33,7 @@ const Element = ({
   mediaQuery: number | null
   previewMode?: boolean
 }) => {
+  const selectedState = useInteractionsStore((s) => s.selectedState)
   const draggedElement = useCanvasStore((s) => s.draggedElement)
   const setDraggedElement = useCanvasStore((s) => s.setDraggedElement)
   const setIsDraggingElement = useInteractionsStore(
@@ -130,16 +131,24 @@ const Element = ({
     }
 
     const hasHeight =
-      (element.style?.height &&
-        !['auto', 'unset'].includes(element.style?.height as string)) ||
-      (element.style?.minHeight &&
-        ['auto', 'unset'].includes(element.style?.minHeight as string))
+      (element.style?.[selectedState]?.height &&
+        !['auto', 'unset'].includes(
+          element.style?.[selectedState]?.height as string
+        )) ||
+      (element.style?.[selectedState]?.minHeight &&
+        ['auto', 'unset'].includes(
+          element.style?.[selectedState]?.minHeight as string
+        ))
 
     const hasWidth =
-      (element.style?.width &&
-        !['auto', 'unset'].includes(element.style?.width as string)) ||
-      (element.style?.minWidth &&
-        ['auto', 'unset'].includes(element.style?.minWidth as string))
+      (element.style?.[selectedState]?.width &&
+        !['auto', 'unset'].includes(
+          element.style?.[selectedState]?.width as string
+        )) ||
+      (element.style?.[selectedState]?.minWidth &&
+        ['auto', 'unset'].includes(
+          element.style?.[selectedState]?.minWidth as string
+        ))
 
     const hasChildren = element.children.length > 0
 
@@ -148,7 +157,7 @@ const Element = ({
     } else {
       setIsUnstyled(false)
     }
-  }, [element])
+  }, [element, selectedState])
 
   useEffect(() => {
     const mouseMoveListener = (e: MouseEvent) => {
@@ -335,7 +344,12 @@ const Element = ({
     .sort((a, b) => Number(a) - Number(b))
 
   const queryStyles = queries.reduce((acc, mq) => {
-    const query = element.mediaQueries?.[mq]
+    const query = {
+      ...element.style?.default,
+      ...element.style?.[selectedState],
+      ...element.mediaQueries?.[mq]?.default,
+      ...element.mediaQueries?.[mq]?.[selectedState],
+    }
     if (!query) return acc
 
     const formattedQuery = Object.keys(query).reduce((a, key) => {
@@ -372,8 +386,13 @@ const Element = ({
     // eslint-disable-next-line @typescript-eslint/prefer-reduce-type-parameter, @typescript-eslint/no-explicit-any -- no need to specify type
   }, {} as any)
 
-  const formattedStyle = Object.keys(element.style || {}).reduce((acc, key) => {
-    const value = element.style?.[key]
+  const styles = {
+    ...element.style?.default,
+    ...element.style?.[selectedState],
+  }
+
+  const formattedStyle = Object.keys(styles).reduce((acc, key) => {
+    const value = styles[key]
 
     if (value === undefined || value === null) return acc
 
@@ -419,45 +438,57 @@ const Element = ({
               : { ...formattedStyle, ...queryStyles }),
             paddingLeft: isDraggingElement
               ? `0.5rem`
-              : queryStyles?.paddingLeft ?? element.style?.paddingLeft,
+              : queryStyles?.[selectedState]?.paddingLeft ??
+                element.style?.[selectedState]?.paddingLeft,
             paddingRight: isDraggingElement
               ? `0.5rem`
-              : queryStyles?.paddingRight ?? element.style?.paddingRight,
+              : queryStyles?.[selectedState]?.paddingRight ??
+                element.style?.[selectedState]?.paddingRight,
             paddingTop: isDraggingElement
               ? `0.5rem`
-              : queryStyles?.paddingTop ?? element.style?.paddingTop,
+              : queryStyles?.[selectedState]?.paddingTop ??
+                element.style?.[selectedState]?.paddingTop,
             paddingBottom: isDraggingElement
               ? `0.5rem`
-              : queryStyles?.paddingBottom ?? element.style?.paddingBottom,
+              : queryStyles?.[selectedState]?.paddingBottom ??
+                element.style?.[selectedState]?.paddingBottom,
             outline: isDraggingElement
               ? '2px solid #923FDE'
-              : queryStyles?.outline ?? element.style?.outline,
+              : queryStyles?.[selectedState]?.outline ??
+                element.style?.[selectedState]?.outline,
             // eslint-disable-next-line no-nested-ternary -- no need to simplify
             position: drag.active
               ? 'absolute'
               : isDraggingElement
               ? 'relative'
-              : queryStyles?.position ?? element.style?.position,
+              : queryStyles?.[selectedState]?.position ??
+                element.style?.[selectedState]?.position,
             top: drag.active
               ? `${drag.y}px`
-              : queryStyles?.top ?? element.style?.top,
+              : queryStyles?.[selectedState]?.top ??
+                element.style?.[selectedState]?.top,
             left: drag.active
               ? `${drag.x}px`
-              : queryStyles?.left ?? element.style?.left,
+              : queryStyles?.[selectedState]?.left ??
+                element.style?.[selectedState]?.left,
             zIndex: drag.active
               ? 1000
-              : queryStyles?.zIndex ?? element.style?.zIndex,
+              : queryStyles?.zIndex ?? element.style?.[selectedState]?.zIndex,
             scale: drag.active
               ? 0.5
-              : queryStyles?.scale ?? element.style?.scale,
+              : queryStyles?.[selectedState]?.scale ??
+                element.style?.[selectedState]?.scale,
             opacity: drag.active
               ? 0.5
-              : queryStyles?.opacity ?? element.style?.opacity,
+              : queryStyles?.[selectedState]?.opacity ??
+                element.style?.[selectedState]?.opacity,
           }}
           onClick={(e) => {
             e.stopPropagation()
             e.preventDefault()
-            setSelectedElementId(element.id === 'root' || previewMode ? null : element.id)
+            setSelectedElementId(
+              element.id === 'root' || previewMode ? null : element.id
+            )
             setSelectedMediaQuery(mediaQuery)
           }}
           onFocus={(e) => {
@@ -505,38 +536,51 @@ const Element = ({
             : { ...formattedStyle, ...queryStyles }),
           paddingLeft: isDraggingElement
             ? `0.5rem`
-            : queryStyles?.paddingLeft ?? element.style?.paddingLeft,
+            : queryStyles?.[selectedState]?.paddingLeft ??
+              element.style?.[selectedState]?.paddingLeft,
           paddingRight: isDraggingElement
             ? `0.5rem`
-            : queryStyles?.paddingRight ?? element.style?.paddingRight,
+            : queryStyles?.[selectedState]?.paddingRight ??
+              element.style?.[selectedState]?.paddingRight,
           paddingTop: isDraggingElement
             ? `0.5rem`
-            : queryStyles?.paddingTop ?? element.style?.paddingTop,
+            : queryStyles?.[selectedState]?.paddingTop ??
+              element.style?.[selectedState]?.paddingTop,
           paddingBottom: isDraggingElement
             ? `0.5rem`
-            : queryStyles?.paddingBottom ?? element.style?.paddingBottom,
+            : queryStyles?.[selectedState]?.paddingBottom ??
+              element.style?.[selectedState]?.paddingBottom,
           outline: isDraggingElement
             ? '2px solid #923FDE'
-            : queryStyles?.outline ?? element.style?.outline,
+            : queryStyles?.[selectedState]?.outline ??
+              element.style?.[selectedState]?.outline,
           // eslint-disable-next-line no-nested-ternary -- no need to simplify
           position: drag.active
             ? 'absolute'
             : isDraggingElement
             ? 'relative'
-            : queryStyles?.position ?? element.style?.position,
+            : queryStyles?.[selectedState]?.position ??
+              element.style?.[selectedState]?.position,
           top: drag.active
             ? `${drag.y}px`
-            : queryStyles?.top ?? element.style?.top,
+            : queryStyles?.[selectedState]?.top ??
+              element.style?.[selectedState]?.top,
           left: drag.active
             ? `${drag.x}px`
-            : queryStyles?.left ?? element.style?.left,
+            : queryStyles?.[selectedState]?.left ??
+              element.style?.[selectedState]?.left,
           zIndex: drag.active
             ? 1000
-            : queryStyles?.zIndex ?? element.style?.zIndex,
-          scale: drag.active ? 0.5 : queryStyles?.scale ?? element.style?.scale,
+            : queryStyles?.[selectedState]?.zIndex ??
+              element.style?.[selectedState]?.zIndex,
+          scale: drag.active
+            ? 0.5
+            : queryStyles?.[selectedState]?.scale ??
+              element.style?.[selectedState]?.scale,
           opacity: drag.active
             ? 0.5
-            : queryStyles?.opacity ?? element.style?.opacity,
+            : queryStyles?.[selectedState]?.opacity ??
+              element.style?.[selectedState]?.opacity,
         }}
         onClick={(e) => {
           e.stopPropagation()

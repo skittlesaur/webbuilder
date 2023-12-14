@@ -35,6 +35,7 @@ const ElementPropertiesPosition = ({
   const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
   const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
   const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
+  const selectedState = useInteractionsStore((s) => s.selectedState)
 
   if (!selectedElementId) return null
 
@@ -65,7 +66,8 @@ const ElementPropertiesPosition = ({
                 'style',
                 'position',
                 value,
-                selectedMediaQuery
+                selectedMediaQuery,
+                selectedState
               )
 
               // Reset position values

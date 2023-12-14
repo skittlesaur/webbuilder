@@ -38,12 +38,21 @@ export type ElementType =
   | 'select'
   | 'option'
 
+export interface ElementStyle {
+  default?: CSSProperties
+  hover?: CSSProperties
+  focus?: CSSProperties
+  active?: CSSProperties
+  visited?: CSSProperties
+  disabled?: CSSProperties
+}
+
 export interface Element {
   id: string
   type: ElementType
   children: (Element | string)[]
-  style: CSSProperties
-  mediaQueries?: Record<string, CSSProperties> // key is the breakpoint width
+  style: ElementStyle
+  mediaQueries?: Record<string, ElementStyle> // key is the breakpoint width
   attributes?: Record<string, unknown> // special attributes like href, src, alt, etc.
   componentId?: string
 }
@@ -126,7 +135,8 @@ interface CanvasStore {
     target: string,
     attribute: string,
     value: unknown,
-    mediaQuery: number | null
+    mediaQuery: number | null,
+    state?: keyof ElementStyle
   ) => void
   draggedElement: DraggedElement | undefined
   setDraggedElement: (draggedElement: DraggedElement | undefined) => void
@@ -324,7 +334,14 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
     const newElements = elements.map((el) => updateElement(el)) as Element[]
     set({ elements: newElements })
   },
-  updateElementAttribute: (elementId, target, attribute, value, mediaQuery) => {
+  updateElementAttribute: (
+    elementId,
+    target,
+    attribute,
+    value,
+    mediaQuery,
+    state
+  ) => {
     const elements = get().elements
 
     const updateElement = (el: Element): Element | Element[] | string => {
@@ -332,28 +349,29 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
 
       if (el.id === elementId) {
         if (target === 'style' && mediaQuery) {
-          const mq = el.mediaQueries ? el.mediaQueries[mediaQuery] : undefined
-
-          if (mq && el[target][attribute] === value) {
-            const update = {
-              ...el,
-            }
-            delete update.mediaQueries?.[mediaQuery][attribute]
-            if (
-              Object.keys(update.mediaQueries?.[mediaQuery] || {}).length === 0
-            ) {
-              delete update.mediaQueries?.[mediaQuery]
-            }
-
-            return update
-          }
-
           return {
             ...el,
             mediaQueries: {
-              ...el.mediaQueries,
+              ...(el.mediaQueries || {}),
               [mediaQuery]: {
-                ...mq,
+                ...(el.mediaQueries?.[mediaQuery] || {}),
+                [state || 'default']: {
+                  ...(el.mediaQueries?.[mediaQuery]?.[state || 'default'] || {}),
+                  [attribute]: value,
+                },
+              },
+            },
+          }
+        }
+
+        if (state) {
+          const data = el[target]?.[state]
+          return {
+            ...el,
+            [target]: {
+              ...(el[target] || {}),
+              [state]: {
+                ...(data || {}),
                 [attribute]: value,
               },
             },

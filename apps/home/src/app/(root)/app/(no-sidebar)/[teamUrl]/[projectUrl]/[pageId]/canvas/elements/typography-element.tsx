@@ -15,6 +15,7 @@ import type { Element } from '@/stores/canvas-store'
 import SubscriptIcon from '@/icons/subscript.svg'
 import SuperscriptIcon from '@/icons/superscript.svg'
 import { findElementByIdArr } from '@/lib/find-element-by-id'
+import { useInteractionsStore } from '@/stores/interactions-store'
 
 interface BubbleMenuButton {
   type: string
@@ -54,6 +55,7 @@ const TypographyElement = ({ element }: { element: Element }) => {
   const updateElement = useCanvasStore((s) => s.updateElement)
   const draggedElement = useCanvasStore((s) => s.draggedElement)
   const elements = useCanvasStore((s) => s.elements)
+  const selectedState = useInteractionsStore((s) => s.selectedState)
 
   const generateContent = (el: Element) => {
     return el.children.map((child) => {
@@ -66,7 +68,8 @@ const TypographyElement = ({ element }: { element: Element }) => {
 
         return {
           type: 'text',
-          text: e.children.map((c) => {
+          text: e.children
+            .map((c) => {
               return getContent(c).text
             })
             .join(''),
@@ -74,17 +77,32 @@ const TypographyElement = ({ element }: { element: Element }) => {
             {
               type: 'textStyle',
               attrs: {
-                color: e.style?.color,
-                fontSize: e.style?.fontSize,
-                fontWeight: e.style?.fontWeight,
-                fontStyle: e.style?.fontStyle,
-                textDecoration: e.style?.textDecoration,
+                color:
+                  e.style?.[selectedState]?.color || e.style?.default?.color,
+                fontSize:
+                  e.style?.[selectedState]?.fontSize ||
+                  e.style?.default?.fontSize,
+                fontWeight:
+                  e.style?.[selectedState]?.fontWeight ||
+                  e.style?.default?.fontWeight,
+                fontStyle:
+                  e.style?.[selectedState]?.fontStyle ||
+                  e.style?.default?.fontStyle,
+                textDecoration:
+                  e.style?.[selectedState]?.textDecoration ||
+                  e.style?.default?.textDecoration,
               },
             },
             ...(e.type === 'sup' ? [{ type: 'superscript' }] : []),
             ...(e.type === 'sub' ? [{ type: 'subscript' }] : []),
-            ...(e.style?.fontWeight === 'bold' ? [{ type: 'bold' }] : []),
-            ...(e.style?.fontStyle === 'italic' ? [{ type: 'italic' }] : []),
+            ...((e.style?.[selectedState]?.fontWeight ||
+              e.style?.default?.fontWeight) === 'bold'
+              ? [{ type: 'bold' }]
+              : []),
+            ...((e.style?.[selectedState]?.fontStyle ||
+              e.style?.default?.fontStyle) === 'italic'
+              ? [{ type: 'italic' }]
+              : []),
             // filter out undefined values
           ].filter((mark) => mark.attrs || mark.type !== 'textStyle'),
         }
@@ -124,24 +142,35 @@ const TypographyElement = ({ element }: { element: Element }) => {
           id: createId(),
           type: 'span',
           children: [text],
-          style: {},
+          style: {
+            default: {},
+            hover: {},
+            focus: {},
+            active: {},
+            visited: {},
+            disabled: {},
+          },
         }
 
         marks?.forEach((mark) => {
           if (mark.type === 'textStyle' && mark.attrs) {
             const styles: CSSProperties = {
-              ...newElement.style,
-              color: mark.attrs.color,
-              fontSize: mark.attrs.fontSize,
-              fontWeight: mark.attrs.fontWeight,
-              fontStyle: mark.attrs.fontStyle,
-              textDecoration: mark.attrs.textDecoration,
+              [selectedState]: {
+                ...(newElement.style?.[selectedState] || {}),
+                color: mark.attrs.color,
+                fontSize: mark.attrs.fontSize,
+                fontWeight: mark.attrs.fontWeight,
+                fontStyle: mark.attrs.fontStyle,
+                textDecoration: mark.attrs.textDecoration,
+              },
             }
-            newElement.style = styles
+            newElement.style[selectedState] = styles
           } else if (mark.type === 'bold') {
-            newElement.style.fontWeight = 'bold'
+            ;(newElement.style[selectedState] as CSSProperties).fontWeight =
+              'bold'
           } else if (mark.type === 'italic') {
-            newElement.style.fontStyle = 'italic'
+            ;(newElement.style[selectedState] as CSSProperties).fontStyle =
+              'italic'
           } else if (mark.type === 'superscript') {
             newElement.type = 'sup'
           } else if (mark.type === 'subscript') {

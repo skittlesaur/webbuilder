@@ -14,6 +14,7 @@ const TypographyColor = ({ color, isBody }) => {
   const variables = useCanvasStore((s) => s.variables)
   const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
   const updateBodyStyle = useCanvasStore((s) => s.updateBodyStyle)
+  const selectedState = useInteractionsStore((s) => s.selectedState)
 
   const getComputedColor = () => {
     const element = document.querySelector(
@@ -119,7 +120,8 @@ const TypographyColor = ({ color, isBody }) => {
               'style',
               'color',
               `var(--${fills[0].name.toLowerCase().replace(/ /g, '-')})`,
-              selectedMediaQuery
+              selectedMediaQuery,
+              selectedState
             )
           }}
         />
@@ -158,7 +160,8 @@ const TypographyColor = ({ color, isBody }) => {
               'style',
               'color',
               c,
-              selectedMediaQuery
+              selectedMediaQuery,
+              selectedState
             )
           }}
         />

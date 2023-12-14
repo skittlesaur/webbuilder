@@ -19,6 +19,7 @@ const ElementPropertiesBorder = ({ borderColor, borderWidth }) => {
   const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
   const variables = useCanvasStore((s) => s.variables)
   const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
+  const selectedState = useInteractionsStore((s) => s.selectedState)
 
   const [border, setBorder] = useState<
     (Fill & { type: 'color' }) | Variable | undefined
@@ -124,7 +125,8 @@ const ElementPropertiesBorder = ({ borderColor, borderWidth }) => {
               'style',
               'borderColor',
               color,
-              selectedMediaQuery
+              selectedMediaQuery,
+              selectedState
             )
           }}
         />

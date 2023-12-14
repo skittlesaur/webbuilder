@@ -19,7 +19,9 @@ const BASIC_ELEMENTS: PanelElement[] = [
     title: 'List Item',
     element: 'li',
     style: {
-      listStyleType: 'disc',
+      default: {
+        listStyleType: 'disc',
+      },
     },
     children: ['List Item'],
   },
@@ -35,14 +37,16 @@ const BASIC_ELEMENTS: PanelElement[] = [
     title: 'Button',
     element: 'button',
     style: {
-      backgroundColor: '#000000',
-      color: '#ffffff',
-      borderRadius: '0.25rem',
-      width: 'fit-content',
-      paddingLeft: '1rem',
-      paddingRight: '1rem',
-      paddingTop: '0.5rem',
-      paddingBottom: '0.5rem',
+      default: {
+        backgroundColor: '#000000',
+        color: '#ffffff',
+        borderRadius: '0.25rem',
+        width: 'fit-content',
+        paddingLeft: '1rem',
+        paddingRight: '1rem',
+        paddingTop: '0.5rem',
+        paddingBottom: '0.5rem',
+      },
     },
     children: [
       {

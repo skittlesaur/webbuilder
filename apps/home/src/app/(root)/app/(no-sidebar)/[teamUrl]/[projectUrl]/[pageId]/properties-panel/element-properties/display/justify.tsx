@@ -21,6 +21,7 @@ const JustifyContent = ({ isBody, display, justifyContent }) => {
   const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
   const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
   const updateBodyStyle = useCanvasStore((s) => s.updateBodyStyle)
+  const selectedState = useInteractionsStore((s) => s.selectedState)
 
   if (
     (!isBody && !selectedElementId) ||
@@ -42,7 +43,8 @@ const JustifyContent = ({ isBody, display, justifyContent }) => {
               'style',
               'justifyContent',
               value,
-              selectedMediaQuery
+              selectedMediaQuery,
+              selectedState
             )
           }
         }}>

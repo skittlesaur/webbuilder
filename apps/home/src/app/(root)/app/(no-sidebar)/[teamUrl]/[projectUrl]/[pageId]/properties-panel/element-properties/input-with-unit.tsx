@@ -29,10 +29,12 @@ const InputWithUnit = ({
   showMeasure = false,
   autoValue = 'auto',
 }: InputWithUnitProps) => {
+  const [mounted, setMounted] = useState(false)
   const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
   const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
   const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
   const updateBodyStyle = useCanvasStore((s) => s.updateBodyStyle)
+  const selectedState = useInteractionsStore((s) => s.selectedState)
 
   const [unit, setUnit] = useState<Unit>(() => {
     if (!selectedElementId) return 'px'
@@ -51,7 +53,7 @@ const InputWithUnit = ({
     return num
   })
 
-  useEffect(() => {
+  const handleUpdate = () => {
     if (!selectedElementId) return
     if (unit === 'auto')
       if (isBody) {
@@ -62,7 +64,8 @@ const InputWithUnit = ({
           'style',
           type,
           autoValue,
-          selectedMediaQuery
+          selectedMediaQuery,
+          selectedState
         )
       }
 
@@ -74,20 +77,23 @@ const InputWithUnit = ({
         'style',
         type,
         `${value ?? ''}${unit}`,
-        selectedMediaQuery
+        selectedMediaQuery,
+        selectedState
       )
     }
-  }, [
-    unit,
-    value,
-    selectedElementId,
-    updateElementAttribute,
-    type,
-    autoValue,
-    selectedMediaQuery,
-    isBody,
-    updateBodyStyle,
-  ])
+  }
+
+  useEffect(() => {
+    if (!mounted) {
+      setMounted(true)
+      return
+    }
+  }, [mounted])
+
+  useEffect(() => {
+    if (!mounted) return
+    handleUpdate()
+  }, [unit, value])
 
   if (!selectedElementId) return null
 

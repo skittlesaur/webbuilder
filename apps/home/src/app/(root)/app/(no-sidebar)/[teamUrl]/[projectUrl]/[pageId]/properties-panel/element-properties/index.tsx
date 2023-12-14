@@ -13,6 +13,7 @@ import MakeComponentButton from './make-component'
 import ElementPropertiesDisplay from './display'
 import InputAttributes from './input'
 import ElementPropertiesColors from './colors'
+import StateSelector from './state-selector'
 import { useInteractionsStore } from '@/stores/interactions-store'
 import { findElementByIdArr } from '@/lib/find-element-by-id'
 import { useCanvasStore } from '@/stores/canvas-store'
@@ -40,6 +41,7 @@ const ElementProperties = ({ isBody }: { isBody?: boolean }) => {
   const bodyStyles = useCanvasStore((s) => s.bodyStyles)
   const elements = useCanvasStore((s) => s.elements)
   const [activePanel, setActivePanel] = useState(PropertyPanel.STYLE)
+  const selectedState = useInteractionsStore((s) => s.selectedState)
 
   const activeElement = useMemo(() => {
     if (isBody) return null
@@ -80,20 +82,56 @@ const ElementProperties = ({ isBody }: { isBody?: boolean }) => {
         .sort((a, b) => Number(a) - Number(b))
 
       const queryStyles = queries.reduce((acc, mq) => {
+        const defaultMq = activeElement.mediaQueries?.[mq]?.default
+        const defaultWithoutUndefined = Object.keys(defaultMq || {}).reduce(
+          (a, key) => {
+            if (defaultMq?.[key] !== undefined) {
+              return {
+                ...a,
+                [key]: defaultMq?.[key],
+              }
+            }
+            return a
+          },
+          {}
+        )
+
+        const selectedStateMq = activeElement.mediaQueries?.[mq]?.[
+          selectedState
+        ] as Record<string, unknown>
+
+        const selectedStateWithoutUndefined = Object.keys(
+          selectedStateMq || {}
+        ).reduce((a, key) => {
+          if (selectedStateMq?.[key] !== undefined) {
+            return {
+              ...a,
+              [key]: selectedStateMq?.[key],
+            }
+          }
+          return a
+        }, {})
+
         return {
           ...acc,
-          ...activeElement.mediaQueries?.[mq],
+          [attribute]: activeElement.style?.default?.[attribute],
+          ...defaultWithoutUndefined,
+          ...selectedStateWithoutUndefined,
         }
       }, {})
 
-      return queryStyles[attribute] || activeElement.style[attribute]
+      return queryStyles[attribute]
     }
 
-    return activeElement.style[attribute]
+    return (
+      activeElement.style?.[selectedState]?.[attribute] ||
+      activeElement.style?.default?.[attribute]
+    )
   }
 
   return (
-    <Fragment key={`${selectedElementId}-${selectedMediaQuery}`}>
+    <Fragment
+      key={`${selectedElementId}-${selectedMediaQuery}-${selectedState}`}>
       {!isBody && (
         <div className="relative z-[1] bg-background flex items-center w-full px-2 border-b border-border">
           {panels.map((p) => (
@@ -115,6 +153,7 @@ const ElementProperties = ({ isBody }: { isBody?: boolean }) => {
         {!isBody && <MakeComponentButton />}
         {activePanel === PropertyPanel.STYLE && (
           <>
+            {!isBody && <StateSelector />}
             {!isBody && (
               <ElementPropertiesPosition
                 bottom={getStyleAttribute('bottom')}

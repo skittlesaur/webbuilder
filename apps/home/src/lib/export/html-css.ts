@@ -145,7 +145,7 @@ const exportHtmlCss = async (options: ExportHtmlCssOptions) => {
 
     const elementClassName = `baraa-${id}`
 
-    const propertiesInBreakpoints: string[] = []
+    const propertiesInBreakpoints = {}
 
     Object.keys((attributes || {}) as Record<string, unknown>).forEach(
       (attribute) => {
@@ -160,11 +160,21 @@ const exportHtmlCss = async (options: ExportHtmlCssOptions) => {
         mediaQueries[mediaQuery] = {}
       }
 
-      propertiesInBreakpoints.push(
-        ...Object.keys(
-          (element.mediaQueries?.[mediaQuery] || {}) as Record<string, unknown>
+      // for each state in the media query
+      Object.keys(element.mediaQueries?.[mediaQuery] || {}).forEach((state) => {
+        if (!propertiesInBreakpoints[state]) {
+          propertiesInBreakpoints[state] = []
+        }
+
+        propertiesInBreakpoints[state].push(
+          ...Object.keys(
+            (element.mediaQueries?.[mediaQuery]?.[state] || {}) as Record<
+              string,
+              unknown
+            >
+          )
         )
-      )
+      })
 
       mediaQueries[mediaQuery] = {
         ...mediaQueries[mediaQuery],
@@ -175,36 +185,75 @@ const exportHtmlCss = async (options: ExportHtmlCssOptions) => {
     if (!isDefaultSmallest) {
       mediaQueries[defaultMediaQuery.width] = {
         ...mediaQueries[defaultMediaQuery.width],
-        [elementClassName]: propertiesInBreakpoints.reduce((acc, property) => {
-          if (element.mediaQueries?.[defaultMediaQuery.width]?.[property]) {
-            return {
-              ...acc,
-              [property]:
-                element.mediaQueries?.[defaultMediaQuery.width]?.[property],
-            }
-          }
+        [elementClassName]: Object.keys(
+          propertiesInBreakpoints as Record<string, unknown>
+        ).reduce((acc, state) => {
+          return {
+            ...acc,
+            [state]: propertiesInBreakpoints[state].reduce((a, property) => {
+              if (
+                element.mediaQueries?.[defaultMediaQuery.width]?.[state]?.[
+                  property
+                ]
+              ) {
+                return {
+                  ...a,
+                  [property]:
+                    element.mediaQueries?.[defaultMediaQuery.width]?.[state]?.[
+                      property
+                    ],
+                }
+              }
 
-          if (element.style?.[property]) {
-            return {
-              ...acc,
-              [property]: element.style?.[property],
-            }
-          }
+              if (element.style?.[state]?.[property]) {
+                return {
+                  ...a,
+                  [property]: element.style?.[state]?.[property],
+                }
+              }
 
-          return acc
+              return acc
+            }, {}),
+          }
         }, {}),
+        // [elementClassName]: propertiesInBreakpoints.reduce((acc, property) => {
+        //   if (element.mediaQueries?.[defaultMediaQuery.width]?.[property]) {
+        //     return {
+        //       ...acc,
+        //       [property]:
+        //         element.mediaQueries?.[defaultMediaQuery.width]?.[property],
+        //     }
+        //   }
+
+        //   if (element.style?.[property]) {
+        //     return {
+        //       ...acc,
+        //       [property]: element.style?.[property],
+        //     }
+        //   }
+
+        //   return acc
+        // }, {}),
       }
     }
 
-    const elementCss = getElementCss(style as CSSProperties)
+    // element default styles based on states
+    Object.keys(style).forEach((state) => {
+      const stateStyle = style[state as keyof typeof style]
+      if (!stateStyle) return
 
-    if (elementCss) {
-      css += `.${elementClassName} { \n${elementCss}; \n}\n\n`
-    }
+      const fonts = stateStyle?.fontFamily?.split(',') || []
+      fonts.forEach((font) => {
+        fontFamilies.add(font.trim())
+      })
 
-    if (style?.fontFamily) {
-      fontFamilies.add(String(style.fontFamily).split(',')[0])
-    }
+      const stateCss = getElementCss(stateStyle as CSSProperties)
+      if (!stateCss) return
+
+      if (state === 'default')
+        css += `.${elementClassName} { \n${stateCss}; \n}\n\n`
+      else css += `.${elementClassName}:${state} { \n${stateCss}; \n}\n\n`
+    })
 
     el.className = elementClassName
 
@@ -234,8 +283,6 @@ const exportHtmlCss = async (options: ExportHtmlCssOptions) => {
     ...bodyMediaQueriesKeys,
   ])
 
-  mediaQueriesToGenerate.delete(String(defaultMediaQuery.width))
-
   const bodyPropertiesForDefault = new Set()
 
   mediaQueriesToGenerate.forEach((key) => {
@@ -243,10 +290,22 @@ const exportHtmlCss = async (options: ExportHtmlCssOptions) => {
     const styleString = Object.entries(
       classStyles as Record<string, CSSProperties>
     )
-      .map(([className, style]) => {
-        const s = getElementCss(style as CSSProperties)
-        if (!s) return ''
-        return `.${className} { \n${s}; \n}`
+      .map(([className, states]) => {
+        const styles: string[] = []
+
+        Object.keys(states || {}).forEach((state) => {
+          const stateStyle = states?.[state as keyof typeof states]
+          if (!stateStyle) return
+
+          const stateCss = getElementCss(stateStyle as CSSProperties)
+          if (!stateCss) return
+
+          if (state === 'default')
+            styles.push(`.${className} { \n${stateCss}; \n}`)
+          else styles.push(`.${className}:${state} { \n${stateCss}; \n}`)
+        })
+
+        return styles.join('\n\n')
       })
       .filter(Boolean)
       .join('\n\n')

@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 import { Offline } from 'react-detect-offline'
+import { stateMapping } from '../state-indicator'
 import Breakpoint from './breakpoint'
 import { useCanvasStore } from '@/stores/canvas-store'
 import { useInteractionsStore } from '@/stores/interactions-store'
@@ -13,12 +14,14 @@ const Canvas = () => {
   const zoom = useCanvasStore((s) => s.zoom)
   const setZoom = useCanvasStore((s) => s.setZoom)
   const removeElement = useCanvasStore((s) => s.removeElement)
+  const selectedState = useInteractionsStore((s) => s.selectedState)
 
   const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
   const setSelectedElementId = useInteractionsStore(
     (s) => s.setSelectedElementId
   )
   const setHoveredElementId = useInteractionsStore((s) => s.setHoveredElementId)
+  const setSelectedState = useInteractionsStore((s) => s.setSelectedState)
 
   const ref = useRef<HTMLDivElement>(null)
 
@@ -64,6 +67,7 @@ const Canvas = () => {
 
     if (isTargetSelf) {
       setSelectedElementId(null)
+      setSelectedState('default')
     }
   }
 
@@ -96,6 +100,7 @@ const Canvas = () => {
       if (isContentEditableFocused) return
 
       setSelectedElementId(null)
+      setSelectedState('default')
       setHoveredElementId(null)
       removeElement(selectedElementId)
       toast.success('Element deleted')
@@ -105,6 +110,7 @@ const Canvas = () => {
       selectedElementId,
       setHoveredElementId,
       setSelectedElementId,
+      setSelectedState,
     ]
   )
 
@@ -120,13 +126,14 @@ const Canvas = () => {
 
   return (
     <div
-      className="select-none relative flex-1 w-full h-full bg-background cursor-all-children !cursor-default outline-none"
+      className="select-none relative flex-1 w-full h-full bg-background border cursor-all-children !cursor-default outline-none"
       id="canvas"
       ref={ref}
       role="button"
       style={
         {
           '--cursor': 'default',
+          borderColor: selectedState === 'default' ? 'transparent' : stateMapping[selectedState].color,
         } as React.CSSProperties
       }
       tabIndex={-1}

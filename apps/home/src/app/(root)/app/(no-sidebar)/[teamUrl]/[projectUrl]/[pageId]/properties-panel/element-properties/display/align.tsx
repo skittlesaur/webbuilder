@@ -20,6 +20,7 @@ const AlignItems = ({ isBody, display, alignItems }) => {
   const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
   const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
   const updateBodyStyle = useCanvasStore((s) => s.updateBodyStyle)
+  const selectedState = useInteractionsStore((s) => s.selectedState)
 
   if (
     (!isBody && !selectedElementId) ||
@@ -41,7 +42,8 @@ const AlignItems = ({ isBody, display, alignItems }) => {
               'style',
               'alignItems',
               value,
-              selectedMediaQuery
+              selectedMediaQuery,
+              selectedState
             )
           }
         }}>

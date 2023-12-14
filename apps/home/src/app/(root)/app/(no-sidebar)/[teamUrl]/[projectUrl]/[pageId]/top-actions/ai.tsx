@@ -72,7 +72,7 @@ const AiButton = () => {
           }
         )
 
-        const deepFormatData = (element: ElementType | string) => {
+        const deepFormatData = (element) => {
           if (typeof element === 'string') return element
 
           const childrenArray = Array.isArray(element.children || [])
@@ -107,6 +107,9 @@ const AiButton = () => {
 
           return {
             ...element,
+            style: {
+              default: style,
+            },
             id: createId(),
             children: (childrenArray || []).map((child) =>
               deepFormatData(child)

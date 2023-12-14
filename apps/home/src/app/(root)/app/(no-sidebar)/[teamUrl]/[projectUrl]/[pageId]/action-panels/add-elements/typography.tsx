@@ -10,10 +10,12 @@ const TYPOGRAPHY_ELEMENTS: PanelElement[] = [
     title: 'Heading',
     element: 'h1',
     style: {
-      fontSize: '1.5rem',
-      fontWeight: 'bold',
-      lineHeight: '1.25',
-      letterSpacing: '-0.025em',
+      default: {
+        fontSize: '1.5rem',
+        fontWeight: 'bold',
+        lineHeight: '1.25',
+        letterSpacing: '-0.025em',
+      },
     },
     children: ['Heading'],
   },
@@ -22,8 +24,10 @@ const TYPOGRAPHY_ELEMENTS: PanelElement[] = [
     title: 'Paragraph',
     element: 'p',
     style: {
-      fontSize: '1rem',
-      lineHeight: '1.5',
+      default: {
+        fontSize: '1rem',
+        lineHeight: '1.5',
+      },
     },
     children: ['Paragraph'],
   },
@@ -32,10 +36,12 @@ const TYPOGRAPHY_ELEMENTS: PanelElement[] = [
     title: 'Text Link',
     element: 'a',
     style: {
-      fontSize: '1rem',
-      lineHeight: '1.5',
-      color: '#0070f3',
-      textDecoration: 'underline',
+      default: {
+        fontSize: '1rem',
+        lineHeight: '1.5',
+        color: '#0070f3',
+        textDecoration: 'underline',
+      },
     },
     children: ['Text Link'],
     attributes: {

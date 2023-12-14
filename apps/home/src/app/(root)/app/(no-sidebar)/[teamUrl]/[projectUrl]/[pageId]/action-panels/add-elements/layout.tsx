@@ -27,10 +27,12 @@ const LAYOUT_ELEMENTS: PanelElement[] = [
     title: 'Grid',
     element: 'div',
     style: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(2, 1fr)',
-      width: '100%',
-      gap: '1rem',
+      default: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(2, 1fr)',
+        width: '100%',
+        gap: '1rem',
+      },
     },
     children: Array.from({ length: 4 }).map(() => ({
       id: createId(),
@@ -44,21 +46,25 @@ const LAYOUT_ELEMENTS: PanelElement[] = [
     title: 'Columns',
     element: 'div',
     style: {
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'stretch',
-      justifyContent: 'space-between',
-      width: '100%',
-      minHeight: '10rem',
-      height: '100%',
-      gap: '1rem',
+      default: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'stretch',
+        justifyContent: 'space-between',
+        width: '100%',
+        minHeight: '10rem',
+        height: '100%',
+        gap: '1rem',
+      },
     },
     children: Array.from({ length: 3 }).map(() => ({
       id: createId(),
       type: 'div',
       children: [],
       style: {
-        flex: 1,
+        default: {
+          flex: 1,
+        },
       },
     })),
   },
@@ -67,12 +73,14 @@ const LAYOUT_ELEMENTS: PanelElement[] = [
     title: 'List',
     element: 'ul',
     style: {
-      listStyleType: 'none',
-      width: '100%',
-      padding: '0',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '1rem',
+      default: {
+        listStyleType: 'none',
+        width: '100%',
+        padding: '0',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1rem',
+      },
     },
     children: Array.from({ length: 3 }).map(() => ({
       id: createId(),

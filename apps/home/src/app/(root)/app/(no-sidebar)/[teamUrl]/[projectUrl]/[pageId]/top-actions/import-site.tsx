@@ -238,7 +238,9 @@ const ImportSite = () => {
         id: createId(),
         type: el.tagName.toLowerCase() as Element['type'],
         children: [],
-        style,
+        style: {
+          default: style,
+        },
         attributes,
       }
 
@@ -275,7 +277,9 @@ const ImportSite = () => {
         id: createId(),
         type: 'div',
         children: elements,
-        style: bodyStyles,
+        style: {
+          default: bodyStyles,
+        },
       }
 
       setElements([wrapperForWidth])

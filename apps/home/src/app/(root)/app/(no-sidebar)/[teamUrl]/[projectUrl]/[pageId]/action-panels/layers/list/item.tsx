@@ -18,6 +18,7 @@ const ListItem = ({ item }: ListItemProps) => {
   const setSelectedElementId = useInteractionsStore(
     (s) => s.setSelectedElementId
   )
+  const setSelectedState = useInteractionsStore((s) => s.setSelectedState)
 
   return (
     <ElementContextMenu element={item.element}>
@@ -28,6 +29,7 @@ const ListItem = ({ item }: ListItemProps) => {
         onClick={() => {
           if (selectedElementId === item.id) {
             setSelectedElementId(null)
+            setSelectedState('default')
           } else {
             setSelectedElementId(item.id)
           }

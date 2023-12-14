@@ -34,6 +34,7 @@ const FontWeight = ({
   const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
   const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
   const updateBodyStyle = useCanvasStore((s) => s.updateBodyStyle)
+  const selectedState = useInteractionsStore((s) => s.selectedState)
 
   const weights = FontsData.find((font) => font.family === fontFamily)?.variants
 
@@ -67,7 +68,8 @@ const FontWeight = ({
             'style',
             'fontWeight',
             val,
-            selectedMediaQuery
+            selectedMediaQuery,
+            selectedState
           )
         }}>
         <SelectTrigger className="truncate">

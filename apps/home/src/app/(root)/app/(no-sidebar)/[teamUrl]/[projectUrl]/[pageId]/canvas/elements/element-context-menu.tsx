@@ -40,6 +40,8 @@ const ElementContextMenu = ({
   const setSelectedElementId = useInteractionsStore(
     (s) => s.setSelectedElementId
   )
+  const setSelectedState = useInteractionsStore((s) => s.setSelectedState)
+
   const addElement = useCanvasStore((s) => s.addElement)
   const removeElement = useCanvasStore((s) => s.removeElement)
 
@@ -53,6 +55,7 @@ const ElementContextMenu = ({
       setSelectedElementId(element.id)
     } else {
       setSelectedElementId(null)
+      setSelectedState('default')
     }
   }
 

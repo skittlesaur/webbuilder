@@ -55,6 +55,7 @@ const ElementPropertiesSize = (props: ElementPropertiesSizeProps) => {
   const selectedElementId = useInteractionsStore((s) => s.selectedElementId)
   const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
   const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
+  const selectedState = useInteractionsStore((s) => s.selectedState)
 
   const [visibleProperties, setVisibleProperties] = useState(() => {
     const visible = properties.filter((property) => {
@@ -73,13 +74,13 @@ const ElementPropertiesSize = (props: ElementPropertiesSizeProps) => {
   )
 
   return (
-    <div className="p-4 border-b border-border flex flex-col gap-4">
+    <div className="flex flex-col gap-4 p-4 border-b border-border">
       <div className="flex items-center justify-between">
         <p className="font-medium">Size</p>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
-              className="select-none rounded-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+              className="rounded-full select-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
               type="button">
               <AddIcon className="w-4 h-4" />
             </button>
@@ -126,10 +127,11 @@ const ElementPropertiesSize = (props: ElementPropertiesSizeProps) => {
                       'style',
                       property.key,
                       undefined,
-                      selectedMediaQuery
+                      selectedMediaQuery,
+                      selectedState
                     )
                 }}>
-                <div className="bg-background rounded-md border border-border hover:bg-accent">
+                <div className="border rounded-md bg-background border-border hover:bg-accent">
                   <RemoveIcon className="w-5 h-5" />
                 </div>
               </button>

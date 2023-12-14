@@ -9,9 +9,11 @@ const MEDIA_ELEMENTS: PanelElement[] = [
     title: 'Image',
     element: 'img',
     style: {
-      objectFit: 'cover',
-      width: '150px',
-      height: '100px',
+      default: {
+        objectFit: 'cover',
+        width: '150px',
+        height: '100px',
+      },
     },
     attributes: {
       src: '/placeholder.jpeg',
@@ -23,8 +25,10 @@ const MEDIA_ELEMENTS: PanelElement[] = [
     title: 'Video',
     element: 'video',
     style: {
-      width: '400px',
-      height: '225px',
+      default: {
+        width: '400px',
+        height: '225px',
+      },
     },
     attributes: {
       src: '',

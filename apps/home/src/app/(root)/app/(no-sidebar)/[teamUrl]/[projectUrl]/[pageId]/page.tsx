@@ -8,6 +8,7 @@ import LayersPanel from './action-panels/layers'
 import './fonts.css'
 import AssetsAndComponentsPanel from './action-panels/assets-and-components'
 import PagesPanel from './action-panels/pages'
+import StateIndicator from './state-indicator'
 import { useCanvasStore } from '@/stores/canvas-store'
 import useProjectPage from '@/resolvers/use-project-page'
 import FullLoader from '@/components/full-loader'
@@ -72,6 +73,7 @@ const ProjectsPage = () => {
           <PagesPanel />
           <Canvas />
           <PropertiesPanel />
+          <StateIndicator />
         </div>
       </div>
     </div>

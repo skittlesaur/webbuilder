@@ -35,6 +35,7 @@ const AlignText = ({
   const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
   const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
   const updateBodyStyle = useCanvasStore((s) => s.updateBodyStyle)
+  const selectedState = useInteractionsStore((s) => s.selectedState)
 
   const handleAlign = (value: string) => {
     if (isBody) {
@@ -46,7 +47,8 @@ const AlignText = ({
       'style',
       'textAlign',
       value,
-      selectedMediaQuery
+      selectedMediaQuery,
+      selectedState
     )
   }
 

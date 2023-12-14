@@ -75,6 +75,7 @@ const ElementPropertiesFill = ({ background, isBody }: FillProps) => {
   const updateElementAttribute = useCanvasStore((s) => s.updateElementAttribute)
   const variables = useCanvasStore((s) => s.variables)
   const updateBodyStyle = useCanvasStore((s) => s.updateBodyStyle)
+  const selectedState = useInteractionsStore((s) => s.selectedState)
 
   const [fills, setFills] = useState<(Fill | Variable)[]>(() => {
     if (!background)
@@ -240,7 +241,8 @@ const ElementPropertiesFill = ({ background, isBody }: FillProps) => {
         'style',
         'background',
         undefined,
-        selectedMediaQuery
+        selectedMediaQuery,
+        selectedState
       )
 
       return
@@ -274,13 +276,15 @@ const ElementPropertiesFill = ({ background, isBody }: FillProps) => {
           return gradientToBackground(fill.value, fill.degree)
         })
         .join(', '),
-      selectedMediaQuery
+      selectedMediaQuery,
+      selectedState
     )
   }, [
     fills,
     isBody,
     selectedElementId,
     selectedMediaQuery,
+    selectedState,
     updateBodyStyle,
     updateElementAttribute,
   ])

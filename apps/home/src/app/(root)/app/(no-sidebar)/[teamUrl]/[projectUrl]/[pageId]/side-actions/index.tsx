@@ -32,8 +32,11 @@ const ACTIONS = [
 ]
 
 const SideActions = () => {
-  const setSelectedElementId = useInteractionsStore((s) => s.setSelectedElementId)
+  const setSelectedElementId = useInteractionsStore(
+    (s) => s.setSelectedElementId
+  )
   const setActivePanel = usePanelsStore((s) => s.setActivePanel)
+  const setSelectedState = useInteractionsStore((s) => s.setSelectedState)
 
   const handleClick = (e: React.MouseEvent | React.KeyboardEvent) => {
     const target = e.target as HTMLElement | null
@@ -43,6 +46,7 @@ const SideActions = () => {
 
     if (isTargetSelf) {
       setSelectedElementId(null)
+      setSelectedState('default')
       setActivePanel(null)
     }
   }
