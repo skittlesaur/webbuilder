@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { Balancer } from 'react-wrap-balancer'
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import ChevronIcon from '@/icons/chevron-forward.svg'
@@ -36,10 +35,11 @@ const PreviewCard = () => {
             </button>
           </div>
           <p className="w-full text-sm text-neutral-600">
-            <Balancer>
-              This is a preview of your site. You can share this link with
-              others to show them your site.
-            </Balancer>
+            This is a preview of your site. You can share this link with others
+            to show them your site.
+          </p>
+          <p className="w-full text-sm text-neutral-600">
+            For safety reasons, events are disabled in preview mode.
           </p>
           <Link
             className="flex items-center justify-between w-full px-4 py-2 text-xs text-black border rounded group border-border/20 hover:border-border"

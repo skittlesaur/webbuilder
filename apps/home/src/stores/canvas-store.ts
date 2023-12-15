@@ -38,6 +38,44 @@ export type ElementType =
   | 'select'
   | 'option'
 
+export type ElementEvent =
+  | 'click'
+  | 'dblclick'
+  | 'mousedown'
+  | 'mouseenter'
+  | 'mouseleave'
+  | 'mousemove'
+  | 'mouseout'
+  | 'mouseover'
+  | 'mouseup'
+  | 'keydown'
+  | 'keypress'
+  | 'keyup'
+  | 'scroll'
+  | 'wheel'
+  | 'copy'
+  | 'cut'
+  | 'paste'
+  | 'drag'
+  | 'dragend'
+  | 'dragenter'
+  | 'dragleave'
+  | 'dragover'
+  | 'dragstart'
+  | 'drop'
+  | 'focus'
+  | 'blur'
+  | 'focusin'
+  | 'focusout'
+  | 'resize'
+  | 'select'
+  | 'submit'
+  | 'search'
+  | 'reset'
+  | 'invalid'
+  | 'input'
+  | 'change'
+
 export interface ElementStyle {
   default?: CSSProperties
   hover?: CSSProperties
@@ -55,6 +93,7 @@ export interface Element {
   mediaQueries?: Record<string, ElementStyle> // key is the breakpoint width
   attributes?: Record<string, unknown> // special attributes like href, src, alt, etc.
   componentId?: string
+  events?: Record<ElementEvent, string> // type -> handler
 }
 
 export interface DraggedElement {
@@ -356,7 +395,8 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
               [mediaQuery]: {
                 ...(el.mediaQueries?.[mediaQuery] || {}),
                 [state || 'default']: {
-                  ...(el.mediaQueries?.[mediaQuery]?.[state || 'default'] || {}),
+                  ...(el.mediaQueries?.[mediaQuery]?.[state || 'default'] ||
+                    {}),
                   [attribute]: value,
                 },
               },

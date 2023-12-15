@@ -8,6 +8,7 @@ import type {
   BodyStyles,
   Breakpoint,
   Element,
+  ElementEvent,
 } from '@/stores/canvas-store'
 import FontsData from '@/lib/fonts-data.json'
 
@@ -134,14 +135,25 @@ const exportHtmlCss = async (options: ExportHtmlCssOptions) => {
   })
   const isDefaultSmallest = smallestMediaQuery.id === defaultMediaQuery.id
 
+  const events: Record<string, Partial<Record<ElementEvent, string>>> = {} // {id: {event: function}}
+
   const deepGenerateElement = (element: Element | string) => {
     if (typeof element === 'string') {
       return document.createTextNode(element)
     }
 
-    const { children, style, id, attributes } = element
+    const { children, style, id, attributes, events: elementEvents } = element
 
     const el = document.createElement(element.type)
+
+    Object.keys(elementEvents || {}).forEach((event) => {
+      if (!events[id]) {
+        events[id] = {}
+      }
+
+      events[id][event as ElementEvent] =
+        elementEvents?.[event as ElementEvent]
+    })
 
     const elementClassName = `baraa-${id}`
 
@@ -216,24 +228,6 @@ const exportHtmlCss = async (options: ExportHtmlCssOptions) => {
             }, {}),
           }
         }, {}),
-        // [elementClassName]: propertiesInBreakpoints.reduce((acc, property) => {
-        //   if (element.mediaQueries?.[defaultMediaQuery.width]?.[property]) {
-        //     return {
-        //       ...acc,
-        //       [property]:
-        //         element.mediaQueries?.[defaultMediaQuery.width]?.[property],
-        //     }
-        //   }
-
-        //   if (element.style?.[property]) {
-        //     return {
-        //       ...acc,
-        //       [property]: element.style?.[property],
-        //     }
-        //   }
-
-        //   return acc
-        // }, {}),
       }
     }
 
@@ -347,6 +341,29 @@ const exportHtmlCss = async (options: ExportHtmlCssOptions) => {
     css += `@media (min-width: ${defaultMediaQuery.width}px) {\n`
     css += `\tbody { \n${bodyDefaultStyleString}; \n}\n\n`
     css += '\n}\n\n'
+  }
+
+  if (Object.keys(events).length > 0) {
+    const script = document.createElement('script')
+    script.type = 'text/javascript'
+    script.innerHTML = `document.addEventListener('DOMContentLoaded', init, false);
+
+function init() {
+  ${Object.entries(events)
+    .map(([id, elementEvents]) => {
+      const variable = `const ${id} = document.querySelector('.baraa-${id}')`
+      const eventsData = Object.entries(elementEvents)
+        .map(([event, fn]) => {
+          return `${id}.addEventListener('${event}', ${fn})`
+        })
+        .join('\n')
+
+      return `${variable}\n\n${eventsData}`
+    })
+    .join('\n')}
+}`
+
+    body.appendChild(script)
   }
 
   const fileName = `baraa-${createId()}`

@@ -14,6 +14,7 @@ import ElementPropertiesDisplay from './display'
 import InputAttributes from './input'
 import ElementPropertiesColors from './colors'
 import StateSelector from './state-selector'
+import EventsPanel from './events'
 import { useInteractionsStore } from '@/stores/interactions-store'
 import { findElementByIdArr } from '@/lib/find-element-by-id'
 import { useCanvasStore } from '@/stores/canvas-store'
@@ -22,6 +23,7 @@ import ScrollableWrapper from '@/components/scrollable-wrapper'
 enum PropertyPanel {
   STYLE,
   ATTRIBUTES,
+  EVENTS,
 }
 
 const panels = [
@@ -32,6 +34,10 @@ const panels = [
   {
     title: 'Attributes',
     panel: PropertyPanel.ATTRIBUTES,
+  },
+  {
+    title: 'Events',
+    panel: PropertyPanel.EVENTS,
   },
 ]
 
@@ -149,8 +155,12 @@ const ElementProperties = ({ isBody }: { isBody?: boolean }) => {
         </div>
       )}
       <ScrollableWrapper>
-        <ElementPropertiesParent />
-        {!isBody && <MakeComponentButton />}
+        {activePanel !== PropertyPanel.EVENTS && (
+          <>
+            <ElementPropertiesParent />
+            {!isBody && <MakeComponentButton />}
+          </>
+        )}
         {activePanel === PropertyPanel.STYLE && (
           <>
             {!isBody && <StateSelector />}
@@ -244,6 +254,7 @@ const ElementProperties = ({ isBody }: { isBody?: boolean }) => {
             />
           </>
         ) : null}
+        {activePanel === PropertyPanel.EVENTS && <EventsPanel />}
       </ScrollableWrapper>
     </Fragment>
   )
