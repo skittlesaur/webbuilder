@@ -186,53 +186,46 @@ const EventsPanel = () => {
   if (!activeElement) return null
 
   return (
-    <AlertDialog open={activeEvent !== null}>
-      <div className="flex flex-col gap-4 p-4 border-b border-border">
-        {events.map((category) => (
-          <Fragment key={category.category}>
-            <p className="font-medium">
-              {category.category}
-            </p>
-            <div className="flex flex-col gap-3">
-              {category.types.map((event) => (
-                <div
-                  className="grid grid-cols-[0.5fr_1fr] gap-2 items-center"
-                  key={event.type}>
-                  <TooltipProvider disableHoverableContent delayDuration={200}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <p className="text-gray-400 truncate">{event.title}</p>
-                      </TooltipTrigger>
-                      <TooltipContent
-                        className="h-8"
-                        side="left"
-                        sideOffset={8}>
-                        {event.title}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                  <AlertDialogTrigger asChild>
-                    <button
-                      className={cn(
-                        'w-full px-3 py-1 text-sm text-left truncate transition-colors border rounded-md shadow-sm bg-background hover:bg-accent h-9 border-border',
-                        {
-                          'text-white': activeElement.events?.[event.type],
-                          'text-neutral-400':
-                            !activeElement.events?.[event.type],
-                        }
-                      )}
-                      type="button"
-                      onClick={() => setActiveEvent(event)}>
-                      {activeElement.events?.[event.type] ? 'Edit' : 'Add'}{' '}
-                      Event
-                    </button>
-                  </AlertDialogTrigger>
-                </div>
-              ))}
-            </div>
-          </Fragment>
-        ))}
-      </div>
+    <AlertDialog key={activeEvent?.type} open={activeEvent !== null}>
+      {events.map((category) => (
+        <div
+          className="flex flex-col gap-4 p-4 border-b border-border"
+          key={category.category}>
+          <p className="font-medium">{category.category}</p>
+          <div className="flex flex-col gap-3">
+            {category.types.map((event) => (
+              <div
+                className="grid grid-cols-[0.5fr_1fr] gap-2 items-center"
+                key={event.type}>
+                <TooltipProvider disableHoverableContent delayDuration={200}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <p className="text-gray-400 truncate">{event.title}</p>
+                    </TooltipTrigger>
+                    <TooltipContent className="h-8" side="left" sideOffset={8}>
+                      {event.title}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <AlertDialogTrigger asChild>
+                  <button
+                    className={cn(
+                      'w-full px-3 py-1 text-sm text-left truncate transition-colors border rounded-md shadow-sm bg-background hover:bg-accent h-9 border-border',
+                      {
+                        'text-white': activeElement.events?.[event.type],
+                        'text-neutral-400': !activeElement.events?.[event.type],
+                      }
+                    )}
+                    type="button"
+                    onClick={() => setActiveEvent(event)}>
+                    {activeElement.events?.[event.type] ? 'Edit' : 'Add'} Event
+                  </button>
+                </AlertDialogTrigger>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
       <AlertDialogContent className="!max-w-xl">
         <AlertDialogHeader>
           <AlertDialogTitle>{activeEvent?.title} Event</AlertDialogTitle>
