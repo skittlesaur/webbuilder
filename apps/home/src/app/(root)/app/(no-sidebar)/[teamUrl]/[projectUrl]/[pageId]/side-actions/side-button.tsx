@@ -18,7 +18,8 @@ const SideButton = ({ Icon, title, value }: SideButtonProps) => {
       <Tooltip>
         <TooltipTrigger asChild>
           <button
-            className="w-8 h-8 rounded hover:bg-secondary/50 text-text flex items-center justify-center"
+            className="flex items-center justify-center w-8 h-8 rounded hover:bg-secondary/50 text-text"
+            id={title.toLowerCase().replace(/&/g, '').replace(/ +/g, '-')}
             type="button"
             onClick={() => {
               if (activePanel === value) {

@@ -18,6 +18,7 @@ const PropertiesPanel = () => {
           'border-border': selectedState === 'default',
         }
       )}
+      id="properties-panel"
       style={{
         borderColor:
           selectedState === 'default'

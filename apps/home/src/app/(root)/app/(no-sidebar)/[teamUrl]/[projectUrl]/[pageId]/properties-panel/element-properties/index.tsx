@@ -21,9 +21,9 @@ import { useCanvasStore } from '@/stores/canvas-store'
 import ScrollableWrapper from '@/components/scrollable-wrapper'
 
 enum PropertyPanel {
-  STYLE,
-  ATTRIBUTES,
-  EVENTS,
+  STYLE = 'style',
+  ATTRIBUTES = 'attributes',
+  EVENTS = 'events',
 }
 
 const panels = [
@@ -146,6 +146,7 @@ const ElementProperties = ({ isBody }: { isBody?: boolean }) => {
                 'text-white': activePanel === p.panel,
                 'text-white/70': activePanel !== p.panel,
               })}
+              id={`properties-panel-tab-${p.panel}`}
               key={p.panel}
               type="button"
               onClick={() => setActivePanel(p.panel)}>

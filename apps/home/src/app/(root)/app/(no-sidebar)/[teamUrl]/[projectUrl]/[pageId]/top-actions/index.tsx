@@ -6,6 +6,7 @@ import ImportSite from './import-site'
 import SaveButton from './save'
 import AiButton from './ai'
 import useProject from '@/resolvers/use-project'
+import Help from './help'
 
 const TopActions = () => {
   const { projectUrl, pageId } = useParams()
@@ -37,6 +38,7 @@ const TopActions = () => {
           <SaveButton />
           <ImportSite />
           <AiButton />
+          <Help />
         </div>
       </div>
     </div>

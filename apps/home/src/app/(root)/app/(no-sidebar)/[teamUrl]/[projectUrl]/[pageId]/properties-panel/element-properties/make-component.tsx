@@ -79,7 +79,9 @@ const MakeComponentButton = () => {
   if (element?.componentId) return null
 
   return (
-    <div className="items-center p-4 border-b border-border">
+    <div
+      className="items-center p-4 border-b border-border"
+      id="make-component">
       <button
         className="w-full px-2 py-1 text-center border rounded border-border hover:bg-accent text-neutral-400 hover:text-white"
         type="button"

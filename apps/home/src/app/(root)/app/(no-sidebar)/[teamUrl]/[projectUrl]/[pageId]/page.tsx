@@ -9,9 +9,11 @@ import './fonts.css'
 import AssetsAndComponentsPanel from './action-panels/assets-and-components'
 import PagesPanel from './action-panels/pages'
 import StateIndicator from './state-indicator'
+import Instructions from './instructions'
 import { useCanvasStore } from '@/stores/canvas-store'
 import useProjectPage from '@/resolvers/use-project-page'
 import FullLoader from '@/components/full-loader'
+import useUser from '@/resolvers/use-user'
 
 const DevTools = dynamic(() => import('./dev-tools'), { ssr: false })
 const Canvas = dynamic(() => import('./canvas'), { ssr: false })
@@ -32,7 +34,11 @@ const ProjectsPage = () => {
   const setZoom = useCanvasStore((s) => s.setZoom)
   const setPan = useCanvasStore((s) => s.setPan)
   const setVariables = useCanvasStore((s) => s.setVariables)
+  const setCompletedInstructions = useCanvasStore(
+    (s) => s.setCompletedInstructions
+  )
   const { projectPage } = useProjectPage()
+  const { user } = useUser()
 
   useEffect(() => {
     if (projectPage) {
@@ -53,7 +59,13 @@ const ProjectsPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only on mount
   }, [projectPage])
 
-  if (!pageLoaded) return <FullLoader title="Loading Project" />
+  useEffect(() => {
+    if (user) {
+      setCompletedInstructions(user.onboarded)
+    }
+  }, [setCompletedInstructions, user])
+
+  if (!pageLoaded || !user) return <FullLoader title="Loading Project" />
 
   return (
     <div
@@ -62,6 +74,7 @@ const ProjectsPage = () => {
         prev[`--${curr.name.toLowerCase().replace(/ /g, '-')}`] = curr.value
         return prev
       }, {})}>
+      <Instructions />
       <DevTools />
       <SideActions />
       <div className="flex flex-col flex-1">

@@ -24,6 +24,7 @@ model User {
   UserPageSettings   UserPageSettings[]
   feedbacks          Feedback[]
   remainingTokens    Int                @default(5)
+  onboarded          Boolean            @default(false)
 }
 
 model UserVerification {

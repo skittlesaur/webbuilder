@@ -34,7 +34,7 @@ const ColorStyle = () => {
   const removeVariable = useCanvasStore((s) => s.removeVariable)
 
   return (
-    <div className="relative mt-4">
+    <div className="relative mt-4" id="color-styles">
       <div className="flex items-center justify-between px-4 py-2 group">
         <p className="text-xs font-medium text-neutral-400">Color styles</p>
         <button

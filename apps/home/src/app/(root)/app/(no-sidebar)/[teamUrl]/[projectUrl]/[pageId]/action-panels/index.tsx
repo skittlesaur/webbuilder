@@ -62,10 +62,11 @@ const ActionPanelWrapper = ({
         <motion.div
           animate={{ x: 0, opacity: 1 }}
           className="min-w-[16rem] max-w-[30rem] absolute z-40 left-0 top-0 bottom-0 border-r border-border px-5 py-6 flex flex-col gap-8 bg-background/80 backdrop-blur"
-          exit={{ 
+          exit={{
             x: previousPanel === null || activePanel === null ? '-100%' : 0,
             opacity: 0,
           }}
+          id={`${self}-panel`}
           initial={{ x: previousPanel === null ? '-100%' : 0, opacity: 0 }}
           ref={ref}
           style={

@@ -146,6 +146,8 @@ export interface BodyStyles extends CSSProperties {
 }
 
 interface CanvasStore {
+  completedInstructions: boolean
+  setCompletedInstructions: (completed: boolean) => void
   zoom: number
   setZoom: (zoom: number) => void
   pan: {
@@ -206,6 +208,10 @@ interface CanvasStore {
 }
 
 export const useCanvasStore = create<CanvasStore>((set, get) => ({
+  completedInstructions: false,
+  setCompletedInstructions: (completed) => {
+    set({ completedInstructions: completed })
+  },
   zoom: 1.7,
   setZoom: (zoom) => {
     set({ zoom })

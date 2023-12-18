@@ -46,6 +46,7 @@
     "react-dom": "^18.2.0",
     "react-drag-drop-files": "^2.3.10",
     "react-infinite-scroll-component": "^6.1.0",
+    "react-joyride": "^2.7.1",
     "react-masonry": "^1.0.7",
     "react-nestable": "^2.0.0",
     "react-use-measure": "^2.1.1",
