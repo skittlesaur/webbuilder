@@ -14,6 +14,7 @@ const DevTools = () => {
   const selectedMediaQuery = useInteractionsStore((s) => s.selectedMediaQuery)
   const elements = useCanvasStore((s) => s.elements)
   const element = findElementByIdArr(elements, selectedElementId || '')
+  const tool = useInteractionsStore((s) => s.tool)
 
   const DATA = [
     {
@@ -41,6 +42,10 @@ const DevTools = () => {
       value: draggedElement
         ? `${draggedElement?.relativeId} - ${draggedElement?.relativePosition}`
         : 'None',
+    },
+    {
+      title: 'Tool',
+      value: tool,
     },
   ]
 

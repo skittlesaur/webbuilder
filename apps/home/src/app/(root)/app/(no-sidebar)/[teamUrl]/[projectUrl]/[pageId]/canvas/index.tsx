@@ -22,6 +22,7 @@ const Canvas = () => {
   )
   const setHoveredElementId = useInteractionsStore((s) => s.setHoveredElementId)
   const setSelectedState = useInteractionsStore((s) => s.setSelectedState)
+  const tool = useInteractionsStore((s) => s.tool)
 
   const ref = useRef<HTMLDivElement>(null)
 
@@ -124,16 +125,75 @@ const Canvas = () => {
     }
   }, [handleElementDelete, selectedElementId])
 
+  useEffect(() => {
+    const curr = ref.current
+    if (!curr) return
+
+    const isHand = tool === 'hand'
+
+    const handleMouseDown = (e: MouseEvent) => {
+      if (!isHand) return
+
+      e.preventDefault()
+      e.stopPropagation()
+
+      const startX = e.pageX - pan.x
+      const startY = e.pageY - pan.y
+
+      const handleMouseMove = (event: MouseEvent) => {
+        event.preventDefault()
+        event.stopPropagation()
+        
+        setPan({
+          x: event.pageX - startX,
+          y: event.pageY - startY,
+        })
+      }
+
+      const handleMouseUp = (event: MouseEvent) => {
+        event.preventDefault()
+        event.stopPropagation()
+        
+        curr.removeEventListener('mousemove', handleMouseMove)
+        curr.removeEventListener('mouseup', handleMouseUp)
+      }
+
+      curr.addEventListener('mousemove', handleMouseMove)
+      curr.addEventListener('mouseup', handleMouseUp)
+    }
+
+    curr.addEventListener('mousedown', handleMouseDown)
+
+    return () => {
+      curr.removeEventListener('mousedown', handleMouseDown)
+    }
+  }, [pan.x, pan.y, setPan, tool])
+
+  const getToolCursorType = () => {
+    switch (tool) {
+      case 'cursor':
+        return 'default'
+      case 'hand':
+        return 'grab'
+      default:
+        return 'default'
+    }
+  }
+
   return (
     <div
-      className="select-none relative flex-1 w-full h-full bg-background border cursor-all-children !cursor-default outline-none"
+      className="relative flex-1 w-full h-full border outline-none select-none bg-background cursor-all-children"
       id="canvas"
       ref={ref}
       role="button"
       style={
         {
-          '--cursor': 'default',
-          borderColor: selectedState === 'default' ? 'transparent' : stateMapping[selectedState].color,
+          '--cursor': getToolCursorType(),
+          cursor: getToolCursorType(),
+          borderColor:
+            selectedState === 'default'
+              ? 'transparent'
+              : stateMapping[selectedState].color,
         } as React.CSSProperties
       }
       tabIndex={-1}

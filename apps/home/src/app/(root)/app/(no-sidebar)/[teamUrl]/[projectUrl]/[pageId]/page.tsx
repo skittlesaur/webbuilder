@@ -10,6 +10,7 @@ import AssetsAndComponentsPanel from './action-panels/assets-and-components'
 import PagesPanel from './action-panels/pages'
 import StateIndicator from './state-indicator'
 import Instructions from './instructions'
+import Tools from './tools'
 import { useCanvasStore } from '@/stores/canvas-store'
 import useProjectPage from '@/resolvers/use-project-page'
 import FullLoader from '@/components/full-loader'
@@ -75,6 +76,7 @@ const ProjectsPage = () => {
         return prev
       }, {})}>
       <Instructions />
+      <Tools />
       <DevTools />
       <SideActions />
       <div className="flex flex-col flex-1">
