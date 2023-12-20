@@ -21,14 +21,22 @@ export const sidebarNav = [
         title: 'Introduction',
         href: '/docs',
       },
+      {
+        title: 'Teams',
+        href: '/docs/teams',
+      },
+      {
+        title: 'Projects',
+        href: '/docs/projects',
+      },
     ],
   },
   {
-    title: 'Navigation',
+    title: 'Page Editor',
     items: [
       {
-        title: 'Creating a Team',
-        href: '/docs/create-team',
+        title: 'Canvas',
+        href: '/docs/page/canvas',
       },
     ],
   },
