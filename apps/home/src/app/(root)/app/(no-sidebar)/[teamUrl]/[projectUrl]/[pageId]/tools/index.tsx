@@ -48,6 +48,14 @@ const Tools = () => {
     let previousTool: Tool = 'cursor'
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement
+
+      if (
+        target.contentEditable === 'true' ||
+        ['input', 'textarea'].includes(target.tagName.toLowerCase())
+      )
+        return
+
       Object.entries(toolsData).forEach(([_key, value]) => {
         if (value.shortcut?.toLowerCase() === e.key?.toLowerCase()) {
           e.preventDefault()
