@@ -19,6 +19,7 @@ const ColorStyle = () => {
   })
 
   const [colorPicker, setColorPicker] = useState(false)
+  const [editingStyle, setEditingStyle] = useState<string | null>(null)
 
   const ref = useDetectClickOutside({
     onTriggered: () => {
@@ -32,6 +33,7 @@ const ColorStyle = () => {
 
   const addVariable = useCanvasStore((s) => s.addVariable)
   const removeVariable = useCanvasStore((s) => s.removeVariable)
+  const updateVariable = useCanvasStore((s) => s.updateVariable)
 
   return (
     <div className="relative mt-4" id="color-styles">
@@ -126,26 +128,107 @@ const ColorStyle = () => {
       ) : null}
       <div className="flex flex-col">
         {colorStyles?.map((v) => (
-          <div
-            className="flex items-center justify-between gap-2 px-4 py-2.5 text-xs group"
-            key={v.name}>
-            <div className="flex items-center gap-2">
-              <div
-                className="w-4 h-4 border rounded border-border"
-                style={{
-                  backgroundColor: v.value as string,
-                }}
-              />
-              <p className="font-medium">{v.name}</p>
-            </div>
+          <div className="relative" key={v.name}>
             <button
-              className="transition-opacity duration-150 opacity-0 group-hover:opacity-100"
+              className="flex items-center w-full justify-between gap-2 px-4 py-2.5 text-xs group"
               type="button"
               onClick={() => {
-                removeVariable(v.name)
+                setFill({
+                  type: 'color',
+                  value: String(v.value).slice(0, 7),
+                  opacity:
+                    (parseInt(String(v.value).slice(7) || 'FF', 16) / 255) *
+                    100,
+                })
+                setEditingStyle((p) => (p === v.name ? null : v.name))
               }}>
-              <RemoveIcon className="w-4 h-4 text-neutral-400 hover:text-white" />
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-4 h-4 border rounded border-border"
+                  style={{
+                    backgroundColor: v.value as string,
+                  }}
+                />
+                <p className="font-medium">{v.name}</p>
+              </div>
+              <button
+                className="transition-opacity duration-150 opacity-0 group-hover:opacity-100"
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  removeVariable(v.name)
+                }}>
+                <RemoveIcon className="w-4 h-4 text-neutral-400 hover:text-white" />
+              </button>
             </button>
+            {editingStyle === v.name && (
+              <div
+                className="absolute flex flex-col min-w-[16rem] gap-4 px-4 py-4 mr-1 border rounded-md bg-background border-border top-2 right-full whitespace-nowrap"
+                ref={ref}>
+                <div className="flex items-center justify-between gap-4">
+                  <p className="text-xs font-medium">Edit {v.name}</p>
+                  <button type="button" onClick={() => setEditingStyle(null)}>
+                    <CloseIcon className="w-4 h-4 text-neutral-400 hover:text-white" />
+                  </button>
+                </div>
+                <div className="w-full h-px bg-border" />
+                <div className="relative w-full h-16 overflow-hidden rounded">
+                  <div
+                    className="absolute inset-0 z-[1]"
+                    style={{
+                      backgroundColor: `${fill.value}${opacityToHex(
+                        fill.opacity / 100
+                      )}`,
+                    }}
+                  />
+                  <Image
+                    fill
+                    alt="Square pattern"
+                    className="object-cover w-full h-full"
+                    src="/square-pattern.jpeg"
+                  />
+                </div>
+                <p className="text-xs font-medium text-neutral-400">
+                  Properties
+                </p>
+                <div className="flex flex-col gap-2">
+                  <div className="relative flex items-center gap-2">
+                    <ColorFill
+                      hideGradient
+                      closeColorPicker={() => setColorPicker(false)}
+                      colorPickerClick={() => {
+                        setColorPicker((prev) => !prev)
+                      }}
+                      colorPickerOpen={colorPicker}
+                      fill={fill}
+                      onConfirm={(data: Fill & { type: 'color' }) => {
+                        setFill(data)
+                      }}
+                    />
+                  </div>
+                </div>
+                <button
+                  className="self-end px-4 py-2 text-xs font-medium text-white rounded w-fit bg-primary"
+                  type="button"
+                  onClick={() => {
+                    setOpen(false)
+                    setColorPicker(false)
+                    setEditingStyle(null)
+                    setFill({
+                      type: 'color',
+                      value: '#ffffff',
+                      opacity: 100,
+                    })
+                    const val = fill.value
+                    const opacity = fill.opacity
+                    const colorHex = `${val}${opacityToHex(opacity / 100)}`
+
+                    updateVariable(v.name, colorHex)
+                  }}>
+                  Update Style
+                </button>
+              </div>
+            )}
           </div>
         ))}
       </div>

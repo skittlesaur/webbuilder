@@ -205,6 +205,7 @@ interface CanvasStore {
   setVariables: (variables: Variable[]) => void
   addVariable: (variable: Variable) => void
   removeVariable: (variableName: string) => void
+  updateVariable: (variableName: string, value: Variable['value']) => void
 }
 
 export const useCanvasStore = create<CanvasStore>((set, get) => ({
@@ -608,6 +609,19 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
       variables: get().variables.filter(
         (variable) => variable.name !== variableName
       ),
+    })
+  },
+  updateVariable: (variableName, value) => {
+    set({
+      variables: get().variables.map((variable) => {
+        if (variable.name === variableName) {
+          return {
+            ...variable,
+            value,
+          }
+        }
+        return variable
+      }),
     })
   },
 }))
