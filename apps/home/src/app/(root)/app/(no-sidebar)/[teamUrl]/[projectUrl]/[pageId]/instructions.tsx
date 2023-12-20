@@ -447,11 +447,17 @@ const Instructions = () => {
   const setCompletedInstructions = useCanvasStore(
     (s) => s.setCompletedInstructions
   )
+  const elements = useCanvasStore((s) => s.elements)
+
+  const [originalElements, setOriginalElements] = useState<Element[]>(elements)
 
   const { user } = useUser()
 
   useEffect(() => {
     setRun(!completedInstructions)
+    if (!completedInstructions) {
+      setOriginalElements(elements)
+    }
   }, [completedInstructions])
 
   const handleJoyrideCallback = async (data: CallBackProps) => {
@@ -498,6 +504,7 @@ const Instructions = () => {
         toast.error(getErrorMessage(err))
       } finally {
         setCompletedInstructions(true)
+        setElements(originalElements)
       }
     }
   }
