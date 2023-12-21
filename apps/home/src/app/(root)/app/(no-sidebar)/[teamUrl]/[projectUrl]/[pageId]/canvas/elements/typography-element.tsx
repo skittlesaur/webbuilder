@@ -155,14 +155,12 @@ const TypographyElement = ({ element }: { element: Element }) => {
         marks?.forEach((mark) => {
           if (mark.type === 'textStyle' && mark.attrs) {
             const styles: CSSProperties = {
-              [selectedState]: {
-                ...(newElement.style?.[selectedState] || {}),
-                color: mark.attrs.color,
-                fontSize: mark.attrs.fontSize,
-                fontWeight: mark.attrs.fontWeight,
-                fontStyle: mark.attrs.fontStyle,
-                textDecoration: mark.attrs.textDecoration,
-              },
+              ...(newElement.style?.[selectedState] || {}),
+              color: mark.attrs.color,
+              fontSize: mark.attrs.fontSize,
+              fontWeight: mark.attrs.fontWeight,
+              fontStyle: mark.attrs.fontStyle,
+              textDecoration: mark.attrs.textDecoration,
             }
             newElement.style[selectedState] = styles
           } else if (mark.type === 'bold') {

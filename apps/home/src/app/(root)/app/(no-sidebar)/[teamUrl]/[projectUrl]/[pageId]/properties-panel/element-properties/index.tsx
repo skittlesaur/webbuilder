@@ -56,6 +56,35 @@ const ElementProperties = ({ isBody }: { isBody?: boolean }) => {
 
   if (!isBody && !activeElement) return null
 
+  const formatViewportValues = (data = {}) => {
+    return Object.keys(data).reduce((a, key) => {
+      const value = data[key]
+
+      if (value === undefined || value === null) return a
+
+      if (String(value).endsWith('vh')) {
+        const num = Number(value.replace('vh', ''))
+        return {
+          ...a,
+          [key]: `calc(var(--vh) * ${num / 100})`,
+        }
+      }
+
+      if (String(value).endsWith('vw')) {
+        const num = Number(value.replace('vw', ''))
+        return {
+          ...a,
+          [key]: `calc(var(--vw) * ${num / 100})`,
+        }
+      }
+
+      return {
+        ...a,
+        [key]: value,
+      }
+    }, {})
+  }
+
   const getStyleAttribute = (attribute: string) => {
     if (isBody) {
       if (selectedMediaQuery !== null) {
@@ -80,59 +109,54 @@ const ElementProperties = ({ isBody }: { isBody?: boolean }) => {
 
     if (!activeElement) return null
 
-    if (selectedMediaQuery !== null) {
-      const queries = Object.keys(
-        (activeElement.mediaQueries || {}) as Record<string, unknown>
-      )
-        .filter((mq) => Number(mq) <= (selectedMediaQuery || 0))
-        .sort((a, b) => Number(a) - Number(b))
-
-      const queryStyles = queries.reduce((acc, mq) => {
-        const defaultMq = activeElement.mediaQueries?.[mq]?.default
-        const defaultWithoutUndefined = Object.keys(defaultMq || {}).reduce(
-          (a, key) => {
-            if (defaultMq?.[key] !== undefined) {
-              return {
-                ...a,
-                [key]: defaultMq?.[key],
-              }
-            }
-            return a
-          },
-          {}
-        )
-
-        const selectedStateMq = activeElement.mediaQueries?.[mq]?.[
-          selectedState
-        ] as Record<string, unknown>
-
-        const selectedStateWithoutUndefined = Object.keys(
-          selectedStateMq || {}
-        ).reduce((a, key) => {
-          if (selectedStateMq?.[key] !== undefined) {
-            return {
-              ...a,
-              [key]: selectedStateMq?.[key],
-            }
-          }
-          return a
-        }, {})
-
-        return {
-          ...acc,
-          [attribute]: activeElement.style?.default?.[attribute],
-          ...defaultWithoutUndefined,
-          ...selectedStateWithoutUndefined,
-        }
-      }, {})
-
-      return queryStyles[attribute]
-    }
-
-    return (
-      activeElement.style?.[selectedState]?.[attribute] ||
-      activeElement.style?.default?.[attribute]
+    const queries = Object.keys(
+      (activeElement.mediaQueries || {}) as Record<string, unknown>
     )
+      .filter((mq) => Number(mq) <= (selectedMediaQuery || Infinity))
+      .sort((a, b) => Number(a) - Number(b))
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO
+    const queryStyles = queries.reduce<any>((acc, mq) => {
+      const defaultQuery = activeElement.mediaQueries?.[mq]?.default || {}
+      const selectedQuery =
+        activeElement.mediaQueries?.[mq]?.[selectedState] || {}
+
+      const formattedDefaultQuery = formatViewportValues(defaultQuery)
+      const formattedSelectedQuery = formatViewportValues(selectedQuery)
+
+      return {
+        default: {
+          ...acc.default,
+          ...formattedDefaultQuery,
+        },
+        [selectedState]: {
+          ...acc[selectedState],
+          ...formattedSelectedQuery,
+        },
+      }
+    }, {})
+
+    const defaultStyles = formatViewportValues(activeElement.style?.default)
+    const selectedStyles = formatViewportValues(
+      activeElement.style?.[selectedState]
+    )
+
+    const elementStyles =
+      selectedMediaQuery === null
+        ? {
+            ...queryStyles.default,
+            ...defaultStyles,
+            ...queryStyles[selectedState],
+            ...selectedStyles,
+          }
+        : {
+            ...defaultStyles,
+            ...queryStyles.default,
+            ...selectedStyles,
+            ...queryStyles[selectedState],
+          }
+
+    return elementStyles[attribute]
   }
 
   return (

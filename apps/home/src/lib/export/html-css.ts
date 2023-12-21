@@ -151,8 +151,7 @@ const exportHtmlCss = async (options: ExportHtmlCssOptions) => {
         events[id] = {}
       }
 
-      events[id][event as ElementEvent] =
-        elementEvents?.[event as ElementEvent]
+      events[id][event as ElementEvent] = elementEvents?.[event as ElementEvent]
     })
 
     const elementClassName = `baraa-${id}`
@@ -234,14 +233,26 @@ const exportHtmlCss = async (options: ExportHtmlCssOptions) => {
     // element default styles based on states
     Object.keys(style).forEach((state) => {
       const stateStyle = style[state as keyof typeof style]
-      if (!stateStyle) return
+      const smallestMediaQueryStyles =
+        element.mediaQueries?.[smallestMediaQuery.width]?.[
+          state as keyof typeof style
+        ]
 
-      const fonts = stateStyle?.fontFamily?.split(',') || []
+      if (!stateStyle && !smallestMediaQueryStyles) return
+
+      const stylesToUse = !isDefaultSmallest
+        ? {
+            ...stateStyle,
+            ...smallestMediaQueryStyles,
+          }
+        : stateStyle
+
+      const fonts = stylesToUse?.fontFamily?.split(',') || []
       fonts.forEach((font) => {
         fontFamilies.add(font.trim())
       })
 
-      const stateCss = getElementCss(stateStyle as CSSProperties)
+      const stateCss = getElementCss(stylesToUse as CSSProperties)
       if (!stateCss) return
 
       if (state === 'default')
@@ -272,10 +283,13 @@ const exportHtmlCss = async (options: ExportHtmlCssOptions) => {
 
   const mediaQueriesKeys = Object.keys(mediaQueries)
   const bodyMediaQueriesKeys = Object.keys(bodyMediaQueries || {})
+
   const mediaQueriesToGenerate = new Set([
     ...mediaQueriesKeys,
     ...bodyMediaQueriesKeys,
   ])
+
+  mediaQueriesToGenerate.delete(String(smallestMediaQuery.width))
 
   const bodyPropertiesForDefault = new Set()
 

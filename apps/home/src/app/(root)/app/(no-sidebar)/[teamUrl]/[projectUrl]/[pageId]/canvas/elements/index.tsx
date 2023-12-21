@@ -24,6 +24,35 @@ const VOID_ELEMENTS = [
   'textarea',
 ]
 
+const formatViewportValues = (data = {}) => {
+  return Object.keys(data).reduce((a, key) => {
+    const value = data[key]
+
+    if (value === undefined || value === null) return a
+
+    if (String(value).endsWith('vh')) {
+      const num = Number(value.replace('vh', ''))
+      return {
+        ...a,
+        [key]: `calc(var(--vh) * ${num / 100})`,
+      }
+    }
+
+    if (String(value).endsWith('vw')) {
+      const num = Number(value.replace('vw', ''))
+      return {
+        ...a,
+        [key]: `calc(var(--vw) * ${num / 100})`,
+      }
+    }
+
+    return {
+      ...a,
+      [key]: value,
+    }
+  }, {})
+}
+
 const Element = ({
   element,
   mediaQuery,
@@ -343,80 +372,43 @@ const Element = ({
     .filter((mq) => Number(mq) <= (mediaQuery || Infinity))
     .sort((a, b) => Number(a) - Number(b))
 
-  const queryStyles = queries.reduce((acc, mq) => {
-    const query = {
-      ...element.style?.default,
-      ...element.style?.[selectedState],
-      ...element.mediaQueries?.[mq]?.default,
-      ...element.mediaQueries?.[mq]?.[selectedState],
-    }
-    if (!query) return acc
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO
+  const queryStyles = queries.reduce<any>((acc, mq) => {
+    const defaultQuery = element.mediaQueries?.[mq]?.default || {}
+    const selectedQuery = element.mediaQueries?.[mq]?.[selectedState] || {}
 
-    const formattedQuery = Object.keys(query).reduce((a, key) => {
-      const value = query[key]
-
-      if (value === undefined || value === null) return acc
-
-      if (String(value).endsWith('vh')) {
-        const num = Number(value.replace('vh', ''))
-        return {
-          ...a,
-          [key]: `calc(var(--vh) * ${num / 100})`,
-        }
-      }
-
-      if (String(value).endsWith('vw')) {
-        const num = Number(value.replace('vw', ''))
-        return {
-          ...a,
-          [key]: `calc(var(--vw) * ${num / 100})`,
-        }
-      }
-
-      return {
-        ...a,
-        [key]: value,
-      }
-    }, {})
+    const formattedDefaultQuery = formatViewportValues(defaultQuery)
+    const formattedSelectedQuery = formatViewportValues(selectedQuery)
 
     return {
-      ...acc,
-      ...formattedQuery,
-    }
-    // eslint-disable-next-line @typescript-eslint/prefer-reduce-type-parameter, @typescript-eslint/no-explicit-any -- no need to specify type
-  }, {} as any)
-
-  const styles = {
-    ...element.style?.default,
-    ...element.style?.[selectedState],
-  }
-
-  const formattedStyle = Object.keys(styles).reduce((acc, key) => {
-    const value = styles[key]
-
-    if (value === undefined || value === null) return acc
-
-    if (String(value).endsWith('vh')) {
-      const num = Number(value.replace('vh', ''))
-      return {
-        ...acc,
-        [key]: `calc(var(--vh) * ${num / 100})`,
-      }
-    }
-
-    if (String(value).endsWith('vw')) {
-      const num = Number(value.replace('vw', ''))
-      return {
-        ...acc,
-        [key]: `calc(var(--vw) * ${num / 100})`,
-      }
-    }
-
-    return {
-      ...acc,
-      [key]: value,
+      default: {
+        ...acc.default,
+        ...formattedDefaultQuery,
+      },
+      [selectedState]: {
+        ...acc[selectedState],
+        ...formattedSelectedQuery,
+      },
     }
   }, {})
+
+  const defaultStyles = formatViewportValues(element.style?.default)
+  const selectedStyles = formatViewportValues(element.style?.[selectedState])
+
+  const elementStyles =
+    mediaQuery === null
+      ? {
+          ...queryStyles.default,
+          ...defaultStyles,
+          ...queryStyles[selectedState],
+          ...selectedStyles,
+        }
+      : {
+          ...defaultStyles,
+          ...queryStyles.default,
+          ...selectedStyles,
+          ...queryStyles[selectedState],
+        }
 
   const isVoidElement = VOID_ELEMENTS.includes(element.type as string)
 
@@ -433,55 +425,31 @@ const Element = ({
           data-droppable="true"
           id={element.id}
           style={{
-            ...(mediaQuery === null
-              ? { ...queryStyles, ...formattedStyle }
-              : { ...formattedStyle, ...queryStyles }),
+            ...elementStyles,
             paddingLeft: isDraggingElement
               ? `0.5rem`
-              : queryStyles?.[selectedState]?.paddingLeft ??
-                element.style?.[selectedState]?.paddingLeft,
+              : elementStyles.paddingLeft,
             paddingRight: isDraggingElement
               ? `0.5rem`
-              : queryStyles?.[selectedState]?.paddingRight ??
-                element.style?.[selectedState]?.paddingRight,
-            paddingTop: isDraggingElement
-              ? `0.5rem`
-              : queryStyles?.[selectedState]?.paddingTop ??
-                element.style?.[selectedState]?.paddingTop,
+              : elementStyles.paddingRight,
+            paddingTop: isDraggingElement ? `0.5rem` : elementStyles.paddingTop,
             paddingBottom: isDraggingElement
               ? `0.5rem`
-              : queryStyles?.[selectedState]?.paddingBottom ??
-                element.style?.[selectedState]?.paddingBottom,
+              : elementStyles.paddingBottom,
             outline: isDraggingElement
               ? '2px solid #923FDE'
-              : queryStyles?.[selectedState]?.outline ??
-                element.style?.[selectedState]?.outline,
+              : elementStyles.outline,
             // eslint-disable-next-line no-nested-ternary -- no need to simplify
             position: drag.active
               ? 'absolute'
               : isDraggingElement
               ? 'relative'
-              : queryStyles?.[selectedState]?.position ??
-                element.style?.[selectedState]?.position,
-            top: drag.active
-              ? `${drag.y}px`
-              : queryStyles?.[selectedState]?.top ??
-                element.style?.[selectedState]?.top,
-            left: drag.active
-              ? `${drag.x}px`
-              : queryStyles?.[selectedState]?.left ??
-                element.style?.[selectedState]?.left,
-            zIndex: drag.active
-              ? 1000
-              : queryStyles?.zIndex ?? element.style?.[selectedState]?.zIndex,
-            scale: drag.active
-              ? 0.5
-              : queryStyles?.[selectedState]?.scale ??
-                element.style?.[selectedState]?.scale,
-            opacity: drag.active
-              ? 0.5
-              : queryStyles?.[selectedState]?.opacity ??
-                element.style?.[selectedState]?.opacity,
+              : elementStyles.position,
+            top: drag.active ? `${drag.y}px` : elementStyles.top,
+            left: drag.active ? `${drag.x}px` : elementStyles.left,
+            zIndex: drag.active ? 1000 : elementStyles.zIndex,
+            scale: drag.active ? 0.5 : elementStyles.scale,
+            opacity: drag.active ? 0.5 : elementStyles.opacity,
           }}
           onClick={(e) => {
             e.stopPropagation()
@@ -531,56 +499,29 @@ const Element = ({
         data-droppable="true"
         id={element.id}
         style={{
-          ...(mediaQuery === null
-            ? { ...queryStyles, ...formattedStyle }
-            : { ...formattedStyle, ...queryStyles }),
-          paddingLeft: isDraggingElement
-            ? `0.5rem`
-            : queryStyles?.[selectedState]?.paddingLeft ??
-              element.style?.[selectedState]?.paddingLeft,
+          ...elementStyles,
+          paddingLeft: isDraggingElement ? `0.5rem` : elementStyles.paddingLeft,
           paddingRight: isDraggingElement
             ? `0.5rem`
-            : queryStyles?.[selectedState]?.paddingRight ??
-              element.style?.[selectedState]?.paddingRight,
-          paddingTop: isDraggingElement
-            ? `0.5rem`
-            : queryStyles?.[selectedState]?.paddingTop ??
-              element.style?.[selectedState]?.paddingTop,
+            : elementStyles.paddingRight,
+          paddingTop: isDraggingElement ? `0.5rem` : elementStyles.paddingTop,
           paddingBottom: isDraggingElement
             ? `0.5rem`
-            : queryStyles?.[selectedState]?.paddingBottom ??
-              element.style?.[selectedState]?.paddingBottom,
+            : elementStyles.paddingBottom,
           outline: isDraggingElement
             ? '2px solid #923FDE'
-            : queryStyles?.[selectedState]?.outline ??
-              element.style?.[selectedState]?.outline,
+            : elementStyles.outline,
           // eslint-disable-next-line no-nested-ternary -- no need to simplify
           position: drag.active
             ? 'absolute'
             : isDraggingElement
             ? 'relative'
-            : queryStyles?.[selectedState]?.position ??
-              element.style?.[selectedState]?.position,
-          top: drag.active
-            ? `${drag.y}px`
-            : queryStyles?.[selectedState]?.top ??
-              element.style?.[selectedState]?.top,
-          left: drag.active
-            ? `${drag.x}px`
-            : queryStyles?.[selectedState]?.left ??
-              element.style?.[selectedState]?.left,
-          zIndex: drag.active
-            ? 1000
-            : queryStyles?.[selectedState]?.zIndex ??
-              element.style?.[selectedState]?.zIndex,
-          scale: drag.active
-            ? 0.5
-            : queryStyles?.[selectedState]?.scale ??
-              element.style?.[selectedState]?.scale,
-          opacity: drag.active
-            ? 0.5
-            : queryStyles?.[selectedState]?.opacity ??
-              element.style?.[selectedState]?.opacity,
+            : elementStyles.position,
+          top: drag.active ? `${drag.y}px` : elementStyles.top,
+          left: drag.active ? `${drag.x}px` : elementStyles.left,
+          zIndex: drag.active ? 1000 : elementStyles.zIndex,
+          scale: drag.active ? 0.5 : elementStyles.scale,
+          opacity: drag.active ? 0.5 : elementStyles.opacity,
         }}
         onClick={(e) => {
           e.stopPropagation()
